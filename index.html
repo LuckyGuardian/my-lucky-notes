@@ -3,18 +3,18 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>典藏知識庫</title>
+  <title>雅韻知識庫</title>
   <style>
     :root {
-      --bg-main: #141312;       /* 深墨灰背景 */
-      --bg-panel: #1c1b18;      /* 墨黑面板 */
-      --bg-card: #282623;       /* 粗礫石色 */
-      --accent-red: #9e2a2b;     /* 硃砂紅 */
-      --accent-hover: #b83234;   /* 亮硃砂 */
-      --accent-gold: #c9a227;    /* 沉香金 */
-      --text-main: #f4f0ea;     /* 宣紙米白 */
-      --text-sub: #a39e93;      /* 煙灰字體 */
-      --border-color: #38342e;  /* 典雅木紋邊框 */
+      --bg-main: #f2ebe1;       /* 淺咖啡古籍宣紙底色 */
+      --bg-panel: #fcf9f2;      /* 暖白米色面板 */
+      --bg-card: #e8ded1;       /* 淺褐卡片色 */
+      --accent-blue: #2b5b84;    /* 典雅青藍色 */
+      --accent-blue-hover: #1f4363;
+      --accent-red: #a84842;     /* 朱砂紅 */
+      --text-main: #2c2a29;     /* 墨黑字體 */
+      --text-sub: #6e675f;      /* 灰褐色字體 */
+      --border-color: #d8cdbe;  /* 柔和竹簡邊框 */
     }
     
     * { 
@@ -44,15 +44,16 @@
       flex-direction: column; 
       gap: 12px; 
       border: 1px solid var(--border-color); 
+      box-shadow: 2px 0 8px rgba(0, 0, 0, 0.03);
     }
     
     .sidebar h3 { 
       font-size: 1.15rem; 
-      color: var(--accent-gold); 
+      color: var(--accent-blue); 
       margin-bottom: 10px; 
       font-weight: bold;
       letter-spacing: 1px;
-      border-bottom: 1px dashed var(--border-color);
+      border-bottom: 2px solid var(--accent-blue);
       padding-bottom: 8px;
     }
     
@@ -68,8 +69,8 @@
     
     .menu-item.active, .menu-item:hover { 
       background-color: var(--bg-card); 
-      color: var(--text-main); 
-      border-left: 3px solid var(--accent-gold);
+      color: var(--accent-blue); 
+      border-left: 4px solid var(--accent-blue);
     }
 
     /* 筆記列表 */
@@ -81,6 +82,7 @@
       display: flex; 
       flex-direction: column; 
       overflow: hidden; 
+      box-shadow: 2px 0 8px rgba(0, 0, 0, 0.03);
     }
     
     .list-header { 
@@ -89,7 +91,7 @@
       display: flex; 
       justify-content: space-between; 
       align-items: center; 
-      background-color: rgba(255, 255, 255, 0.02);
+      background-color: var(--bg-main);
     }
     
     .list-header h4 { 
@@ -99,7 +101,7 @@
     }
     
     .btn-add { 
-      background: var(--accent-red); 
+      background: var(--accent-blue); 
       color: white; 
       border: none; 
       padding: 6px 14px; 
@@ -111,7 +113,7 @@
     }
     
     .btn-add:hover { 
-      background: var(--accent-hover); 
+      background: var(--accent-blue-hover); 
     }
     
     .note-items { 
@@ -125,14 +127,14 @@
       border-radius: 6px; 
       margin-bottom: 8px; 
       cursor: pointer; 
-      background-color: var(--bg-main); 
+      background-color: #ffffff; 
       border: 1px solid var(--border-color); 
       transition: 0.2s; 
     }
     
     .note-item:hover { 
-      border-color: var(--accent-gold); 
-      background-color: var(--bg-card); 
+      border-color: var(--accent-blue); 
+      background-color: var(--bg-main); 
     }
     
     .note-item h4 { 
@@ -158,6 +160,7 @@
       border-radius: 8px; 
       padding: 25px; 
       border: 1px solid var(--border-color); 
+      box-shadow: 2px 0 8px rgba(0, 0, 0, 0.03);
     }
     
     .editor-tools { 
@@ -168,7 +171,7 @@
     }
     
     .btn-tool { 
-      background: var(--bg-card); 
+      background: #ffffff; 
       color: var(--text-main); 
       border: 1px solid var(--border-color); 
       padding: 6px 16px; 
@@ -180,15 +183,15 @@
     }
     
     .btn-tool:hover { 
-      background-color: var(--border-color); 
-      border-color: var(--accent-gold);
+      background-color: var(--bg-main); 
+      border-color: var(--accent-blue);
     }
     
     .input-title { 
       background: transparent; 
       border: none; 
-      border-bottom: 1px solid var(--border-color);
-      color: var(--accent-gold); 
+      border-bottom: 2px solid var(--border-color);
+      color: var(--accent-blue); 
       font-size: 1.5rem; 
       font-weight: bold; 
       margin-bottom: 20px; 
@@ -216,7 +219,7 @@
 </head>
 <body>
   <div class="sidebar">
-    <h3>📜 典藏知識庫</h3>
+    <h3>📜 雅韻知識庫</h3>
     <div class="menu-item active">📖 英文筆記</div>
     <div class="menu-item">💼 工作筆記</div>
   </div>
@@ -236,8 +239,8 @@
 
   <div class="editor-panel">
     <div class="editor-tools">
-      <button class="btn-tool" onclick="saveNote()">💾 封存儲存</button>
-      <button class="btn-tool" style="color: #e63946;" onclick="deleteNote()">🗑️ 移除筆記</button>
+      <button class="btn-tool" onclick="saveNote()">💾 儲存筆記</button>
+      <button class="btn-tool" style="color: var(--accent-red);" onclick="deleteNote()">🗑️ 刪除筆記</button>
     </div>
     <input type="text" id="noteTitle" class="input-title" value="卷首語" placeholder="請輸入標題...">
     <textarea id="noteContent" class="input-content" placeholder="在此記錄知識與思考...">點擊右上角「新增」按鈕即可撰寫新筆記。</textarea>
@@ -266,11 +269,11 @@
       newItem.innerHTML = `<h4>${title}</h4><p>${content}</p>`;
       
       container.prepend(newItem);
-      alert('筆記已成功封存儲存！');
+      alert('筆記已成功儲存！');
     }
 
     function deleteNote() {
-      if (confirm('確定要移除此篇筆記嗎？')) {
+      if (confirm('確定要刪除此篇筆記嗎？')) {
         document.getElementById('noteTitle').value = '';
         document.getElementById('noteContent').value = '';
       }
