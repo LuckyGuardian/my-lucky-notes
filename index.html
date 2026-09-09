@@ -3,47 +3,209 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>🐾 我的可愛知識庫</title>
+  <title>典藏知識庫</title>
   <style>
     :root {
-      --bg-main: #1a1829;
-      --bg-panel: #242136;
-      --bg-card: #2f2b4a;
-      --accent-pink: #f472b6;
-      --accent-purple: #c084fc;
-      --accent-yellow: #fde047;
-      --text-main: #f3f4f6;
-      --text-sub: #9ca3af;
-      --border-color: #3b3558;
+      --bg-main: #141312;       /* 深墨灰背景 */
+      --bg-panel: #1c1b18;      /* 墨黑面板 */
+      --bg-card: #282623;       /* 粗礫石色 */
+      --accent-red: #9e2a2b;     /* 硃砂紅 */
+      --accent-hover: #b83234;   /* 亮硃砂 */
+      --accent-gold: #c9a227;    /* 沉香金 */
+      --text-main: #f4f0ea;     /* 宣紙米白 */
+      --text-sub: #a39e93;      /* 煙灰字體 */
+      --border-color: #38342e;  /* 典雅木紋邊框 */
     }
-    * { box-sizing: border-box; margin: 0; padding: 0; font-family: "Comfortaa", "Segoe UI", "PingFang TC", sans-serif; }
-    body { display: flex; height: 100vh; background-color: var(--bg-main); color: var(--text-main); overflow: hidden; padding: 10px; gap: 10px; }
+    
+    * { 
+      box-sizing: border-box; 
+      margin: 0; 
+      padding: 0; 
+      font-family: "Microsoft JhengHei", "微軟正黑體", sans-serif; 
+    }
+    
+    body { 
+      display: flex; 
+      height: 100vh; 
+      background-color: var(--bg-main); 
+      color: var(--text-main); 
+      overflow: hidden; 
+      padding: 12px; 
+      gap: 12px; 
+    }
     
     /* 側邊欄 */
-    .sidebar { width: 200px; background-color: var(--bg-panel); border-radius: 16px; padding: 20px 15px; display: flex; flex-direction: column; gap: 12px; border: 1px solid var(--border-color); }
-    .sidebar h3 { font-size: 1.1rem; color: var(--accent-pink); margin-bottom: 8px; display: flex; align-items: center; gap: 6px; }
-    .menu-item { padding: 10px 14px; border-radius: 12px; cursor: pointer; color: var(--text-sub); transition: 0.2s; font-size: 0.95rem; font-weight: bold; }
-    .menu-item.active, .menu-item:hover { background-color: var(--bg-card); color: var(--accent-yellow); }
+    .sidebar { 
+      width: 210px; 
+      background-color: var(--bg-panel); 
+      border-radius: 8px; 
+      padding: 20px 15px; 
+      display: flex; 
+      flex-direction: column; 
+      gap: 12px; 
+      border: 1px solid var(--border-color); 
+    }
+    
+    .sidebar h3 { 
+      font-size: 1.15rem; 
+      color: var(--accent-gold); 
+      margin-bottom: 10px; 
+      font-weight: bold;
+      letter-spacing: 1px;
+      border-bottom: 1px dashed var(--border-color);
+      padding-bottom: 8px;
+    }
+    
+    .menu-item { 
+      padding: 10px 14px; 
+      border-radius: 6px; 
+      cursor: pointer; 
+      color: var(--text-sub); 
+      transition: 0.2s; 
+      font-size: 0.95rem; 
+      font-weight: bold;
+    }
+    
+    .menu-item.active, .menu-item:hover { 
+      background-color: var(--bg-card); 
+      color: var(--text-main); 
+      border-left: 3px solid var(--accent-gold);
+    }
 
     /* 筆記列表 */
-    .note-list-panel { width: 260px; background-color: var(--bg-panel); border-radius: 16px; border: 1px solid var(--border-color); display: flex; flex-direction: column; overflow: hidden; }
-    .list-header { padding: 16px; border-bottom: 1px solid var(--border-color); display: flex; justify-content: space-between; align-items: center; }
-    .list-header h4 { color: var(--accent-purple); }
-    .btn-add { background: linear-gradient(135deg, var(--accent-pink), var(--accent-purple)); color: white; border: none; padding: 8px 14px; border-radius: 20px; cursor: pointer; font-weight: bold; box-shadow: 0 4px 10px rgba(244, 114, 182, 0.3); transition: 0.2s; }
-    .btn-add:hover { transform: translateY(-2px); }
-    .note-items { overflow-y: auto; flex: 1; padding: 10px; }
-    .note-item { padding: 12px 14px; border-radius: 12px; margin-bottom: 8px; cursor: pointer; background-color: var(--bg-main); border: 1px solid transparent; transition: 0.2s; }
-    .note-item:hover { border-color: var(--accent-purple); background-color: var(--bg-card); }
-    .note-item h4 { font-size: 0.95rem; margin-bottom: 4px; color: #fff; }
-    .note-item p { font-size: 0.8rem; color: var(--text-sub); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+    .note-list-panel { 
+      width: 270px; 
+      background-color: var(--bg-panel); 
+      border-radius: 8px; 
+      border: 1px solid var(--border-color); 
+      display: flex; 
+      flex-direction: column; 
+      overflow: hidden; 
+    }
+    
+    .list-header { 
+      padding: 16px; 
+      border-bottom: 1px solid var(--border-color); 
+      display: flex; 
+      justify-content: space-between; 
+      align-items: center; 
+      background-color: rgba(255, 255, 255, 0.02);
+    }
+    
+    .list-header h4 { 
+      color: var(--text-main); 
+      font-size: 1rem;
+      letter-spacing: 1px;
+    }
+    
+    .btn-add { 
+      background: var(--accent-red); 
+      color: white; 
+      border: none; 
+      padding: 6px 14px; 
+      border-radius: 4px; 
+      cursor: pointer; 
+      font-weight: bold; 
+      font-size: 0.9rem;
+      transition: 0.2s; 
+    }
+    
+    .btn-add:hover { 
+      background: var(--accent-hover); 
+    }
+    
+    .note-items { 
+      overflow-y: auto; 
+      flex: 1; 
+      padding: 10px; 
+    }
+    
+    .note-item { 
+      padding: 12px 14px; 
+      border-radius: 6px; 
+      margin-bottom: 8px; 
+      cursor: pointer; 
+      background-color: var(--bg-main); 
+      border: 1px solid var(--border-color); 
+      transition: 0.2s; 
+    }
+    
+    .note-item:hover { 
+      border-color: var(--accent-gold); 
+      background-color: var(--bg-card); 
+    }
+    
+    .note-item h4 { 
+      font-size: 0.95rem; 
+      margin-bottom: 6px; 
+      color: var(--text-main); 
+    }
+    
+    .note-item p { 
+      font-size: 0.85rem; 
+      color: var(--text-sub); 
+      white-space: nowrap; 
+      overflow: hidden; 
+      text-overflow: ellipsis; 
+    }
 
     /* 編輯器區域 */
-    .editor-panel { flex: 1; display: flex; flex-direction: column; background-color: var(--bg-panel); border-radius: 16px; padding: 25px; border: 1px solid var(--border-color); }
-    .editor-tools { display: flex; gap: 10px; margin-bottom: 15px; justify-content: flex-end; }
-    .btn-tool { background: var(--bg-card); color: var(--text-main); border: 1px solid var(--border-color); padding: 8px 16px; border-radius: 20px; cursor: pointer; font-weight: bold; transition: 0.2s; }
-    .btn-tool:hover { background-color: var(--border-color); }
-    .input-title { background: transparent; border: none; color: var(--accent-yellow); font-size: 1.6rem; font-weight: bold; margin-bottom: 15px; outline: none; }
-    .input-content { flex: 1; background: transparent; border: none; color: var(--text-main); font-size: 1.05rem; line-height: 1.7; resize: none; outline: none; }
+    .editor-panel { 
+      flex: 1; 
+      display: flex; 
+      flex-direction: column; 
+      background-color: var(--bg-panel); 
+      border-radius: 8px; 
+      padding: 25px; 
+      border: 1px solid var(--border-color); 
+    }
+    
+    .editor-tools { 
+      display: flex; 
+      gap: 10px; 
+      margin-bottom: 15px; 
+      justify-content: flex-end; 
+    }
+    
+    .btn-tool { 
+      background: var(--bg-card); 
+      color: var(--text-main); 
+      border: 1px solid var(--border-color); 
+      padding: 6px 16px; 
+      border-radius: 4px; 
+      cursor: pointer; 
+      font-weight: bold; 
+      font-size: 0.9rem;
+      transition: 0.2s; 
+    }
+    
+    .btn-tool:hover { 
+      background-color: var(--border-color); 
+      border-color: var(--accent-gold);
+    }
+    
+    .input-title { 
+      background: transparent; 
+      border: none; 
+      border-bottom: 1px solid var(--border-color);
+      color: var(--accent-gold); 
+      font-size: 1.5rem; 
+      font-weight: bold; 
+      margin-bottom: 20px; 
+      padding-bottom: 8px;
+      outline: none; 
+    }
+    
+    .input-content { 
+      flex: 1; 
+      background: transparent; 
+      border: none; 
+      color: var(--text-main); 
+      font-size: 1.05rem; 
+      line-height: 1.8; 
+      resize: none; 
+      outline: none; 
+    }
 
     @media (max-width: 767px) {
       body { flex-direction: column; }
@@ -54,31 +216,31 @@
 </head>
 <body>
   <div class="sidebar">
-    <h3>🐾 知識庫</h3>
-    <div class="menu-item active">🐟 英文筆記</div>
-    <div class="menu-item">罐 罐工作</div>
+    <h3>📜 典藏知識庫</h3>
+    <div class="menu-item active">📖 英文筆記</div>
+    <div class="menu-item">💼 工作筆記</div>
   </div>
 
   <div class="note-list-panel">
     <div class="list-header">
-      <h4>✨ 筆記清單</h4>
+      <h4>📑 筆記清單</h4>
       <button class="btn-add" onclick="createNote()">+ 新增</button>
     </div>
     <div class="note-items" id="noteItems">
-      <div class="note-item" onclick="selectNote('🐱 歡迎使用可愛知識庫', '點擊右上角新增按鈕開始寫筆記吧！')">
-        <h4>🐱 歡迎使用可愛知識庫</h4>
-        <p>點擊右上角新增按鈕開始寫筆記吧！</p>
+      <div class="note-item" onclick="selectNote('卷首語', '點擊右上角「新增」按鈕即可撰寫新筆記。')">
+        <h4>卷首語</h4>
+        <p>點擊右上角「新增」按鈕即可撰寫新筆記。</p>
       </div>
     </div>
   </div>
 
   <div class="editor-panel">
     <div class="editor-tools">
-      <button class="btn-tool" onclick="saveNote()">💾 儲存筆記</button>
-      <button class="btn-tool" style="color: #f87171;" onclick="deleteNote()">🗑️ 丟進垃圾桶</button>
+      <button class="btn-tool" onclick="saveNote()">💾 封存儲存</button>
+      <button class="btn-tool" style="color: #e63946;" onclick="deleteNote()">🗑️ 移除筆記</button>
     </div>
-    <input type="text" id="noteTitle" class="input-title" value="🐱 歡迎使用可愛知識庫" placeholder="輸入標題喵...">
-    <textarea id="noteContent" class="input-content" placeholder="開始記錄今天的心情與筆記吧...">點擊右上角新增按鈕開始寫筆記吧！</textarea>
+    <input type="text" id="noteTitle" class="input-title" value="卷首語" placeholder="請輸入標題...">
+    <textarea id="noteContent" class="input-content" placeholder="在此記錄知識與思考...">點擊右上角「新增」按鈕即可撰寫新筆記。</textarea>
   </div>
 
   <script>
@@ -94,7 +256,7 @@
     }
 
     function saveNote() {
-      const title = document.getElementById('noteTitle').value || '🐾 未命名筆記';
+      const title = document.getElementById('noteTitle').value || '未命名筆記';
       const content = document.getElementById('noteContent').value;
       
       const container = document.getElementById('noteItems');
@@ -104,11 +266,11 @@
       newItem.innerHTML = `<h4>${title}</h4><p>${content}</p>`;
       
       container.prepend(newItem);
-      alert('🐾 筆記成功儲存囉！');
+      alert('筆記已成功封存儲存！');
     }
 
     function deleteNote() {
-      if (confirm('確定要刪除這篇筆記嗎喵？')) {
+      if (confirm('確定要移除此篇筆記嗎？')) {
         document.getElementById('noteTitle').value = '';
         document.getElementById('noteContent').value = '';
       }
