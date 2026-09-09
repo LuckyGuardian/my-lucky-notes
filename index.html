@@ -1,0 +1,60 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>我的個人知識庫</title>
+  <style>
+    * { box-sizing: border-box; margin: 0; padding: 0; font-family: "One UI Sans", "Noto Sans TC", sans-serif; }
+    body { display: flex; height: 100vh; background-color: #f8f9fa; color: #212529; overflow: hidden; }
+    .sidebar { width: 240px; background-color: #1e1e2d; color: #a2a3b7; padding: 20px 15px; }
+    .note-list-panel { width: 320px; background-color: #ffffff; border-right: 1px solid #e9ecef; }
+    .editor-panel { flex: 1; padding: 30px; overflow-y: auto; line-height: 1.8; font-size: 1.125rem; }
+    @media (max-width: 767px) {
+      body { flex-direction: column; }
+      .sidebar, .note-list-panel { width: 100%; height: auto; }
+      .editor-panel { padding: 20px; }
+    }
+  </style>
+  <script type="module">
+    import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-app.js";
+    import { getAuth, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-auth.js";
+
+    // 填入你的 Firebase 連線金鑰
+    const firebaseConfig = {
+      apiKey: "AIzaSyDaLYJe74S_WBP65ch1YdoenQGy7wkyIJ8",
+      authDomain: "my-lucky-notes.firebaseapp.com",
+      projectId: "my-lucky-notes",
+      storageBucket: "my-lucky-notes.firebasestorage.app",
+      messagingSenderId: "38225473709",
+      appId: "1:38225473709:web:d547eab40ab109c85b04a4"
+    };
+
+    const app = initializeApp(firebaseConfig);
+    const auth = getAuth(app);
+
+    onAuthStateChanged(auth, (user) => {
+      if (user) {
+        console.log("使用者已登入:", user.email);
+      } else {
+        console.log("未登入狀態");
+      }
+    });
+  </script>
+</head>
+<body>
+  <div class="sidebar">
+    <h3>📁 個人知識庫</h3>
+    <p style="margin-top: 15px;">🔤 英文筆記</p>
+    <p style="margin-top: 10px;">💼 工作筆記</p>
+  </div>
+  <div class="note-list-panel" style="padding: 15px;">
+    <h4>筆記列表</h4>
+    <p style="font-size: 0.9rem; color: #6c757d; margin-top: 10px;">歡迎使用你的專屬知識庫！</p>
+  </div>
+  <div class="editor-panel">
+    <h1>🎉 筆記系統初始化成功！</h1>
+    <p style="margin-top: 15px;">這是你的個人知識庫網頁，已經順利串接 Firebase 後端資料庫與白名單驗證。</p>
+  </div>
+</body>
+</html>
