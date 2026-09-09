@@ -45,6 +45,8 @@
       gap: 12px; 
       border: 1px solid var(--border-color); 
       box-shadow: 2px 0 8px rgba(0, 0, 0, 0.03);
+      position: relative; /* 為了讓左下角圖案定位 */
+      overflow: hidden;
     }
     
     .sidebar h3 { 
@@ -65,12 +67,25 @@
       transition: 0.2s; 
       font-size: 0.95rem; 
       font-weight: bold;
+      z-index: 1; /* 避免文字被背景圖遮住 */
     }
     
     .menu-item.active, .menu-item:hover { 
       background-color: var(--bg-card); 
       color: var(--accent-blue); 
       border-left: 4px solid var(--accent-blue);
+    }
+
+    /* 左下角彼岸花圖案 */
+    .spider-lily {
+      position: absolute;
+      bottom: -10px;
+      left: -10px;
+      width: 130px;
+      height: 130px;
+      opacity: 0.18; /* 保持隱約典雅質感 */
+      pointer-events: none; /* 不干擾點擊操作 */
+      z-index: 0;
     }
 
     /* 筆記列表 */
@@ -214,6 +229,7 @@
       body { flex-direction: column; }
       .sidebar { width: 100%; height: auto; flex-direction: row; justify-content: space-around; }
       .note-list-panel { width: 100%; height: 180px; }
+      .spider-lily { display: none; }
     }
   </style>
 </head>
@@ -222,6 +238,18 @@
     <h3>📜 雅韻知識庫</h3>
     <div class="menu-item active">📖 英文筆記</div>
     <div class="menu-item">💼 工作筆記</div>
+    
+    <!-- 彼岸花 SVG 圖案 -->
+    <svg class="spider-lily" viewBox="0 0 100 100" fill="#a84842">
+      <path d="M50,90 C50,70 45,50 30,35 C20,25 5,20 0,22 C10,28 22,35 28,45 C35,55 38,70 40,90 Z" />
+      <path d="M50,90 C52,70 58,50 72,35 C82,25 97,20 100,22 C90,28 78,35 72,45 C65,55 62,70 60,90 Z" />
+      <path d="M50,90 C48,65 35,45 20,28 C10,18 -2,12 0,10 C8,18 20,28 28,38 C38,50 42,68 45,90 Z" />
+      <path d="M50,90 C52,65 65,45 80,28 C90,18 102,12 100,10 C92,18 80,28 72,38 C62,50 58,68 55,90 Z" />
+      <circle cx="0" cy="22" r="2" />
+      <circle cx="100" cy="22" r="2" />
+      <circle cx="0" cy="10" r="2" />
+      <circle cx="100" cy="10" r="2" />
+    </svg>
   </div>
 
   <div class="note-list-panel">
@@ -230,32 +258,59 @@
       <button class="btn-add" onclick="createNote()">+ 新增</button>
     </div>
     <div class="note-items" id="noteItems">
-      <div class="note-item" onclick="selectNote('卷首語', '點擊右上角「新增」按鈕即可撰寫新筆記。')">
-        <h4>卷首語</h4>
-        <p>點擊右上角「新增」按鈕即可撰寫新筆記。</p>
+      <div class="note-item" onclick="loadSampleNote()">
+        <h4>📌 工作會議與任務範本</h4>
+        <p>點擊載入標準職場會議紀錄與待辦事項模板...</p>
       </div>
     </div>
   </div>
 
   <div class="editor-panel">
     <div class="editor-tools">
+      <button class="btn-tool" onclick="applyTemplate()">📋 帶入工作範本</button>
       <button class="btn-tool" onclick="saveNote()">💾 儲存筆記</button>
       <button class="btn-tool" style="color: var(--accent-red);" onclick="deleteNote()">🗑️ 刪除筆記</button>
     </div>
-    <input type="text" id="noteTitle" class="input-title" value="卷首語" placeholder="請輸入標題...">
-    <textarea id="noteContent" class="input-content" placeholder="在此記錄知識與思考...">點擊右上角「新增」按鈕即可撰寫新筆記。</textarea>
+    <input type="text" id="noteTitle" class="input-title" value="📌 工作會議與任務範本" placeholder="請輸入標題...">
+    <textarea id="noteContent" class="input-content" placeholder="在此記錄知識與思考..."></textarea>
   </div>
 
   <script>
+    const defaultTemplate = `📌 [專案/會議名稱] 紀錄
+
+【一、 核心目標與結論】
+* 本次會議要解決的最重要問題：
+* 最終決議與共識：
+
+【二、 Action Items (待辦追蹤)】
+[ ] 任務 A (負責人 / 預計完成日)
+[ ] 任務 B (負責人 / 預計完成日)
+
+【三、 詳細過程與背景資料】
+* 討論細節：
+* 參考數據與連結：`;
+
+    document.getElementById('noteContent').value = defaultTemplate;
+
     function createNote() {
       document.getElementById('noteTitle').value = '';
       document.getElementById('noteContent').value = '';
       document.getElementById('noteTitle').focus();
     }
 
+    function applyTemplate() {
+      if (confirm('是否要在目前編輯器中載入「工作會議範本」？')) {
+        document.getElementById('noteContent').value = defaultTemplate;
+      }
+    }
+
     function selectNote(title, content) {
       document.getElementById('noteTitle').value = title;
       document.getElementById('noteContent').value = content;
+    }
+
+    function loadSampleNote() {
+      selectNote('📌 工作會議與任務範本', defaultTemplate);
     }
 
     function saveNote() {
