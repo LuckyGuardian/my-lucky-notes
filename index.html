@@ -45,7 +45,7 @@
       gap: 12px; 
       border: 1px solid var(--border-color); 
       box-shadow: 2px 0 8px rgba(0, 0, 0, 0.03);
-      position: relative; /* 為了讓左下角圖案定位 */
+      position: relative;
       overflow: hidden;
     }
     
@@ -67,7 +67,7 @@
       transition: 0.2s; 
       font-size: 0.95rem; 
       font-weight: bold;
-      z-index: 1; /* 避免文字被背景圖遮住 */
+      z-index: 1;
     }
     
     .menu-item.active, .menu-item:hover { 
@@ -83,8 +83,8 @@
       left: -10px;
       width: 130px;
       height: 130px;
-      opacity: 0.18; /* 保持隱約典雅質感 */
-      pointer-events: none; /* 不干擾點擊操作 */
+      opacity: 0.18;
+      pointer-events: none;
       z-index: 0;
     }
 
@@ -180,20 +180,21 @@
     
     .editor-tools { 
       display: flex; 
-      gap: 10px; 
+      gap: 8px; 
       margin-bottom: 15px; 
       justify-content: flex-end; 
+      flex-wrap: wrap;
     }
     
     .btn-tool { 
       background: #ffffff; 
       color: var(--text-main); 
       border: 1px solid var(--border-color); 
-      padding: 6px 16px; 
+      padding: 6px 14px; 
       border-radius: 4px; 
       cursor: pointer; 
       font-weight: bold; 
-      font-size: 0.9rem;
+      font-size: 0.85rem;
       transition: 0.2s; 
     }
     
@@ -258,7 +259,11 @@
       <button class="btn-add" onclick="createNote()">+ 新增</button>
     </div>
     <div class="note-items" id="noteItems">
-      <div class="note-item" onclick="loadSampleNote()">
+      <div class="note-item" onclick="loadEnglishSample()">
+        <h4>🔤 英文句型與搭配詞範本</h4>
+        <p>點擊載入職場 Email 萬用句型與單字卡範本...</p>
+      </div>
+      <div class="note-item" onclick="loadWorkSample()">
         <h4>📌 工作會議與任務範本</h4>
         <p>點擊載入標準職場會議紀錄與待辦事項模板...</p>
       </div>
@@ -267,16 +272,34 @@
 
   <div class="editor-panel">
     <div class="editor-tools">
-      <button class="btn-tool" onclick="applyTemplate()">📋 帶入工作範本</button>
+      <button class="btn-tool" onclick="applyEnglishTemplate()">🔤 帶入英文範本</button>
+      <button class="btn-tool" onclick="applyWorkTemplate()">📋 帶入工作範本</button>
       <button class="btn-tool" onclick="saveNote()">💾 儲存筆記</button>
       <button class="btn-tool" style="color: var(--accent-red);" onclick="deleteNote()">🗑️ 刪除筆記</button>
     </div>
-    <input type="text" id="noteTitle" class="input-title" value="📌 工作會議與任務範本" placeholder="請輸入標題...">
+    <input type="text" id="noteTitle" class="input-title" value="🔤 英文句型與搭配詞範本" placeholder="請輸入標題...">
     <textarea id="noteContent" class="input-content" placeholder="在此記錄知識與思考..."></textarea>
   </div>
 
   <script>
-    const defaultTemplate = `📌 [專案/會議名稱] 紀錄
+    const englishTemplate = `🔤 [學習主題/情境名稱] (範例：職場 Email 跟進)
+
+【一、 萬用句型 / 情境短語】
+* 句型 1：I wanted to check in on the status of [專案/事項].
+  (中譯：我想確認一下 [專案/事項] 的目前進度。)
+* 句型 2：Just a gentle reminder regarding [事項].
+  (中譯：溫馨提醒一下關於 [事項]。)
+
+【二、 核心單字與搭配詞 (Collocations)】
+* 核心詞：Follow up (v.) 跟進
+  * 常見搭配：follow up on something
+  * 實用例句：I will follow up on this issue tomorrow.
+
+【三、 避坑指南 (台式英文校正)】
+* ❌ 錯誤：I very like this project.
+* ⭕ 正確：I really like this project. / I like this project very much.`;
+
+    const workTemplate = `📌 [專案/會議名稱] 紀錄
 
 【一、 核心目標與結論】
 * 本次會議要解決的最重要問題：
@@ -290,7 +313,8 @@
 * 討論細節：
 * 參考數據與連結：`;
 
-    document.getElementById('noteContent').value = defaultTemplate;
+    // 預設寫入英文範本
+    document.getElementById('noteContent').value = englishTemplate;
 
     function createNote() {
       document.getElementById('noteTitle').value = '';
@@ -298,9 +322,17 @@
       document.getElementById('noteTitle').focus();
     }
 
-    function applyTemplate() {
-      if (confirm('是否要在目前編輯器中載入「工作會議範本」？')) {
-        document.getElementById('noteContent').value = defaultTemplate;
+    function applyEnglishTemplate() {
+      if (confirm('是否載入「英文句型範本」？')) {
+        document.getElementById('noteTitle').value = '🔤 [學習主題/情境名稱]';
+        document.getElementById('noteContent').value = englishTemplate;
+      }
+    }
+
+    function applyWorkTemplate() {
+      if (confirm('是否載入「工作會議範本」？')) {
+        document.getElementById('noteTitle').value = '📌 [專案/會議名稱] 紀錄';
+        document.getElementById('noteContent').value = workTemplate;
       }
     }
 
@@ -309,8 +341,12 @@
       document.getElementById('noteContent').value = content;
     }
 
-    function loadSampleNote() {
-      selectNote('📌 工作會議與任務範本', defaultTemplate);
+    function loadEnglishSample() {
+      selectNote('🔤 英文句型與搭配詞範本', englishTemplate);
+    }
+
+    function loadWorkSample() {
+      selectNote('📌 工作會議與任務範本', workTemplate);
     }
 
     function saveNote() {
