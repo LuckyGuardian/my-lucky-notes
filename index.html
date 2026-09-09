@@ -3,58 +3,116 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>我的個人知識庫</title>
+  <title>🐾 我的可愛知識庫</title>
   <style>
-    * { box-sizing: border-box; margin: 0; padding: 0; font-family: "One UI Sans", "Noto Sans TC", sans-serif; }
-    body { display: flex; height: 100vh; background-color: #f8f9fa; color: #212529; overflow: hidden; }
-    .sidebar { width: 240px; background-color: #1e1e2d; color: #a2a3b7; padding: 20px 15px; }
-    .note-list-panel { width: 320px; background-color: #ffffff; border-right: 1px solid #e9ecef; }
-    .editor-panel { flex: 1; padding: 30px; overflow-y: auto; line-height: 1.8; font-size: 1.125rem; }
+    :root {
+      --bg-main: #1a1829;
+      --bg-panel: #242136;
+      --bg-card: #2f2b4a;
+      --accent-pink: #f472b6;
+      --accent-purple: #c084fc;
+      --accent-yellow: #fde047;
+      --text-main: #f3f4f6;
+      --text-sub: #9ca3af;
+      --border-color: #3b3558;
+    }
+    * { box-sizing: border-box; margin: 0; padding: 0; font-family: "Comfortaa", "Segoe UI", "PingFang TC", sans-serif; }
+    body { display: flex; height: 100vh; background-color: var(--bg-main); color: var(--text-main); overflow: hidden; padding: 10px; gap: 10px; }
+    
+    /* 側邊欄 */
+    .sidebar { width: 200px; background-color: var(--bg-panel); border-radius: 16px; padding: 20px 15px; display: flex; flex-direction: column; gap: 12px; border: 1px solid var(--border-color); }
+    .sidebar h3 { font-size: 1.1rem; color: var(--accent-pink); margin-bottom: 8px; display: flex; align-items: center; gap: 6px; }
+    .menu-item { padding: 10px 14px; border-radius: 12px; cursor: pointer; color: var(--text-sub); transition: 0.2s; font-size: 0.95rem; font-weight: bold; }
+    .menu-item.active, .menu-item:hover { background-color: var(--bg-card); color: var(--accent-yellow); }
+
+    /* 筆記列表 */
+    .note-list-panel { width: 260px; background-color: var(--bg-panel); border-radius: 16px; border: 1px solid var(--border-color); display: flex; flex-direction: column; overflow: hidden; }
+    .list-header { padding: 16px; border-bottom: 1px solid var(--border-color); display: flex; justify-content: space-between; align-items: center; }
+    .list-header h4 { color: var(--accent-purple); }
+    .btn-add { background: linear-gradient(135deg, var(--accent-pink), var(--accent-purple)); color: white; border: none; padding: 8px 14px; border-radius: 20px; cursor: pointer; font-weight: bold; box-shadow: 0 4px 10px rgba(244, 114, 182, 0.3); transition: 0.2s; }
+    .btn-add:hover { transform: translateY(-2px); }
+    .note-items { overflow-y: auto; flex: 1; padding: 10px; }
+    .note-item { padding: 12px 14px; border-radius: 12px; margin-bottom: 8px; cursor: pointer; background-color: var(--bg-main); border: 1px solid transparent; transition: 0.2s; }
+    .note-item:hover { border-color: var(--accent-purple); background-color: var(--bg-card); }
+    .note-item h4 { font-size: 0.95rem; margin-bottom: 4px; color: #fff; }
+    .note-item p { font-size: 0.8rem; color: var(--text-sub); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+
+    /* 編輯器區域 */
+    .editor-panel { flex: 1; display: flex; flex-direction: column; background-color: var(--bg-panel); border-radius: 16px; padding: 25px; border: 1px solid var(--border-color); }
+    .editor-tools { display: flex; gap: 10px; margin-bottom: 15px; justify-content: flex-end; }
+    .btn-tool { background: var(--bg-card); color: var(--text-main); border: 1px solid var(--border-color); padding: 8px 16px; border-radius: 20px; cursor: pointer; font-weight: bold; transition: 0.2s; }
+    .btn-tool:hover { background-color: var(--border-color); }
+    .input-title { background: transparent; border: none; color: var(--accent-yellow); font-size: 1.6rem; font-weight: bold; margin-bottom: 15px; outline: none; }
+    .input-content { flex: 1; background: transparent; border: none; color: var(--text-main); font-size: 1.05rem; line-height: 1.7; resize: none; outline: none; }
+
     @media (max-width: 767px) {
       body { flex-direction: column; }
-      .sidebar, .note-list-panel { width: 100%; height: auto; }
-      .editor-panel { padding: 20px; }
+      .sidebar { width: 100%; height: auto; flex-direction: row; justify-content: space-around; }
+      .note-list-panel { width: 100%; height: 180px; }
     }
   </style>
-  <script type="module">
-    import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-app.js";
-    import { getAuth, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-auth.js";
-
-    // 填入你的 Firebase 連線金鑰
-    const firebaseConfig = {
-      apiKey: "AIzaSyDaLYJe74S_WBP65ch1YdoenQGy7wkyIJ8",
-      authDomain: "my-lucky-notes.firebaseapp.com",
-      projectId: "my-lucky-notes",
-      storageBucket: "my-lucky-notes.firebasestorage.app",
-      messagingSenderId: "38225473709",
-      appId: "1:38225473709:web:d547eab40ab109c85b04a4"
-    };
-
-    const app = initializeApp(firebaseConfig);
-    const auth = getAuth(app);
-
-    onAuthStateChanged(auth, (user) => {
-      if (user) {
-        console.log("使用者已登入:", user.email);
-      } else {
-        console.log("未登入狀態");
-      }
-    });
-  </script>
 </head>
 <body>
   <div class="sidebar">
-    <h3>📁 個人知識庫</h3>
-    <p style="margin-top: 15px;">🔤 英文筆記</p>
-    <p style="margin-top: 10px;">💼 工作筆記</p>
+    <h3>🐾 知識庫</h3>
+    <div class="menu-item active">🐟 英文筆記</div>
+    <div class="menu-item">罐 罐工作</div>
   </div>
-  <div class="note-list-panel" style="padding: 15px;">
-    <h4>筆記列表</h4>
-    <p style="font-size: 0.9rem; color: #6c757d; margin-top: 10px;">歡迎使用你的專屬知識庫！</p>
+
+  <div class="note-list-panel">
+    <div class="list-header">
+      <h4>✨ 筆記清單</h4>
+      <button class="btn-add" onclick="createNote()">+ 新增</button>
+    </div>
+    <div class="note-items" id="noteItems">
+      <div class="note-item" onclick="selectNote('🐱 歡迎使用可愛知識庫', '點擊右上角新增按鈕開始寫筆記吧！')">
+        <h4>🐱 歡迎使用可愛知識庫</h4>
+        <p>點擊右上角新增按鈕開始寫筆記吧！</p>
+      </div>
+    </div>
   </div>
+
   <div class="editor-panel">
-    <h1>🎉 筆記系統初始化成功！</h1>
-    <p style="margin-top: 15px;">這是你的個人知識庫網頁，已經順利串接 Firebase 後端資料庫與白名單驗證。</p>
+    <div class="editor-tools">
+      <button class="btn-tool" onclick="saveNote()">💾 儲存筆記</button>
+      <button class="btn-tool" style="color: #f87171;" onclick="deleteNote()">🗑️ 丟進垃圾桶</button>
+    </div>
+    <input type="text" id="noteTitle" class="input-title" value="🐱 歡迎使用可愛知識庫" placeholder="輸入標題喵...">
+    <textarea id="noteContent" class="input-content" placeholder="開始記錄今天的心情與筆記吧...">點擊右上角新增按鈕開始寫筆記吧！</textarea>
   </div>
+
+  <script>
+    function createNote() {
+      document.getElementById('noteTitle').value = '';
+      document.getElementById('noteContent').value = '';
+      document.getElementById('noteTitle').focus();
+    }
+
+    function selectNote(title, content) {
+      document.getElementById('noteTitle').value = title;
+      document.getElementById('noteContent').value = content;
+    }
+
+    function saveNote() {
+      const title = document.getElementById('noteTitle').value || '🐾 未命名筆記';
+      const content = document.getElementById('noteContent').value;
+      
+      const container = document.getElementById('noteItems');
+      const newItem = document.createElement('div');
+      newItem.className = 'note-item';
+      newItem.onclick = () => selectNote(title, content);
+      newItem.innerHTML = `<h4>${title}</h4><p>${content}</p>`;
+      
+      container.prepend(newItem);
+      alert('🐾 筆記成功儲存囉！');
+    }
+
+    function deleteNote() {
+      if (confirm('確定要刪除這篇筆記嗎喵？')) {
+        document.getElementById('noteTitle').value = '';
+        document.getElementById('noteContent').value = '';
+      }
+    }
+  </script>
 </body>
 </html>
