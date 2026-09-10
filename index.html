@@ -51,8 +51,12 @@
 
     .dashboard-grid { flex: 1; display: grid; grid-template-columns: 1fr 1fr; gap: 14px; overflow-y: auto; }
     .board-card { background: var(--bg-panel); border-radius: 12px; border: 1px solid var(--border-color); display: flex; flex-direction: column; max-height: 100%; }
+    
+    /* 看板頂部與新增按鈕 */
     .board-header { padding: 12px 16px; border-bottom: 1px solid var(--border-color); display: flex; justify-content: space-between; align-items: center; }
     .board-title { display: flex; align-items: center; gap: 8px; font-size: 1rem; font-weight: bold; color: var(--accent-green); }
+    .btn-board-add { background: #ffffff; border: 1px solid var(--border-color); padding: 3px 10px; border-radius: 6px; font-size: 0.8rem; font-weight: bold; cursor: pointer; color: var(--accent-green); transition: 0.2s; }
+    .btn-board-add:hover { background: var(--accent-green); color: white; border-color: var(--accent-green); }
 
     .card-list { padding: 12px; overflow-y: auto; flex: 1; display: flex; flex-direction: column; gap: 10px; }
     .item-card { background: var(--bg-card); border-radius: 8px; border: 1px solid var(--border-color); padding: 12px; display: flex; flex-direction: column; gap: 8px; cursor: pointer; transition: 0.2s; }
@@ -175,9 +179,11 @@
       </div>
 
       <div class="dashboard-grid">
+        <!-- 看板 1 -->
         <div class="board-card" id="ai-board">
           <div class="board-header">
             <div class="board-title">🤖 AI 智庫與筆記</div>
+            <button class="btn-board-add" onclick="openCategoryEditor('AI')">+ 新增</button>
           </div>
           <div class="card-list" id="list-ai">
             <div class="item-card" onclick="openNoteInEditor('ChatGPT 萬用文案潤飾 Prompt', aiTemplate, '🤖 AI 智庫與筆記', this)">
@@ -190,9 +196,11 @@
           </div>
         </div>
 
+        <!-- 看板 2 -->
         <div class="board-card" id="work-board">
           <div class="board-header">
             <div class="board-title">💼 工作任務</div>
+            <button class="btn-board-add" onclick="openCategoryEditor('Work')">+ 新增</button>
           </div>
           <div class="card-list" id="list-work">
             <div class="item-card" onclick="openNoteInEditor('跨部門會議紀錄與進度追蹤', workTemplate, '💼 工作任務', this)">
@@ -205,9 +213,11 @@
           </div>
         </div>
 
+        <!-- 看板 3 -->
         <div class="board-card" id="todo-board">
           <div class="board-header">
             <div class="board-title">☑️ 待辦事項</div>
+            <button class="btn-board-add" onclick="openCategoryEditor('Todo')">+ 新增</button>
           </div>
           <div class="card-list" id="list-todo">
             <div class="item-card" onclick="openNoteInEditor('拼圖遊戲開發與測試', '詳細測試步驟...', '☑️ 待辦事項', this)">
@@ -220,9 +230,11 @@
           </div>
         </div>
 
+        <!-- 看板 4 -->
         <div class="board-card" id="learn-board">
           <div class="board-header">
             <div class="board-title">📖 學習筆記</div>
+            <button class="btn-board-add" onclick="openCategoryEditor('Learn')">+ 新增</button>
           </div>
           <div class="card-list" id="list-learn">
             <div class="item-card" onclick="openNoteInEditor('英文句型與搭配詞指南', englishTemplate, '📖 學習筆記', this)">
@@ -291,7 +303,6 @@
   </div>
 
   <script>
-    /* 🛡️ 白名單授權清單 */
     const whitelistEmails = [
       'n29560408@gmail.com',
       'n29560408@cdc.gov.tw'
@@ -336,7 +347,6 @@
 * 相關連結/資料：
 * 預計完成時間：`;
 
-    /* 📤 單篇頁面匯出（產出手機可直接打開預覽的 HTML 檔） */
     function exportSingleNote() {
       const userEmail = prompt('🔐 安全驗證：請輸入授權 Email 以匯出單篇筆記：');
       if (!userEmail) return;
@@ -350,7 +360,6 @@
       const content = document.getElementById('noteContent').value;
       const category = document.getElementById('editorTargetCategory').value;
 
-      // 建立可直接在手機/電腦點開查看的精美 HTML 頁面
       const htmlContent = `<!DOCTYPE html>
 <html lang="zh-TW">
 <head>
@@ -386,7 +395,6 @@
       alert('✅ 單篇筆記已成功匯出為 HTML 檔案！在手機點開即可直接閱讀。');
     }
 
-    /* 🔒 全站資料 JSON 匯出 */
     function exportDataWithWhitelist() {
       const userEmail = prompt('🔐 安全驗證：請輸入允許匯出的授權 Email：');
       if (!userEmail) return;
