@@ -37,11 +37,11 @@
     .menu-item.export-btn { color: var(--accent-blue); background: #e0e7ff; margin-top: 5px; }
     .menu-item.export-btn:hover { background: #c7d2fe; }
 
-    .main-container { flex: 1; display: flex; flex-direction: column; gap: 12px; overflow: hidden; position: relative; }
+    .main-container { flex: 1; display: flex; flex-direction: column; gap: 10px; overflow: hidden; position: relative; }
     
-    .view-toggle-bar { display: flex; gap: 10px; border-bottom: 1px solid var(--border-color); padding-bottom: 8px; }
-    .tab-btn { padding: 6px 16px; border-radius: 6px; border: 1px solid var(--border-color); background: white; cursor: pointer; font-weight: bold; font-size: 0.9rem; color: var(--text-sub); }
-    .tab-btn.active { background: var(--accent-green); color: white; border-color: var(--accent-green); }
+    /* 頂部狀態顯示列 */
+    .current-status-bar { display: flex; justify-content: space-between; align-items: center; padding: 2px 4px; }
+    .status-title { font-size: 0.9rem; font-weight: bold; color: var(--text-sub); }
 
     .dashboard-view { flex: 1; display: flex; flex-direction: column; gap: 12px; overflow: hidden; }
     .top-input-bar { background: var(--bg-panel); border-radius: 12px; padding: 10px 16px; display: flex; align-items: center; gap: 10px; border: 1px solid var(--border-color); }
@@ -151,20 +151,20 @@
 
     <div class="sidebar-section-title" style="margin-top: 10px;">分類看板與編輯</div>
     <div class="menu-group">
-      <div class="menu-item active" onclick="switchView('dashboard'); toggleSidebar();">🌐 全部看板</div>
-      <div class="menu-item" onclick="openCategoryEditor('AI'); toggleSidebar();">🤖 AI 智庫與筆記</div>
-      <div class="menu-item" onclick="openCategoryEditor('Work'); toggleSidebar();">💼 工作任務</div>
-      <div class="menu-item" onclick="openCategoryEditor('Todo'); toggleSidebar();">☑️ 待辦事項</div>
-      <div class="menu-item" onclick="openCategoryEditor('Learn'); toggleSidebar();">📖 學習筆記 (編輯器)</div>
+      <div class="menu-item active" id="menu-all" onclick="switchView('dashboard', '🌐 全部看板'); updateMenuActive('menu-all'); toggleSidebar();">🌐 全部看板</div>
+      <div class="menu-item" id="menu-ai" onclick="openCategoryEditor('AI'); updateMenuActive('menu-ai'); toggleSidebar();">🤖 AI 智庫與筆記</div>
+      <div class="menu-item" id="menu-work" onclick="openCategoryEditor('Work'); updateMenuActive('menu-work'); toggleSidebar();">💼 工作任務</div>
+      <div class="menu-item" id="menu-todo" onclick="openCategoryEditor('Todo'); updateMenuActive('menu-todo'); toggleSidebar();">☑️ 待辦事項</div>
+      <div class="menu-item" id="menu-learn" onclick="openCategoryEditor('Learn'); updateMenuActive('menu-learn'); toggleSidebar();">📖 學習筆記 (編輯器)</div>
     </div>
   </div>
 
   <!-- 主內容區 -->
   <div class="main-container">
 
-    <div class="view-toggle-bar">
-      <button class="tab-btn active" id="tab-dashboard" onclick="switchView('dashboard')">🗂️ 看板模式</button>
-      <button class="tab-btn" id="tab-editor" onclick="switchView('editor')">📝 筆記詳細編輯器</button>
+    <!-- 頂部狀態列 -->
+    <div class="current-status-bar">
+      <span class="status-title" id="currentStatusText">🌐 全部看板模式</span>
     </div>
 
     <!-- 視窗 1：看板模式 -->
@@ -375,6 +375,12 @@
 * 相關連結/資料：
 * 預計完成時間：`;
 
+    function updateMenuActive(menuId) {
+      document.querySelectorAll('.menu-item').forEach(el => el.classList.remove('active'));
+      const activeEl = document.getElementById(menuId);
+      if (activeEl) activeEl.classList.add('active');
+    }
+
     function applyTextColor(selectEl) {
       const val = selectEl.value;
       if (!val) return;
@@ -509,24 +515,29 @@
       currentImages = [];
       renderImages();
 
+      let categoryName = '';
       if (type === 'AI') {
+        categoryName = '🤖 AI 智庫與筆記';
         document.getElementById('noteTitle').value = '🤖 [AI 工具與用途]';
         document.getElementById('noteContent').value = aiTemplate;
-        document.getElementById('editorTargetCategory').value = '🤖 AI 智庫與筆記';
+        document.getElementById('editorTargetCategory').value = categoryName;
       } else if (type === 'Work') {
+        categoryName = '💼 工作任務';
         document.getElementById('noteTitle').value = '📌 [專案/會議名稱] 紀錄';
         document.getElementById('noteContent').value = workTemplate;
-        document.getElementById('editorTargetCategory').value = '💼 工作任務';
+        document.getElementById('editorTargetCategory').value = categoryName;
       } else if (type === 'Todo') {
+        categoryName = '☑️ 待辦事項';
         document.getElementById('noteTitle').value = '☑️ 新待辦任務';
         document.getElementById('noteContent').value = todoTemplate;
-        document.getElementById('editorTargetCategory').value = '☑️ 待辦事項';
+        document.getElementById('editorTargetCategory').value = categoryName;
       } else if (type === 'Learn') {
+        categoryName = '📖 學習筆記';
         document.getElementById('noteTitle').value = '📖 [學習主題名稱]';
         document.getElementById('noteContent').value = englishTemplate;
-        document.getElementById('editorTargetCategory').value = '📖 學習筆記';
+        document.getElementById('editorTargetCategory').value = categoryName;
       }
-      switchView('editor');
+      switchView('editor', '📝 編輯中：' + categoryName);
     }
 
     function insertTag(openTag, closeTag) {
@@ -541,22 +552,19 @@
       textarea.setSelectionRange(start + openTag.length, start + replacement.length - closeTag.length);
     }
 
-    function switchView(viewName) {
+    function switchView(viewName, statusText) {
       const dash = document.getElementById('view-dashboard');
       const edit = document.getElementById('view-editor');
-      const tabDash = document.getElementById('tab-dashboard');
-      const tabEdit = document.getElementById('tab-editor');
+      const statusEl = document.getElementById('currentStatusText');
 
       if (viewName === 'dashboard') {
         dash.style.display = 'flex';
         edit.style.display = 'none';
-        tabDash.classList.add('active');
-        tabEdit.classList.remove('active');
+        statusEl.innerText = statusText || '🌐 全部看板模式';
       } else {
         dash.style.display = 'none';
         edit.style.display = 'flex';
-        tabEdit.classList.add('active');
-        tabDash.classList.remove('active');
+        statusEl.innerText = statusText || '📝 筆記詳細編輯模式';
       }
     }
 
@@ -565,7 +573,7 @@
       document.getElementById('noteContent').value = content;
       if (category) document.getElementById('editorTargetCategory').value = category;
       currentEditingCard = cardElement || null;
-      switchView('editor');
+      switchView('editor', '📝 修改筆記：' + title);
     }
 
     function handleImageUpload(event) {
@@ -650,10 +658,9 @@
       }
 
       currentEditingCard = null;
-      switchView('dashboard');
+      switchView('dashboard', '🌐 全部看板模式');
     }
 
-    /* 🗑️ 刪除筆記 (防誤刪二次確認警示) */
     function deleteCurrentNote() {
       if (confirm('⚠️ 警告：確定要刪除這篇筆記嗎？刪除後將無法恢復！')) {
         if (currentEditingCard) {
@@ -665,7 +672,7 @@
         currentImages = [];
         renderImages();
         alert('筆記已成功刪除！');
-        switchView('dashboard');
+        switchView('dashboard', '🌐 全部看板模式');
       }
     }
 
