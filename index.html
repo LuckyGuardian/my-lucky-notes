@@ -94,6 +94,7 @@
 
     .input-title { background: transparent; border: none; border-bottom: 2px solid var(--border-color); color: var(--accent-green); font-size: 1.25rem; font-weight: bold; margin-bottom: 8px; padding-bottom: 4px; outline: none; width: 100%; }
     
+    /* 📱 富文本可編輯區（支援直接內嵌圖片與全螢幕放大檢視） */
     .input-content-editable { 
       flex: 1; 
       background: white; 
@@ -112,13 +113,16 @@
     .input-content-editable:focus { border-color: var(--accent-green); }
     .input-content-editable ul, .input-content-editable ol { padding-left: 20px; margin: 4px 0; }
     .input-content-editable p { margin-bottom: 6px; }
+    .input-content-editable img { max-width: 100%; height: auto; border-radius: 6px; cursor: pointer; border: 1px solid var(--border-color); margin: 6px 0; transition: transform 0.2s; }
+    .input-content-editable img:hover { transform: scale(1.01); border-color: var(--accent-green); }
 
     .image-section { margin-top: 8px; padding-top: 6px; border-top: 1px dashed var(--border-color); }
     .image-preview-container { display: flex; gap: 8px; flex-wrap: wrap; margin-top: 4px; }
-    .image-preview-box { position: relative; width: 75px; height: 75px; border-radius: 6px; border: 1px solid var(--border-color); overflow: hidden; }
+    .image-preview-box { position: relative; width: 75px; height: 75px; border-radius: 6px; border: 1px solid var(--border-color); overflow: hidden; cursor: pointer; }
     .image-preview-box img { width: 100%; height: 100%; object-fit: cover; }
-    .btn-delete-img { position: absolute; top: 2px; right: 2px; background: rgba(168,72,66,0.85); color: white; border: none; border-radius: 50%; width: 18px; height: 18px; cursor: pointer; font-size: 0.7rem; }
+    .btn-delete-img { position: absolute; top: 2px; right: 2px; background: rgba(168,72,66,0.85); color: white; border: none; border-radius: 50%; width: 18px; height: 18px; cursor: pointer; font-size: 0.7rem; z-index: 2; }
 
+    /* 📅 行事曆 View 樣式 */
     .calendar-view { display: none; flex: 1; flex-direction: column; background: var(--bg-panel); border-radius: 10px; padding: 12px; border: 1px solid var(--border-color); overflow-y: auto; gap: 10px; }
     .calendar-header { display: flex; justify-content: space-between; align-items: center; border-bottom: 1px solid var(--border-color); padding-bottom: 6px; }
     .calendar-controls { display: flex; align-items: center; gap: 6px; }
@@ -137,9 +141,13 @@
 
     .fab-btn { display: none; position: fixed; bottom: 16px; right: 16px; width: 50px; height: 50px; background: var(--accent-green); color: white; border-radius: 50%; border: none; font-size: 1.6rem; box-shadow: 0 4px 10px rgba(0,0,0,0.2); cursor: pointer; z-index: 99; }
 
-    .modal-overlay { display: none; position: fixed; top: 0; left: 0; width: 100vw; height: 100vh; background: rgba(0,0,0,0.3); backdrop-filter: blur(2px); z-index: 999; justify-content: center; align-items: center; }
-    .modal-box { background: #ffffff; width: 90%; max-width: 450px; border-radius: 12px; padding: 18px; display: flex; flex-direction: column; gap: 12px; box-shadow: 0 10px 25px rgba(0,0,0,0.1); }
+    /* Modal 視窗與圖片放大燈箱 (LightBox) */
+    .modal-overlay { display: none; position: fixed; top: 0; left: 0; width: 100vw; height: 100vh; background: rgba(0,0,0,0.5); backdrop-filter: blur(3px); z-index: 9999; justify-content: center; align-items: center; }
+    .modal-box { background: #ffffff; width: 90%; max-width: 450px; border-radius: 12px; padding: 18px; display: flex; flex-direction: column; gap: 12px; box-shadow: 0 10px 25px rgba(0,0,0,0.2); }
     .modal-header { display: flex; justify-content: space-between; align-items: center; border-bottom: 1px solid #e2e8f0; padding-bottom: 6px; }
+    
+    .img-lightbox-box { position: relative; max-width: 90vw; max-height: 90vh; display: flex; justify-content: center; align-items: center; }
+    .img-lightbox-box img { max-width: 100%; max-height: 85vh; border-radius: 8px; box-shadow: 0 8px 30px rgba(0,0,0,0.3); }
 
     @media (max-width: 768px) {
       body { flex-direction: column; padding: 4px; gap: 4px; }
@@ -299,7 +307,7 @@
     <!-- 視窗 2：筆記詳細編輯器 -->
     <div class="editor-view" id="view-editor">
       <div class="editor-tools">
-        <select id="editorTargetCategory" class="select-category" style="padding:4px 8px;font-size:0.8rem;">
+        <select id="editorTargetCategory" class="select-category" style="padding:3px 6px;font-size:0.8rem;">
           <option value="🤖 AI 智庫與筆記">🤖 AI 智庫與筆記</option>
           <option value="💼 工作任務">💼 工作任務</option>
           <option value="☑️ 待辦事項">☑️ 待辦事項</option>
@@ -309,14 +317,29 @@
 
         <span style="color:var(--border-color);">|</span>
 
-        <button class="btn-tool btn-fmt" onclick="formatDoc('bold')" title="粗體"><b>B</b></button>
+        <!-- ✍️ 新增字體樣態選單 -->
+        <select class="btn-tool" onchange="formatDoc(this.value); this.value='';" style="padding:3px 6px;">
+          <option value="">✍️ 字體樣態</option>
+          <option value="bold">粗體 (Bold)</option>
+          <option value="italic">斜體 (Italic)</option>
+          <option value="strikeThrough">刪除線 (Strike)</option>
+        </select>
 
-        <!-- 🎨 高對比度鮮明標準字體顏色選項 -->
+        <!-- 🔤 新增字體大小選單 -->
+        <select class="btn-tool" onchange="formatDoc('fontSize', this.value); this.value='';" style="padding:3px 6px;">
+          <option value="">🔤 字體大小</option>
+          <option value="2">小 (Small)</option>
+          <option value="3">中 (Normal)</option>
+          <option value="5">大 (Large)</option>
+          <option value="6">特大 (Extra Large)</option>
+        </select>
+
+        <!-- 🎨 字體顏色 (加深高對比度) -->
         <select class="btn-tool" onchange="formatDoc('foreColor', this.value); this.value='';" style="padding:3px 6px;">
           <option value="">🎨 字體顏色</option>
-          <option value="#dc2626" style="color:#dc2626;font-weight:bold;">🔴 鮮紅字</option>
-          <option value="#2563eb" style="color:#2563eb;font-weight:bold;">🔵 寶藍字</option>
-          <option value="#16a34a" style="color:#16a34a;font-weight:bold;">🟢 翠綠字</option>
+          <option value="#ef4444">🔴 鮮紅字</option>
+          <option value="#3b82f6">🔵 鮮藍字</option>
+          <option value="#10b981">🟢 鮮綠字</option>
         </select>
 
         <select class="btn-tool" onchange="formatDoc('hiliteColor', this.value); this.value='';" style="padding:3px 6px;">
@@ -341,10 +364,11 @@
 
       <input type="text" id="noteTitle" class="input-title" placeholder="請輸入筆記標題...">
       
-      <div id="noteContent" class="input-content-editable" contenteditable="true" placeholder="在此處自由書寫或直接 Ctrl+V 貼上圖片/文字/網址..."></div>
+      <!-- 精緻滿版富文本編輯區 (支援貼圖與點擊放大) -->
+      <div id="noteContent" class="input-content-editable" contenteditable="true" placeholder="在此處自由書寫或直接 Ctrl+V / 長按貼上圖片與網址..."></div>
 
       <div class="image-section">
-        <span style="font-size:0.8rem;color:var(--text-sub);">📷 圖片附件：</span>
+        <span style="font-size:0.8rem;color:var(--text-sub);">📷 圖片附件區 (點擊圖片可全螢幕放大查看)：</span>
         <div class="image-preview-container" id="imageContainer"></div>
       </div>
     </div>
@@ -367,6 +391,13 @@
   </div>
 
   <button class="fab-btn" onclick="mobileQuickAdd()">+</button>
+
+  <!-- 全螢幕圖片放大檢視視窗 (Lightbox) -->
+  <div class="modal-overlay" id="lightboxModal" onclick="closeLightbox()">
+    <div class="img-lightbox-box">
+      <img id="lightboxImg" src="" onclick="event.stopPropagation()">
+    </div>
+  </div>
 
   <div class="modal-overlay" id="exportModal">
     <div class="modal-box">
@@ -442,6 +473,7 @@
 
       const editorEl = document.getElementById('noteContent');
       if (editorEl) {
+        // 📸 剪貼簿直接貼圖監聽（貼上即自動解析圖片檔）
         editorEl.addEventListener('paste', (e) => {
           const items = (e.clipboardData || e.originalEvent.clipboardData).items;
           for (let item of items) {
@@ -450,6 +482,8 @@
               const file = item.getAsFile();
               const reader = new FileReader();
               reader.onload = (event) => {
+                // 將圖片內嵌插入文字區
+                document.execCommand('insertImage', false, event.target.result);
                 currentImages.push(event.target.result);
                 renderImages();
               };
@@ -457,8 +491,24 @@
             }
           }
         });
+
+        // 點擊編輯區內的圖片可放大預覽
+        editorEl.addEventListener('click', (e) => {
+          if (e.target.tagName === 'IMG') {
+            openLightbox(e.target.src);
+          }
+        });
       }
     });
+
+    /* 放大圖片 Lightbox */
+    function openLightbox(src) {
+      document.getElementById('lightboxImg').src = src;
+      document.getElementById('lightboxModal').style.display = 'flex';
+    }
+    function closeLightbox() {
+      document.getElementById('lightboxModal').style.display = 'none';
+    }
 
     function loadNotesFromStorage() {
       const saved = localStorage.getItem('luckynote_data');
@@ -1043,6 +1093,7 @@
       if (file) {
         const reader = new FileReader();
         reader.onload = function(e) {
+          document.execCommand('insertImage', false, e.target.result);
           currentImages.push(e.target.result);
           renderImages();
         };
@@ -1056,7 +1107,8 @@
       currentImages.forEach((src, idx) => {
         const box = document.createElement('div');
         box.className = 'image-preview-box';
-        box.innerHTML = `<img src="${src}"><button class="btn-delete-img" onclick="currentImages.splice(${idx},1);renderImages();">✕</button>`;
+        box.onclick = () => openLightbox(src);
+        box.innerHTML = `<img src="${src}"><button class="btn-delete-img" onclick="event.stopPropagation(); currentImages.splice(${idx},1); renderImages();">✕</button>`;
         container.appendChild(box);
       });
     }
@@ -1105,7 +1157,7 @@
       }
 
       if (!recognition) {
-        return alert('⚠️ 您的瀏覽器不支援語音辨識功能。\n建議使用電腦版 Google Chrome 瀏覽器開啟！');
+        return alert('⚠️ 您的瀏覽器不支援 Web Speech 語音 API。\n如果您使用手機，建議直接點擊手機輸入法鍵盤右下角的「🎙️ 麥克風」進行語音輸入，效果最佳！');
       }
 
       const btn = document.getElementById('voiceBtn');
