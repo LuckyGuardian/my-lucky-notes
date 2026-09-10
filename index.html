@@ -24,25 +24,29 @@
     .mobile-header h2 { font-size: 1.1rem; color: var(--accent-green); display: flex; align-items: center; gap: 8px; cursor: pointer; }
     .btn-hamburger { background: transparent; border: none; font-size: 1.4rem; cursor: pointer; }
 
-    /* 側邊欄與可收折（Collapse）樣式 */
+    /* 側邊欄樣式 */
     .sidebar { width: 230px; background: var(--bg-panel); border-radius: 12px; padding: 16px 12px; display: flex; flex-direction: column; gap: 10px; border: 1px solid var(--border-color); overflow-y: auto; z-index: 100; transition: width 0.3s ease, padding 0.3s ease, transform 0.3s ease; position: relative; }
     .sidebar.collapsed { width: 64px; padding: 16px 8px; }
     .sidebar.collapsed .mascot-title,
     .sidebar.collapsed .sidebar-section-title,
     .sidebar.collapsed .menu-text,
-    .sidebar.collapsed .btn-side-add-text { display: none; }
+    .sidebar.collapsed .btn-side-add-text,
+    .sidebar.collapsed .btn-add-folder { display: none; }
     .sidebar.collapsed .menu-item { justify-content: center; padding: 10px 0; }
     .sidebar.collapsed .btn-side-add { padding: 10px 0; }
 
     .btn-toggle-collapse { position: absolute; top: 12px; right: 10px; background: transparent; border: none; font-size: 0.9rem; cursor: pointer; color: var(--text-sub); }
     
-    /* 點擊金小貓可回到首頁全部看板 */
     .mascot-box { display: flex; align-items: center; gap: 10px; padding: 8px 6px; border-bottom: 1px solid var(--border-color); margin-bottom: 4px; cursor: pointer; transition: opacity 0.2s; }
     .mascot-box:hover { opacity: 0.8; }
     .mascot-svg { width: 42px; height: 42px; flex-shrink: 0; }
     .mascot-title { font-size: 1.1rem; font-weight: bold; color: var(--accent-green); white-space: nowrap; }
 
-    .sidebar-section-title { font-size: 0.8rem; color: var(--text-sub); font-weight: bold; margin-top: 6px; margin-bottom: 2px; padding-left: 8px; white-space: nowrap; }
+    .sidebar-section-title-box { display: flex; justify-content: space-between; align-items: center; margin-top: 6px; margin-bottom: 2px; padding-left: 8px; padding-right: 4px; }
+    .sidebar-section-title { font-size: 0.8rem; color: var(--text-sub); font-weight: bold; white-space: nowrap; }
+    .btn-add-folder { background: transparent; border: none; font-size: 0.9rem; cursor: pointer; color: var(--accent-green); font-weight: bold; }
+    .btn-add-folder:hover { transform: scale(1.1); }
+
     .menu-group { display: flex; flex-direction: column; gap: 4px; }
     .menu-item { padding: 8px 12px; border-radius: 8px; cursor: pointer; color: var(--text-main); font-size: 0.9rem; font-weight: 500; display: flex; align-items: center; gap: 8px; white-space: nowrap; }
     .menu-item:hover, .menu-item.active { background: #eee9e0; color: var(--accent-green); font-weight: bold; }
@@ -134,7 +138,8 @@
       .sidebar.collapsed .mascot-title,
       .sidebar.collapsed .sidebar-section-title,
       .sidebar.collapsed .menu-text,
-      .sidebar.collapsed .btn-side-add-text { display: inline; }
+      .sidebar.collapsed .btn-side-add-text,
+      .sidebar.collapsed .btn-add-folder { display: inline; }
       .btn-toggle-collapse { display: none; }
       
       .dashboard-grid { grid-template-columns: 1fr; }
@@ -154,7 +159,6 @@
   <!-- 手機版 Header -->
   <div class="mobile-header">
     <h2 onclick="goHome()">
-      <!-- 🐱 可愛金小貓 SVG -->
       <svg class="mascot-svg" style="width:28px;height:28px;" viewBox="0 0 100 100">
         <circle cx="50" cy="55" r="38" fill="#f4bb44" />
         <polygon points="20,15 38,30 12,42" fill="#e59b2b" />
@@ -180,7 +184,6 @@
   <div class="sidebar" id="sidebar">
     <button class="btn-toggle-collapse" id="collapseBtn" onclick="toggleSidebarCollapse()" title="收起/展開側邊欄">◀</button>
 
-    <!-- 點擊吉祥物圖騰/標題即可回「全部看板」 -->
     <div class="mascot-box" onclick="goHome()" title="點擊回到全部看板">
       <svg class="mascot-svg" viewBox="0 0 100 100">
         <circle cx="50" cy="55" r="38" fill="#f4bb44" />
@@ -209,7 +212,9 @@
       ➕ <span class="btn-side-add-text">快速新增卡片</span>
     </button>
 
-    <div class="sidebar-section-title">快速跳轉</div>
+    <div class="sidebar-section-title-box">
+      <span class="sidebar-section-title">快速跳轉</span>
+    </div>
     <div class="menu-group">
       <div class="menu-item" onclick="openSearchModal(); toggleSidebar();">🔍 <span class="menu-text">搜尋</span></div>
       <div class="menu-item" onclick="openTagModal(); toggleSidebar();">🏷️ <span class="menu-text">Tag 瀏覽</span></div>
@@ -217,12 +222,16 @@
       <div class="menu-item export-btn" onclick="openExportModal(); toggleSidebar();">📥 <span class="menu-text">匯出資料 (自訂/全站)</span></div>
     </div>
 
-    <div class="sidebar-section-title">分類看板與編輯</div>
-    <div class="menu-group">
-      <div class="menu-item" id="menu-ai" onclick="openCategoryEditor('AI'); updateMenuActive('menu-ai'); toggleSidebar();">🤖 <span class="menu-text">AI 智庫與筆記</span></div>
-      <div class="menu-item" id="menu-work" onclick="openCategoryEditor('Work'); updateMenuActive('menu-work'); toggleSidebar();">💼 <span class="menu-text">工作任務</span></div>
-      <div class="menu-item" id="menu-todo" onclick="openCategoryEditor('Todo'); updateMenuActive('menu-todo'); toggleSidebar();">☑️ <span class="menu-text">待辦事項</span></div>
-      <div class="menu-item" id="menu-learn" onclick="openCategoryEditor('Learn'); updateMenuActive('menu-learn'); toggleSidebar();">📖 <span class="menu-text">學習筆記 (編輯器)</span></div>
+    <div class="sidebar-section-title-box">
+      <span class="sidebar-section-title">新增筆記 (分類範本)</span>
+      <button class="btn-add-folder" onclick="addNewFolder()" title="新增資料夾/分類看板">➕</button>
+    </div>
+    <div class="menu-group" id="categoryMenuGroup">
+      <!-- ⚡ 點擊左側分類：直接打開該分類空白範本進行編輯 -->
+      <div class="menu-item" id="menu-ai" onclick="openNewCategoryNote('🤖 AI 智庫與筆記'); updateMenuActive('menu-ai'); toggleSidebar();">🤖 <span class="menu-text">AI 智庫與筆記</span></div>
+      <div class="menu-item" id="menu-work" onclick="openNewCategoryNote('💼 工作任務'); updateMenuActive('menu-work'); toggleSidebar();">💼 <span class="menu-text">工作任務</span></div>
+      <div class="menu-item" id="menu-todo" onclick="openNewCategoryNote('☑️ 待辦事項'); updateMenuActive('menu-todo'); toggleSidebar();">☑️ <span class="menu-text">待辦事項</span></div>
+      <div class="menu-item" id="menu-learn" onclick="openNewCategoryNote('📖 學習筆記'); updateMenuActive('menu-learn'); toggleSidebar();">📖 <span class="menu-text">學習筆記</span></div>
     </div>
   </div>
 
@@ -236,11 +245,11 @@
 
     <!-- 視窗 1：看板模式 -->
     <div class="dashboard-view" id="view-dashboard">
-      <div class="dashboard-grid">
+      <div class="dashboard-grid" id="dashboardGrid">
         <div class="board-card" id="ai-board">
           <div class="board-header">
             <div class="board-title">🤖 AI 智庫與筆記</div>
-            <button class="btn-board-add" onclick="openCategoryEditor('AI')">+ 新增</button>
+            <button class="btn-board-add" onclick="openNewCategoryNote('🤖 AI 智庫與筆記')">+ 新增</button>
           </div>
           <div class="card-list" id="list-ai">
             <div class="item-card" draggable="true" onclick="openNoteInEditor('ChatGPT 萬用文案潤飾 Prompt', aiTemplate, '🤖 AI 智庫與筆記', this)">
@@ -256,7 +265,7 @@
         <div class="board-card" id="work-board">
           <div class="board-header">
             <div class="board-title">💼 工作任務</div>
-            <button class="btn-board-add" onclick="openCategoryEditor('Work')">+ 新增</button>
+            <button class="btn-board-add" onclick="openNewCategoryNote('💼 工作任務')">+ 新增</button>
           </div>
           <div class="card-list" id="list-work">
             <div class="item-card" draggable="true" onclick="openNoteInEditor('跨部門會議紀錄與進度追蹤', workTemplate, '💼 工作任務', this)">
@@ -272,7 +281,7 @@
         <div class="board-card" id="todo-board">
           <div class="board-header">
             <div class="board-title">☑️ 待辦事項</div>
-            <button class="btn-board-add" onclick="openCategoryEditor('Todo')">+ 新增</button>
+            <button class="btn-board-add" onclick="openNewCategoryNote('☑️ 待辦事項')">+ 新增</button>
           </div>
           <div class="card-list" id="list-todo">
             <div class="item-card" draggable="true" onclick="openNoteInEditor('9/16與Headquarter.ai討論會', meetingTemplate, '☑️ 待辦事項', this)">
@@ -302,7 +311,7 @@
         <div class="board-card" id="learn-board">
           <div class="board-header">
             <div class="board-title">📖 學習筆記</div>
-            <button class="btn-board-add" onclick="openCategoryEditor('Learn')">+ 新增</button>
+            <button class="btn-board-add" onclick="openNewCategoryNote('📖 學習筆記')">+ 新增</button>
           </div>
           <div class="card-list" id="list-learn">
             <div class="item-card" draggable="true" onclick="openNoteInEditor('英文句型與搭配詞指南', englishTemplate, '📖 學習筆記', this)">
@@ -342,7 +351,7 @@
           <option value="">🖍️ 螢光筆</option>
           <option value="#fef08a">💛 黃色</option>
           <option value="#fed7aa">🧡 橘色</option>
-          <option value="#bbf7d0">綠色</option>
+          <option value="#bbf7d0">💚 綠色</option>
         </select>
 
         <span style="color:var(--border-color);">|</span>
@@ -505,17 +514,82 @@
 【一、 任務細節說明】
 * 相關連結/資料：`;
 
-    /* 回到全部看板首頁 */
     function goHome() {
+      showAllBoards();
       updateMenuActive('');
       switchView('dashboard', '🌐 全部看板模式');
+    }
+
+    function showAllBoards() {
+      const allBoards = document.querySelectorAll('.board-card');
+      allBoards.forEach(b => b.style.display = 'flex');
+    }
+
+    /* 📁 自訂新增資料夾 / 分類看板 */
+    function addNewFolder() {
+      const folderName = prompt('請輸入新資料夾/分類看板名稱 (例如：🛒 購物清單)：');
+      if (!folderName) return;
+
+      const safeId = 'custom-' + Date.now();
+      
+      const menuGroup = document.getElementById('categoryMenuGroup');
+      const menuItem = document.createElement('div');
+      menuItem.className = 'menu-item';
+      menuItem.id = 'menu-' + safeId;
+      menuItem.onclick = () => {
+        openNewCategoryNote(folderName);
+        updateMenuActive('menu-' + safeId);
+        toggleSidebar();
+      };
+      menuItem.innerHTML = `📁 <span class="menu-text">${folderName}</span>`;
+      menuGroup.appendChild(menuItem);
+
+      const grid = document.getElementById('dashboardGrid');
+      const boardCard = document.createElement('div');
+      boardCard.className = 'board-card';
+      boardCard.id = safeId;
+      boardCard.innerHTML = `
+        <div class="board-header">
+          <div class="board-title">📁 ${folderName}</div>
+          <button class="btn-board-add" onclick="openNewCategoryNote('${folderName}')">+ 新增</button>
+        </div>
+        <div class="card-list" id="list-${safeId}"></div>
+      `;
+      grid.appendChild(boardCard);
+
+      const sel = document.getElementById('editorTargetCategory');
+      const opt = document.createElement('option');
+      opt.value = folderName;
+      opt.innerText = folderName;
+      sel.appendChild(opt);
+
+      initDragAndDrop();
+      alert('資料夾看板「' + folderName + '」已成功建立！');
+    }
+
+    /* 開啟空白分類筆記範本 */
+    function openNewCategoryNote(categoryName) {
+      currentEditingCard = null;
+      currentImages = [];
+      renderImages();
+
+      document.getElementById('noteTitle').value = categoryName + ' - 新筆記';
+      
+      let tpl = todoTemplate;
+      if (categoryName.includes('AI')) tpl = aiTemplate;
+      else if (categoryName.includes('工作')) tpl = workTemplate;
+      else if (categoryName.includes('學習')) tpl = englishTemplate;
+
+      document.getElementById('noteContent').innerHTML = tpl.replace(/\n/g, '<br>');
+      document.getElementById('editorTargetCategory').value = categoryName;
+      switchView('editor', '📝 新增：' + categoryName);
     }
 
     window.addEventListener('popstate', (e) => {
       if (e.state && e.state.view) {
         switchView(e.state.view, e.state.statusText, false);
       } else {
-        switchView('dashboard', '🌐 全部看板模式', false);
+        goHome();
       }
     });
 
@@ -721,36 +795,6 @@
       alert('✅ 單篇筆記已成功匯出為 HTML 檔案！');
     }
 
-    function openCategoryEditor(type) {
-      currentEditingCard = null;
-      currentImages = [];
-      renderImages();
-
-      let categoryName = '';
-      if (type === 'AI') {
-        categoryName = '🤖 AI 智庫與筆記';
-        document.getElementById('noteTitle').value = '🤖 [AI 工具與用途]';
-        document.getElementById('noteContent').innerHTML = aiTemplate.replace(/\n/g, '<br>');
-        document.getElementById('editorTargetCategory').value = categoryName;
-      } else if (type === 'Work') {
-        categoryName = '💼 工作任務';
-        document.getElementById('noteTitle').value = '📌 [專案/會議名稱] 紀錄';
-        document.getElementById('noteContent').innerHTML = workTemplate.replace(/\n/g, '<br>');
-        document.getElementById('editorTargetCategory').value = categoryName;
-      } else if (type === 'Todo') {
-        categoryName = '☑️ 待辦事項';
-        document.getElementById('noteTitle').value = '☑️ 新待辦任務';
-        document.getElementById('noteContent').innerHTML = todoTemplate.replace(/\n/g, '<br>');
-        document.getElementById('editorTargetCategory').value = categoryName;
-      } else if (type === 'Learn') {
-        categoryName = '📖 學習筆記';
-        document.getElementById('noteTitle').value = '📖 [學習主題名稱]';
-        document.getElementById('noteContent').innerHTML = englishTemplate.replace(/\n/g, '<br>');
-        document.getElementById('editorTargetCategory').value = categoryName;
-      }
-      switchView('editor', '📝 編輯中：' + categoryName);
-    }
-
     function switchView(viewName, statusText, pushState = true) {
       const dash = document.getElementById('view-dashboard');
       const edit = document.getElementById('view-editor');
@@ -864,11 +908,14 @@
         bindCardDragEvents(card);
         card.onclick = () => openNoteInEditor(title, content, targetCategory, card);
         card.innerHTML = `<div class="item-card-header"><input type="checkbox" onclick="event.stopPropagation()"><span class="item-card-title">${title}</span></div>`;
-        document.getElementById(targetListId).prepend(card);
+        
+        const targetList = document.getElementById(targetListId);
+        if (targetList) targetList.prepend(card);
         alert('筆記「' + title + '」已儲存至看板！');
       }
 
       currentEditingCard = null;
+      showAllBoards();
       switchView('dashboard', '🌐 全部看板模式');
     }
 
@@ -883,6 +930,7 @@
         currentImages = [];
         renderImages();
         alert('筆記已成功刪除！');
+        showAllBoards();
         switchView('dashboard', '🌐 全部看板模式');
       }
     }
