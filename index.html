@@ -24,7 +24,6 @@
     .mobile-header h2 { font-size: 1rem; color: var(--accent-green); display: flex; align-items: center; gap: 6px; cursor: pointer; }
     .btn-hamburger { background: transparent; border: none; font-size: 1.3rem; cursor: pointer; }
 
-    /* 側邊欄樣式 (壓縮高度) */
     .sidebar { width: 220px; background: var(--bg-panel); border-radius: 10px; padding: 10px 8px; display: flex; flex-direction: column; gap: 6px; border: 1px solid var(--border-color); overflow-y: auto; z-index: 100; transition: width 0.3s ease, padding 0.3s ease, transform 0.3s ease; position: relative; }
     .sidebar.collapsed { width: 56px; padding: 10px 6px; }
     .sidebar.collapsed .mascot-title,
@@ -60,7 +59,6 @@
 
     .main-container { flex: 1; display: flex; flex-direction: column; gap: 6px; overflow: hidden; position: relative; }
     
-    /* 頂部狀態列緊湊化 */
     .current-status-bar { display: flex; align-items: center; gap: 8px; padding: 0 2px; }
     .btn-back-page { background: #ffffff; border: 1px solid var(--border-color); border-radius: 6px; padding: 3px 8px; font-size: 0.8rem; font-weight: bold; cursor: pointer; color: var(--accent-green); display: flex; align-items: center; gap: 4px; }
     .btn-back-page:hover { background: #eee9e0; }
@@ -85,15 +83,17 @@
     .item-card-header { display: flex; align-items: center; gap: 6px; }
     .item-card-title { font-size: 0.9rem; font-weight: bold; flex: 1; }
 
-    /* 🖊️ 筆記詳細編輯器：極緻最大化區域 */
     .editor-view { display: none; flex: 1; flex-direction: column; background: var(--bg-panel); border-radius: 10px; padding: 10px 14px; border: 1px solid var(--border-color); overflow: hidden; }
     .editor-tools { display: flex; gap: 4px; margin-bottom: 8px; flex-wrap: wrap; align-items: center; }
     .btn-tool { background: #ffffff; border: 1px solid var(--border-color); padding: 4px 8px; border-radius: 5px; cursor: pointer; font-weight: bold; font-size: 0.8rem; outline: none; }
     .btn-tool:hover { background-color: #f3f0e6; }
     
+    .btn-voice { background-color: #fef3c7; border-color: #f59e0b; color: #92400e; }
+    .btn-voice.recording { background-color: #fee2e2; border-color: #ef4444; color: #991b1b; animation: pulse 1.2s infinite; }
+    @keyframes pulse { 0% { opacity: 1; } 50% { opacity: 0.4; } 100% { opacity: 1; } }
+
     .input-title { background: transparent; border: none; border-bottom: 2px solid var(--border-color); color: var(--accent-green); font-size: 1.25rem; font-weight: bold; margin-bottom: 8px; padding-bottom: 4px; outline: none; width: 100%; }
     
-    /* 📱 富文本可編輯區 (解決 Gemini 貼文被吃字問題) */
     .input-content-editable { 
       flex: 1; 
       background: white; 
@@ -110,8 +110,6 @@
       overflow-wrap: anywhere; 
     }
     .input-content-editable:focus { border-color: var(--accent-green); }
-    .input-content-editable ul, .input-content-editable ol { padding-left: 20px; margin: 4px 0; }
-    .input-content-editable p { margin-bottom: 6px; }
 
     .image-section { margin-top: 8px; padding-top: 6px; border-top: 1px dashed var(--border-color); }
     .image-preview-container { display: flex; gap: 8px; flex-wrap: wrap; margin-top: 4px; }
@@ -119,7 +117,7 @@
     .image-preview-box img { width: 100%; height: 100%; object-fit: cover; }
     .btn-delete-img { position: absolute; top: 2px; right: 2px; background: rgba(168,72,66,0.85); color: white; border: none; border-radius: 50%; width: 18px; height: 18px; cursor: pointer; font-size: 0.7rem; }
 
-    /* 📅 行事曆 View 樣式 */
+    /* 📅 行事曆 View 電腦版樣式 */
     .calendar-view { display: none; flex: 1; flex-direction: column; background: var(--bg-panel); border-radius: 10px; padding: 12px; border: 1px solid var(--border-color); overflow-y: auto; gap: 10px; }
     .calendar-header { display: flex; justify-content: space-between; align-items: center; border-bottom: 1px solid var(--border-color); padding-bottom: 6px; }
     .calendar-controls { display: flex; align-items: center; gap: 6px; }
@@ -127,7 +125,7 @@
 
     .calendar-grid { display: grid; grid-template-columns: repeat(7, 1fr); gap: 6px; text-align: center; }
     .cal-day-header { font-weight: bold; color: var(--accent-green); padding: 6px; background: #eee9e0; border-radius: 5px; font-size: 0.85rem; }
-    .cal-day-cell { background: white; border: 1px solid var(--border-color); border-radius: 6px; min-height: 75px; padding: 4px; display: flex; flex-direction: column; gap: 2px; cursor: pointer; text-align: left; transition: 0.2s; }
+    .cal-day-cell { background: white; border: 1px solid var(--border-color); border-radius: 6px; min-height: 75px; padding: 4px; display: flex; flex-direction: column; gap: 2px; cursor: pointer; text-align: left; transition: 0.2s; position: relative; }
     .cal-day-cell.empty { background: transparent; border: none; cursor: default; }
     .cal-day-cell:not(.empty):hover { border-color: var(--accent-green); background-color: #faf8f5; }
     .cal-day-cell.today { border: 2px solid var(--accent-green); background-color: #f4f8f5; }
@@ -136,12 +134,13 @@
     .cal-holiday { background: #fee2e2; color: #991b1b; font-size: 0.65rem; padding: 1px 3px; border-radius: 3px; font-weight: bold; }
     .cal-event-tag { background: #e0e7ff; color: #2b5b84; font-size: 0.68rem; padding: 1px 3px; border-radius: 3px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; font-weight: bold; cursor: pointer; display: block; }
 
-    .fab-btn { display: none; position: fixed; bottom: 16px; right: 16px; width: 50px; height: 56px; background: var(--accent-green); color: white; border-radius: 50%; border: none; font-size: 1.6rem; box-shadow: 0 4px 10px rgba(0,0,0,0.2); cursor: pointer; z-index: 99; }
+    .fab-btn { display: none; position: fixed; bottom: 16px; right: 16px; width: 50px; height: 50px; background: var(--accent-green); color: white; border-radius: 50%; border: none; font-size: 1.6rem; box-shadow: 0 4px 10px rgba(0,0,0,0.2); cursor: pointer; z-index: 99; }
 
     .modal-overlay { display: none; position: fixed; top: 0; left: 0; width: 100vw; height: 100vh; background: rgba(0,0,0,0.3); backdrop-filter: blur(2px); z-index: 999; justify-content: center; align-items: center; }
     .modal-box { background: #ffffff; width: 90%; max-width: 450px; border-radius: 12px; padding: 18px; display: flex; flex-direction: column; gap: 12px; box-shadow: 0 10px 25px rgba(0,0,0,0.1); }
     .modal-header { display: flex; justify-content: space-between; align-items: center; border-bottom: 1px solid #e2e8f0; padding-bottom: 6px; }
 
+    /* 📱 手機版專屬美化與行事曆極致優化 */
     @media (max-width: 768px) {
       body { flex-direction: column; padding: 4px; gap: 4px; }
       .mobile-header { display: flex; }
@@ -152,6 +151,15 @@
       .fab-btn { display: flex; justify-content: center; align-items: center; }
       .editor-view { padding: 8px 10px; }
       .input-content-editable { padding: 8px; font-size: 0.95rem; }
+
+      /* 📱 手機版行事曆縮小排版，不重疊不破版 */
+      .calendar-view { padding: 6px; gap: 6px; }
+      .calendar-grid { gap: 2px; }
+      .cal-day-header { padding: 3px 0; font-size: 0.7rem; border-radius: 3px; }
+      .cal-day-cell { min-height: 48px; padding: 2px; gap: 1px; border-radius: 4px; }
+      .cal-day-num { font-size: 0.7rem; }
+      .cal-holiday { font-size: 0.55rem; padding: 0 1px; line-height: 1.1; }
+      .cal-event-tag { font-size: 0.58rem; padding: 0 2px; line-height: 1.2; }
     }
   </style>
 </head>
@@ -315,7 +323,7 @@
           <option value="">🖍️ 螢光筆</option>
           <option value="#fef08a">💛 黃色</option>
           <option value="#fed7aa">🧡 橘色</option>
-          <option value="#bbf7d0">💚 綠色</option>
+          <option value="#bbf7d0">🟢 綠色</option>
         </select>
 
         <span style="color:var(--border-color);">|</span>
@@ -333,7 +341,6 @@
 
       <input type="text" id="noteTitle" class="input-title" placeholder="請輸入筆記標題...">
       
-      <!-- 精緻滿版富文本編輯區 -->
       <div id="noteContent" class="input-content-editable" contenteditable="true" placeholder="在此處自由書寫或直接 Ctrl+V 貼上圖片/文字/網址..."></div>
 
       <div class="image-section">
@@ -453,7 +460,6 @@
       }
     });
 
-    /* 安全載入 LocalStorage 筆記庫 (不覆蓋已儲存的筆記) */
     function loadNotesFromStorage() {
       const saved = localStorage.getItem('luckynote_data');
       if (saved) {
@@ -1055,38 +1061,80 @@
       });
     }
 
+    /* 🎙️ 優化語音辨識機制（包含瀏覽器相容性與錯誤捕捉） */
     let recognition = null;
     let isRecording = false;
-    if ('webkitSpeechRecognition' in window || 'SpeechRecognition' in window) {
+
+    function initSpeechRecognition() {
       const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
-      recognition = new SpeechRecognition();
-      recognition.continuous = true;
-      recognition.lang = 'zh-TW';
-      recognition.onresult = (event) => {
+      if (!SpeechRecognition) return null;
+
+      const rec = new SpeechRecognition();
+      rec.continuous = true;
+      rec.interimResults = false;
+      rec.lang = 'zh-TW';
+
+      rec.onresult = (event) => {
         let transcript = '';
         for (let i = event.resultIndex; i < event.results.length; i++) {
-          if (event.results[i].isFinal) transcript += event.results[i][0].transcript;
+          if (event.results[i].isFinal) {
+            transcript += event.results[i][0].transcript;
+          }
         }
         if (transcript) {
           const editor = document.getElementById('noteContent');
           editor.innerHTML += (editor.innerHTML ? '<br>' : '') + transcript;
         }
       };
+
+      rec.onerror = (event) => {
+        console.error('語音辨識錯誤：', event.error);
+        alert('🎙️ 語音辨識錯誤：' + event.error + '\n請確認您已授權麥克風存取權限。');
+        stopRecording();
+      };
+
+      rec.onend = () => {
+        if (isRecording) stopRecording();
+      };
+
+      return rec;
     }
 
     function toggleVoiceRecognition() {
-      if (!recognition) return alert('請使用 Chrome 開啟語音功能');
+      if (!recognition) {
+        recognition = initSpeechRecognition();
+      }
+
+      if (!recognition) {
+        return alert('⚠️ 您的瀏覽器（或 Safari/手機環境）不支援語音辨識功能。\n建議使用電腦版 Google Chrome 瀏覽器開啟！');
+      }
+
       const btn = document.getElementById('voiceBtn');
+
       if (isRecording) {
-        isRecording = false;
-        recognition.stop();
+        stopRecording();
+      } else {
+        try {
+          isRecording = true;
+          recognition.start();
+          btn.innerText = '🔴 錄音中...';
+          btn.classList.add('recording');
+        } catch (e) {
+          alert('無法啟動錄音：' + e.message);
+          stopRecording();
+        }
+      }
+    }
+
+    function stopRecording() {
+      isRecording = false;
+      const btn = document.getElementById('voiceBtn');
+      if (btn) {
         btn.innerText = '🎙️ 語音輸入';
         btn.classList.remove('recording');
-      } else {
-        isRecording = true;
-        recognition.start();
-        btn.innerText = '🔴 錄音中...';
-        btn.classList.add('recording');
+      }
+      if (recognition) {
+        try { recognition.stop(); } catch(e) {}
       }
     }
 
