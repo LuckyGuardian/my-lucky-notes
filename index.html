@@ -38,10 +38,10 @@
     .btn-submit { background: var(--accent-green); color: white; border: none; padding: 8px 16px; border-radius: 8px; cursor: pointer; font-weight: bold; transition: 0.2s; }
     .btn-submit:hover { background: #2a4232; }
 
-    /* 看板區域（兩欄網格） */
+    /* 看板區域 */
     .dashboard-grid { flex: 1; display: grid; grid-template-columns: 1fr 1fr; gap: 14px; overflow-y: auto; padding-right: 4px; }
 
-    /* 看板單元 (Board Block) */
+    /* 看板單元 */
     .board-card { background: var(--bg-panel); backdrop-filter: blur(8px); border-radius: 12px; border: 1px solid var(--border-color); display: flex; flex-direction: column; max-height: 480px; box-shadow: 0 4px 12px rgba(0,0,0,0.03); }
     .board-header { padding: 14px 16px; border-bottom: 1px solid var(--border-color); display: flex; justify-content: space-between; align-items: center; }
     .board-title { display: flex; align-items: center; gap: 8px; font-size: 1.05rem; font-weight: bold; color: var(--accent-green); }
@@ -50,23 +50,33 @@
     .btn-small { background: white; border: 1px solid var(--border-color); padding: 4px 8px; border-radius: 6px; font-size: 0.75rem; cursor: pointer; color: var(--text-sub); }
     .btn-small:hover { border-color: var(--accent-green); color: var(--accent-green); }
 
-    /* 卡片列表 */
+    /* 卡片與 Tag 膠囊標籤 */
     .card-list { padding: 12px; overflow-y: auto; flex: 1; display: flex; flex-direction: column; gap: 10px; }
     .item-card { background: var(--bg-card); border-radius: 8px; border: 1px solid var(--border-color); padding: 12px; display: flex; flex-direction: column; gap: 8px; transition: 0.2s; }
-    .item-card:hover { border-color: var(--accent-green); box-shadow: 0 2px 8px rgba(0,0,0,0.05); }
     .item-card-header { display: flex; align-items: center; gap: 8px; }
     .item-card-header input[type="checkbox"] { width: 16px; height: 16px; cursor: pointer; }
     .item-card-title { font-size: 0.95rem; font-weight: bold; color: var(--text-main); flex: 1; }
     
-    /* 連結卡片樣式 */
+    .tags-wrapper { display: flex; gap: 6px; flex-wrap: wrap; margin-top: 2px; }
+    .tag-badge { background: #e0e7ff; color: #3730a3; font-size: 0.75rem; padding: 2px 8px; border-radius: 12px; font-weight: bold; }
+
+    /* 連結預覽區 */
     .link-preview-box { background: rgba(236, 239, 230, 0.6); border-radius: 6px; padding: 8px 12px; border: 1px solid var(--border-color); display: flex; justify-content: space-between; align-items: center; }
     .link-url { font-size: 0.85rem; color: var(--accent-blue); text-decoration: none; word-break: break-all; }
     .btn-study { background: #e0e7ff; color: #3730a3; border: none; padding: 4px 10px; border-radius: 6px; font-size: 0.75rem; font-weight: bold; cursor: pointer; }
 
-    /* 搜尋列隱藏提示 */
-    .search-bar-panel { display: none; background: white; padding: 10px; border-radius: 8px; border: 1px solid var(--border-color); margin-bottom: 10px; }
+    /* 🏷️ 跨分類 Tag 瀏覽彈出視窗 (Modal) */
+    .modal-overlay { display: none; position: fixed; top: 0; left: 0; width: 100vw; height: 100vh; background: rgba(0,0,0,0.4); backdrop-filter: blur(4px); z-index: 999; justify-content: center; align-items: center; }
+    .modal-box { background: #ffffff; width: 85%; max-width: 900px; height: 80vh; border-radius: 16px; padding: 24px; display: flex; flex-direction: column; gap: 16px; box-shadow: 0 10px 30px rgba(0,0,0,0.15); overflow: hidden; }
+    .modal-header { display: flex; justify-content: space-between; align-items: center; border-bottom: 1px solid #e2e8f0; padding-bottom: 12px; }
+    .modal-header h3 { font-size: 1.2rem; color: var(--accent-green); display: flex; align-items: center; gap: 8px; }
+    .btn-close { background: transparent; border: none; font-size: 1.4rem; cursor: pointer; color: var(--text-sub); }
 
-    @media (max-width: 900px) { .dashboard-grid { grid-template-columns: 1fr; } }
+    .tag-cloud-box { display: flex; gap: 8px; flex-wrap: wrap; background: #f8fafc; padding: 14px; border-radius: 10px; border: 1px solid #e2e8f0; }
+    .tag-pill { background: white; border: 1px solid #cbd5e1; padding: 6px 14px; border-radius: 20px; font-size: 0.85rem; cursor: pointer; transition: 0.2s; font-weight: 500; }
+    .tag-pill.selected, .tag-pill:hover { background: var(--accent-green); color: white; border-color: var(--accent-green); }
+
+    .tag-result-container { flex: 1; overflow-y: auto; display: flex; flex-direction: column; gap: 12px; padding-right: 4px; }
   </style>
 </head>
 <body>
@@ -75,23 +85,19 @@
   <div class="sidebar">
     <div class="sidebar-section-title">快速跳轉</div>
     <div class="menu-group">
-      <div class="menu-item" onclick="filterCategory('收件匣')">📥 收件匣</div>
-      <div class="menu-item" onclick="toggleSearchPanel()">🔍 搜尋</div>
-      <div class="menu-item" onclick="alert('標籤總覽功能：正在匯集所有 #Tag...')">🏷️ Tag 瀏覽</div>
-      <div class="menu-item" onclick="alert('研讀紀錄：紀錄您已完成雲端研讀的項目')">🕒 研讀紀錄</div>
-      <div class="menu-item" onclick="alert('雅韻知識庫 v2.0 - 支援多看板與快速收集')">❓ 使用說明</div>
+      <div class="menu-item" onclick="alert('收件匣：集中管理尚未歸類的快記與網址')">📥 收件匣</div>
+      <div class="menu-item" onclick="openTagModal()">🏷️ Tag 瀏覽</div>
+      <div class="menu-item" onclick="alert('研讀紀錄：呈現已學習完畢的雲端卡片')">🕒 研讀紀錄</div>
+      <div class="menu-item" onclick="alert('雅韻知識庫 v3.0 - 支援 Tag 跨分類篩選與雲端卡片庫')">❓ 使用說明</div>
     </div>
 
     <div class="sidebar-section-title" style="margin-top: 10px;">分類看板</div>
     <div class="menu-group">
-      <div class="menu-item active" onclick="filterCategory('全部')">🌐 全部看板</div>
+      <div class="menu-item active">🌐 全部看板</div>
       <div class="menu-item" onclick="scrollToBoard('cdc-board')">💻 CDC開發中專案</div>
       <div class="menu-item" onclick="scrollToBoard('todo-board')">☑️ 待辦事項</div>
       <div class="menu-item" onclick="scrollToBoard('dev-board')">💡 個人開發專案</div>
       <div class="menu-item" onclick="scrollToBoard('learn-board')">📖 學習筆記</div>
-      <div class="menu-item">💡 靈感與想法</div>
-      <div class="menu-item">🔖 稍後閱讀</div>
-      <div class="menu-item">🍳 食譜</div>
       <div class="menu-item">🤖 AI工具</div>
     </div>
   </div>
@@ -102,50 +108,62 @@
     <!-- 頂部快速新增欄 -->
     <div class="top-input-bar">
       <select id="cardCategory" class="select-category">
-        <option value="☑️ 待辦事項">☑️ 待辦事項</option>
         <option value="💻 CDC開發中專案">💻 CDC開發中專案</option>
+        <option value="☑️ 待辦事項">☑️ 待辦事項</option>
         <option value="💡 個人開發專案">💡 個人開發專案</option>
         <option value="📖 學習筆記">📖 學習筆記</option>
       </select>
-      <input type="text" id="quickInput" class="input-quick" placeholder="貼上文字、標題或網址連結...">
+      <input type="text" id="quickInput" class="input-quick" placeholder="貼上文字、標題或網址連結 (可在結尾加上 #AI工具 #開源)...">
       <button class="btn-submit" onclick="addCard()">送出卡片</button>
     </div>
 
-    <!-- 關鍵字搜尋列 (點擊左側搜尋時展開) -->
-    <div id="searchPanel" class="search-bar-panel">
-      🔍 搜尋關鍵字：<input type="text" id="searchInput" oninput="searchCards()" placeholder="輸入關鍵字比對所有卡片..." style="padding: 4px 8px; width: 80%;">
-    </div>
-
-    <!-- 看板區域 ( Grid 兩欄並排 ) -->
+    <!-- 看板區域 -->
     <div class="dashboard-grid">
 
       <!-- 看板 1: CDC開發中專案 -->
       <div class="board-card" id="cdc-board">
         <div class="board-header">
-          <div class="board-title">💻 CDC開發中專案 <span class="board-count" id="count-cdc">2</span></div>
-          <div class="board-tools">
-            <button class="btn-small">+ 新增</button>
-            <button class="btn-small">👁️ 隱藏已完成</button>
-          </div>
+          <div class="board-title">💻 CDC開發中專案 <span class="board-count">3</span></div>
         </div>
         <div class="card-list" id="list-cdc">
           <div class="item-card">
             <div class="item-card-header">
               <input type="checkbox">
-              <span class="item-card-title">app流程圖</span>
+              <span class="item-card-title">環境變數管理</span>
+            </div>
+            <div class="tags-wrapper">
+              <span class="tag-badge">開源</span><span class="tag-badge">AI提示詞</span><span class="tag-badge">系統架構</span>
             </div>
             <div class="link-preview-box">
               <a href="https://www.threads.net" target="_blank" class="link-url">🔗 https://www.threads.com/share/_vmWk9bXT/</a>
               <button class="btn-study">☁️ 雲端研讀</button>
             </div>
           </div>
+
           <div class="item-card">
             <div class="item-card-header">
               <input type="checkbox">
-              <span class="item-card-title">session搜尋機制</span>
+              <span class="item-card-title">1+1自己做的字幕網站</span>
+            </div>
+            <div class="tags-wrapper">
+              <span class="tag-badge">開源</span><span class="tag-badge">AI工具</span><span class="tag-badge">AI Agent</span>
             </div>
             <div class="link-preview-box">
-              <a href="https://www.threads.net" target="_blank" class="link-url">🔗 https://www.threads.com/share/_xFmBOZAL/</a>
+              <a href="https://www.threads.net" target="_blank" class="link-url">🔗 https://www.threads.com/share/BATDrasvPH/</a>
+              <button class="btn-study">☁️ 雲端研讀</button>
+            </div>
+          </div>
+
+          <div class="item-card">
+            <div class="item-card-header">
+              <input type="checkbox">
+              <span class="item-card-title">headroom taskobserver</span>
+            </div>
+            <div class="tags-wrapper">
+              <span class="tag-badge">Claude Code</span><span class="tag-badge">軟體開發</span>
+            </div>
+            <div class="link-preview-box">
+              <a href="https://www.instagram.com" target="_blank" class="link-url">🔗 https://www.instagram.com/reel/C8x...</a>
               <button class="btn-study">☁️ 雲端研讀</button>
             </div>
           </div>
@@ -155,58 +173,16 @@
       <!-- 看板 2: 待辦事項 -->
       <div class="board-card" id="todo-board">
         <div class="board-header">
-          <div class="board-title">☑️ 待辦事項 <span class="board-count" id="count-todo">2</span></div>
-          <div class="board-tools">
-            <button class="btn-small">+ 新增</button>
-            <button class="btn-small">🗑️ 清空已完成</button>
-          </div>
+          <div class="board-title">☑️ 待辦事項 <span class="board-count">1</span></div>
         </div>
         <div class="card-list" id="list-todo">
           <div class="item-card">
             <div class="item-card-header">
               <input type="checkbox">
-              <span class="item-card-title">完成知識庫系統介面重構</span>
+              <span class="item-card-title">拼圖遊戲開發與邏輯測試</span>
             </div>
-          </div>
-          <div class="item-card">
-            <div class="item-card-header">
-              <input type="checkbox">
-              <span class="item-card-title">拼圖遊戲開發驗證</span>
-            </div>
-            <div class="link-preview-box">
-              <a href="https://www.threads.net" target="_blank" class="link-url">🔗 https://www.threads.com/share/BATDrasvPH/</a>
-            </div>
-          </div>
-        </div>
-      </div>
-
-      <!-- 看板 3: 個人開發專案 -->
-      <div class="board-card" id="dev-board">
-        <div class="board-header">
-          <div class="board-title">💡 個人開發專案 <span class="board-count" id="count-dev">1</span></div>
-          <div class="board-tools"><button class="btn-small">+ 新增</button></div>
-        </div>
-        <div class="card-list" id="list-dev">
-          <div class="item-card">
-            <div class="item-card-header">
-              <input type="checkbox">
-              <span class="item-card-title">My Lucky Notes 雲端筆記專案</span>
-            </div>
-          </div>
-        </div>
-      </div>
-
-      <!-- 看板 4: 學習筆記 -->
-      <div class="board-card" id="learn-board">
-        <div class="board-header">
-          <div class="board-title">📖 學習筆記 <span class="board-count" id="count-learn">1</span></div>
-          <div class="board-tools"><button class="btn-small">+ 新增</button></div>
-        </div>
-        <div class="card-list" id="list-learn">
-          <div class="item-card">
-            <div class="item-card-header">
-              <input type="checkbox">
-              <span class="item-card-title">Web Speech 語音識別 API 應用技巧</span>
+            <div class="tags-wrapper">
+              <span class="tag-badge">前端開發</span><span class="tag-badge">軟體開發</span>
             </div>
           </div>
         </div>
@@ -215,8 +191,63 @@
     </div>
   </div>
 
+  <!-- 🏷️ 跨分類 Tag 瀏覽 Modal (彈出視窗) -->
+  <div class="modal-overlay" id="tagModal">
+    <div class="modal-box">
+      <div class="modal-header">
+        <h3>🏷️ 跨分類 Tag 瀏覽</h3>
+        <button class="btn-close" onclick="closeTagModal()">✕</button>
+      </div>
+
+      <div class="tag-cloud-box">
+        <span class="tag-pill selected" onclick="filterTag(this, '全部')">全部 (6)</span>
+        <span class="tag-pill" onclick="filterTag(this, '開源')">開源 (2)</span>
+        <span class="tag-pill" onclick="filterTag(this, 'AI提示詞')">AI提示詞 (1)</span>
+        <span class="tag-pill" onclick="filterTag(this, 'AI工具')">AI工具 (1)</span>
+        <span class="tag-pill" onclick="filterTag(this, 'AI Agent')">AI Agent (1)</span>
+        <span class="tag-pill" onclick="filterTag(this, 'Claude Code')">Claude Code (1)</span>
+        <span class="tag-pill" onclick="filterTag(this, '軟體開發')">軟體開發 (2)</span>
+      </div>
+
+      <div class="tag-result-container" id="tagResultContainer">
+        <!-- 搜尋結果會顯示在此 -->
+      </div>
+    </div>
+  </div>
+
   <script>
-    /* 快速新增卡片邏輯 */
+    /* 彈出與關閉 Modal */
+    function openTagModal() {
+      document.getElementById('tagModal').style.display = 'flex';
+      renderTagResults('全部');
+    }
+
+    function closeTagModal() {
+      document.getElementById('tagModal').style.display = 'none';
+    }
+
+    /* Tag 標籤動態點擊篩選 */
+    function filterTag(element, tag) {
+      document.querySelectorAll('.tag-pill').forEach(pill => pill.classList.remove('selected'));
+      element.classList.add('selected');
+      renderTagResults(tag);
+    }
+
+    function renderTagResults(tag) {
+      const container = document.getElementById('tagResultContainer');
+      container.innerHTML = '';
+      const allCards = document.querySelectorAll('.dashboard-grid .item-card');
+
+      allCards.forEach(card => {
+        const tags = Array.from(card.querySelectorAll('.tag-badge')).map(t => t.innerText);
+        if (tag === '全部' || tags.includes(tag)) {
+          const clone = card.cloneNode(true);
+          container.appendChild(clone);
+        }
+      });
+    }
+
+    /* 快速新增卡片 (自動解析 #Tag) */
     function addCard() {
       const category = document.getElementById('cardCategory').value;
       const text = document.getElementById('quickInput').value.trim();
@@ -226,17 +257,18 @@
         return;
       }
 
-      let targetListId = '';
-      if (category.includes('CDC')) targetListId = 'list-cdc';
-      else if (category.includes('待辦')) targetListId = 'list-todo';
-      else if (category.includes('個人')) targetListId = 'list-dev';
-      else targetListId = 'list-learn';
+      // 自動解析 #Tag 標籤
+      const tagMatches = text.match(/#[\u4e00-\u9fa5a-zA-Z0-9]+/g) || [];
+      const cleanText = text.replace(/#[\u4e00-\u9fa5a-zA-Z0-9]+/g, '').trim();
 
+      let targetListId = category.includes('CDC') ? 'list-cdc' : 'list-todo';
       const listContainer = document.getElementById(targetListId);
-      const isLink = text.startsWith('http://') || text.startsWith('https://');
+      const isLink = cleanText.startsWith('http://') || cleanText.startsWith('https://');
 
       const card = document.createElement('div');
       card.className = 'item-card';
+
+      let tagsHtml = tagMatches.map(t => `<span class="tag-badge">${t.replace('#','')}</span>`).join('');
 
       if (isLink) {
         card.innerHTML = `
@@ -244,8 +276,9 @@
             <input type="checkbox">
             <span class="item-card-title">新收集網址資源</span>
           </div>
+          <div class="tags-wrapper">${tagsHtml}</div>
           <div class="link-preview-box">
-            <a href="${text}" target="_blank" class="link-url">🔗 ${text}</a>
+            <a href="${cleanText}" target="_blank" class="link-url">🔗 ${cleanText}</a>
             <button class="btn-study">☁️ 雲端研讀</button>
           </div>
         `;
@@ -253,39 +286,19 @@
         card.innerHTML = `
           <div class="item-card-header">
             <input type="checkbox">
-            <span class="item-card-title">${text}</span>
+            <span class="item-card-title">${cleanText}</span>
           </div>
+          <div class="tags-wrapper">${tagsHtml}</div>
         `;
       }
 
       listContainer.prepend(card);
       document.getElementById('quickInput').value = '';
-      alert('卡片已成功加入「' + category + '」！');
+      alert('卡片已成功新增！');
     }
 
-    /* 切換搜尋面板 */
-    function toggleSearchPanel() {
-      const panel = document.getElementById('searchPanel');
-      panel.style.display = panel.style.display === 'block' ? 'none' : 'block';
-      if (panel.style.display === 'block') document.getElementById('searchInput').focus();
-    }
-
-    /* 關鍵字即時搜尋 */
-    function searchCards() {
-      const query = document.getElementById('searchInput').value.toLowerCase();
-      const cards = document.querySelectorAll('.item-card');
-      cards.forEach(card => {
-        const text = card.innerText.toLowerCase();
-        card.style.display = text.includes(query) ? 'flex' : 'none';
-      });
-    }
-
-    /* 捲動至特定看板 */
     function scrollToBoard(boardId) {
-      const board = document.getElementById(boardId);
-      if (board) {
-        board.scrollIntoView({ behavior: 'smooth' });
-      }
+      document.getElementById(boardId)?.scrollIntoView({ behavior: 'smooth' });
     }
   </script>
 </body>
