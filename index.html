@@ -24,7 +24,6 @@
     .mobile-header h2 { font-size: 1.1rem; color: var(--accent-green); display: flex; align-items: center; gap: 8px; cursor: pointer; }
     .btn-hamburger { background: transparent; border: none; font-size: 1.4rem; cursor: pointer; }
 
-    /* 側邊欄樣式 */
     .sidebar { width: 230px; background: var(--bg-panel); border-radius: 12px; padding: 16px 12px; display: flex; flex-direction: column; gap: 10px; border: 1px solid var(--border-color); overflow-y: auto; z-index: 100; transition: width 0.3s ease, padding 0.3s ease, transform 0.3s ease; position: relative; }
     .sidebar.collapsed { width: 64px; padding: 16px 8px; }
     .sidebar.collapsed .mascot-title,
@@ -48,7 +47,6 @@
     .btn-add-folder:hover { transform: scale(1.1); }
 
     .menu-group { display: flex; flex-direction: column; gap: 4px; }
-    
     .menu-item { padding: 8px 12px; border-radius: 8px; cursor: grab; color: var(--text-main); font-size: 0.9rem; font-weight: 500; display: flex; align-items: center; gap: 8px; white-space: nowrap; transition: 0.2s; user-select: none; }
     .menu-item:active { cursor: grabbing; }
     .menu-item.dragging { opacity: 0.4; background: #eee9e0; border: 1px dashed var(--accent-green); }
@@ -111,14 +109,12 @@
     .image-preview-box img { width: 100%; height: 100%; object-fit: cover; }
     .btn-delete-img { position: absolute; top: 2px; right: 2px; background: rgba(168,72,66,0.85); color: white; border: none; border-radius: 50%; width: 20px; height: 20px; cursor: pointer; }
 
-    /* 📅 行事曆 View 樣式 */
     .calendar-view { display: none; flex: 1; flex-direction: column; background: var(--bg-panel); border-radius: 12px; padding: 20px; border: 1px solid var(--border-color); overflow-y: auto; gap: 15px; }
     .calendar-header { display: flex; justify-content: space-between; align-items: center; border-bottom: 1px solid var(--border-color); padding-bottom: 10px; }
     .calendar-grid { display: grid; grid-template-columns: repeat(7, 1fr); gap: 8px; text-align: center; }
     .cal-day-header { font-weight: bold; color: var(--accent-green); padding: 8px; background: #eee9e0; border-radius: 6px; }
     .cal-day-cell { background: white; border: 1px solid var(--border-color); border-radius: 8px; min-height: 85px; padding: 6px; display: flex; flex-direction: column; gap: 4px; cursor: pointer; text-align: left; transition: 0.2s; }
-    .cal-day-cell.empty-cell { background: transparent; border: none; cursor: default; }
-    .cal-day-cell:not(.empty-cell):hover { border-color: var(--accent-green); background-color: #faf8f5; }
+    .cal-day-cell:hover { border-color: var(--accent-green); background-color: #faf8f5; }
     .cal-day-num { font-weight: bold; font-size: 0.85rem; color: var(--text-sub); }
     .cal-holiday { background: #fee2e2; color: #991b1b; font-size: 0.72rem; padding: 2px 4px; border-radius: 4px; font-weight: bold; }
     .cal-event-tag { background: #e0e7ff; color: #2b5b84; font-size: 0.72rem; padding: 2px 4px; border-radius: 4px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; font-weight: bold; cursor: pointer; display: block; margin-top: 2px; }
@@ -318,7 +314,7 @@
           <option value="">🖍️ 螢光筆</option>
           <option value="#fef08a">💛 黃色</option>
           <option value="#fed7aa">🧡 橘色</option>
-          <option value="#bbf7d0">💚 綠色</option>
+          <option value="#bbf7d0">綠色</option>
         </select>
 
         <span style="color:var(--border-color);">|</span>
@@ -333,7 +329,6 @@
       </div>
 
       <input type="hidden" id="noteCalendarDay" value="">
-
       <input type="text" id="noteTitle" class="input-title" placeholder="請輸入筆記標題...">
       <div id="noteContent" class="input-content-editable" contenteditable="true" placeholder="在此處自由書寫或直接 Ctrl+V 貼上圖片/文字/網址..."></div>
 
@@ -343,7 +338,7 @@
       </div>
     </div>
 
-    <!-- 視窗 3：📅 行事曆 (完美修正 2026/9/1 為星期二對齊) -->
+    <!-- 視窗 3：📅 行事曆 -->
     <div class="calendar-view" id="view-calendar">
       <div class="calendar-header">
         <h3 style="color:var(--accent-green);">📅 2026 年 9 月行程表</h3>
@@ -352,11 +347,6 @@
       <div class="calendar-grid" id="calendarGrid">
         <div class="cal-day-header">日</div><div class="cal-day-header">一</div><div class="cal-day-header">二</div><div class="cal-day-header">三</div><div class="cal-day-header">四</div><div class="cal-day-header">五</div><div class="cal-day-header">六</div>
         
-        <!-- 2026/9/1 為星期二，前兩格 (日、一) 為空白留白 -->
-        <div class="cal-day-cell empty-cell"></div>
-        <div class="cal-day-cell empty-cell"></div>
-
-        <!-- 1日 ~ 30日 對齊真實星期 -->
         <div class="cal-day-cell" id="cal-day-1" onclick="clickCalendarDay(1)"><span class="cal-day-num">1</span></div>
         <div class="cal-day-cell" id="cal-day-2" onclick="clickCalendarDay(2)"><span class="cal-day-num">2</span></div>
         <div class="cal-day-cell" id="cal-day-3" onclick="clickCalendarDay(3)"><span class="cal-day-num">3</span></div>
@@ -499,16 +489,64 @@
 * 相關連結/資料：
 * 預計完成時間：`;
 
-    /* 算真實星期的工具函式 (2026/09/01 為星期二) */
-    const weekNames = ['日', '一', '二', '三', '四', '五', '六'];
-    function getWeekName2026Sep(dayNum) {
-      const date = new Date(2026, 8, dayNum); // 8 代表 9 月
-      return weekNames[date.getDay()];
+    /* 💾 LocalStorage 持久化儲存數據 */
+    function saveToStorage() {
+      const notesData = [];
+      const cards = document.querySelectorAll('.item-card');
+      cards.forEach(card => {
+        notesData.push({
+          id: card.dataset.id || Date.now(),
+          title: card.querySelector('.item-card-title').innerText,
+          content: card.dataset.content || '',
+          category: card.dataset.category || '',
+          listId: card.parentElement.id,
+          dayNum: card.dataset.dayNum || ''
+        });
+      });
+      localStorage.setItem('lucky_note_cards', JSON.stringify(notesData));
+    }
+
+    function loadFromStorage() {
+      const savedData = localStorage.getItem('lucky_note_cards');
+      if (!savedData) return;
+      const notesData = JSON.parse(savedData);
+      
+      notesData.forEach(item => {
+        const card = document.createElement('div');
+        card.className = 'item-card';
+        card.setAttribute('draggable', 'true');
+        card.dataset.id = item.id;
+        card.dataset.content = item.content;
+        card.dataset.category = item.category;
+        card.dataset.dayNum = item.dayNum;
+        bindCardDragEvents(card);
+
+        card.onclick = () => openNoteInEditor(item.title, item.content, item.category, card);
+        card.innerHTML = `<div class="item-card-header"><input type="checkbox" onclick="event.stopPropagation()"><span class="item-card-title">${item.title}</span></div>`;
+
+        const listEl = document.getElementById(item.listId);
+        if (listEl) listEl.appendChild(card);
+
+        if (item.dayNum) {
+          const calCell = document.getElementById('cal-day-' + item.dayNum);
+          if (calCell) {
+            const eventTag = document.createElement('span');
+            eventTag.className = 'cal-event-tag';
+            eventTag.innerText = item.title.replace(/^⏰\s*\[\d+\/\d+\s*/, '').replace(/\]$/, '');
+            eventTag.onclick = (e) => {
+              e.stopPropagation();
+              openNoteInEditor(item.title, item.content, item.category, card);
+            };
+            calCell.appendChild(eventTag);
+          }
+        }
+      });
     }
 
     document.addEventListener('DOMContentLoaded', () => {
       initDragAndDrop();
       initCategoryMenuDragAndDrop();
+      loadFromStorage(); // 自動載入先前的筆記紀錄
 
       const editorEl = document.getElementById('noteContent');
       if (editorEl) {
@@ -664,13 +702,11 @@
       switchView('editor', '📝 新增：' + categoryName);
     }
 
-    /* 📅 點擊行事曆任意日期：自動計算真實星期並帶入精準範本 */
     function clickCalendarDay(dayNum) {
       const dayStr = dayNum < 10 ? '0' + dayNum : '' + dayNum;
-      const wName = getWeekName2026Sep(dayNum);
       document.getElementById('noteCalendarDay').value = dayNum;
       document.getElementById('noteTitle').value = `⏰ [9/${dayStr} 活動/會議提醒]`;
-      document.getElementById('noteContent').innerHTML = `⏰ 2026/09/${dayStr} (${wName}) 活動與會議行程<br><br><b>【一、 基本資訊與地點】</b><br>* 時間：2026 / 09 / ${dayStr} (${wName}) 10:00 - 11:00<br>* 地點：會議室 A / 線上 Teams<br>* 主持人：專案負責人<br><br><b>【二、 內容摘要與待辦】</b><br>[ ] 準備討論資料與 PPT 簡報檔`;
+      document.getElementById('noteContent').innerHTML = `⏰ 2026/09/${dayStr} 活動與會議行程<br><br><b>【一、 基本資訊與地點】</b><br>* 時間：2026 / 09 / ${dayStr} (三) 10:00 - 11:00<br>* 地點：會議室 A / 線上 Teams (連結：https://...)<br>* 主持人：專案負責人<br><br><b>【二、 內容摘要與待辦】</b><br>[ ] 準備討論資料與 PPT 簡報檔`;
       document.getElementById('editorTargetCategory').value = '☑️ 待辦事項';
       switchView('editor', `📝 新增 9/${dayStr} 行程提醒`);
     }
@@ -707,6 +743,7 @@
           } else {
             list.insertBefore(draggingCard, afterElement);
           }
+          saveToStorage();
         });
       });
     }
@@ -732,13 +769,14 @@
     }
 
     function openQuickAddModal() {
-      const cat = prompt('請選擇分類數字 (1:AI智庫, 2:工作任務, 3:待辦事項, 4:學習筆記, 5:網路知識)：', '3');
+      const cat = prompt('請選擇分類數字 (1:AI智庫, 2:工作任務, 3:待辦事項, 4:學習筆記, 5:網路知識)：', '5');
       const title = prompt('請輸入卡片標題 (可加 #Tag)：');
       if (!title) return;
 
-      let targetListId = 'list-todo';
+      let targetListId = 'list-web';
       if (cat === '1') targetListId = 'list-ai';
       else if (cat === '2') targetListId = 'list-work';
+      else if (cat === '3') targetListId = 'list-todo';
       else if (cat === '4') targetListId = 'list-learn';
 
       const card = document.createElement('div');
@@ -748,14 +786,13 @@
       card.onclick = () => openNoteInEditor(title, '', '快速新增卡片', card);
       card.innerHTML = `<div class="item-card-header"><input type="checkbox" onclick="event.stopPropagation()"><span class="item-card-title">${title}</span></div>`;
       document.getElementById(targetListId).prepend(card);
+      saveToStorage();
       alert('卡片「' + title + '」已新增！');
     }
 
     function applyMeetingTemplate(month = '09', day = '16') {
-      const dNum = parseInt(day, 10);
-      const wName = isNaN(dNum) ? '三' : getWeekName2026Sep(dNum);
       document.getElementById('noteTitle').value = `⏰ [${month}/${day} 會議/活動名稱]`;
-      document.getElementById('noteContent').innerHTML = meetingTemplate.replace('2026 / 09 / 16 (三)', `2026 / ${month} / ${day} (${wName})`).replace(/\n/g, '<br>');
+      document.getElementById('noteContent').innerHTML = meetingTemplate.replace(/\n/g, '<br>');
       document.getElementById('editorTargetCategory').value = '💼 工作任務';
     }
 
@@ -982,12 +1019,19 @@
 
       if (currentEditingCard) {
         currentEditingCard.querySelector('.item-card-title').innerText = title;
+        currentEditingCard.dataset.content = content;
+        currentEditingCard.dataset.category = targetCategory;
         currentEditingCard.onclick = () => openNoteInEditor(title, content, targetCategory, currentEditingCard);
         alert('筆記「' + title + '」已成功更新！');
       } else {
         const card = document.createElement('div');
         card.className = 'item-card';
         card.setAttribute('draggable', 'true');
+        card.dataset.id = Date.now();
+        card.dataset.content = content;
+        card.dataset.category = targetCategory;
+        card.dataset.dayNum = dayNum;
+
         bindCardDragEvents(card);
         card.onclick = () => openNoteInEditor(title, content, targetCategory, card);
         card.innerHTML = `<div class="item-card-header"><input type="checkbox" onclick="event.stopPropagation()"><span class="item-card-title">${title}</span></div>`;
@@ -1009,9 +1053,10 @@
           }
         }
 
-        alert('筆記「' + title + '」已同步儲存至看板與行事曆！');
+        alert('筆記「' + title + '」已同步儲存！');
       }
 
+      saveToStorage();
       currentEditingCard = null;
       document.getElementById('noteCalendarDay').value = '';
       showAllBoards();
@@ -1028,6 +1073,7 @@
         document.getElementById('noteContent').innerHTML = '';
         currentImages = [];
         renderImages();
+        saveToStorage();
         alert('筆記已成功刪除！');
         showAllBoards();
         switchView('dashboard', '🌐 全部看板模式');
