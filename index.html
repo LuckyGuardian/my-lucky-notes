@@ -67,11 +67,10 @@
 
     .editor-view { display: none; flex: 1; flex-direction: column; background: var(--bg-panel); border-radius: 12px; padding: 20px; border: 1px solid var(--border-color); overflow-y: auto; }
     .editor-tools { display: flex; gap: 6px; margin-bottom: 12px; flex-wrap: wrap; align-items: center; }
-    .btn-tool { background: #ffffff; border: 1px solid var(--border-color); padding: 6px 12px; border-radius: 6px; cursor: pointer; font-weight: bold; font-size: 0.85rem; }
+    .btn-tool { background: #ffffff; border: 1px solid var(--border-color); padding: 6px 12px; border-radius: 6px; cursor: pointer; font-weight: bold; font-size: 0.85rem; outline: none; }
     .btn-tool:hover { background-color: #f3f0e6; }
     
     .btn-fmt { font-weight: bold; padding: 5px 10px; }
-    .btn-highlight { background-color: #fef08a; border-color: #eab308; }
 
     .btn-voice { background-color: #fef3c7; border-color: #f59e0b; color: #92400e; }
     .btn-voice.recording { background-color: #fee2e2; border-color: #ef4444; color: #991b1b; animation: pulse 1.5s infinite; }
@@ -88,7 +87,6 @@
 
     .fab-btn { display: none; position: fixed; bottom: 20px; right: 20px; width: 56px; height: 56px; background: var(--accent-green); color: white; border-radius: 50%; border: none; font-size: 1.8rem; box-shadow: 0 4px 12px rgba(0,0,0,0.25); cursor: pointer; z-index: 99; }
 
-    /* Modal 樣式 */
     .modal-overlay { display: none; position: fixed; top: 0; left: 0; width: 100vw; height: 100vh; background: rgba(0,0,0,0.3); backdrop-filter: blur(2px); z-index: 999; justify-content: center; align-items: center; }
     .modal-box { background: #ffffff; width: 90%; max-width: 500px; border-radius: 16px; padding: 24px; display: flex; flex-direction: column; gap: 16px; box-shadow: 0 10px 25px rgba(0,0,0,0.1); }
     .modal-header { display: flex; justify-content: space-between; align-items: center; border-bottom: 1px solid #e2e8f0; padding-bottom: 10px; }
@@ -113,7 +111,7 @@
   <div class="mobile-header">
     <h2>
       <svg class="mascot-svg" style="width:24px;height:24px;" viewBox="0 0 100 100">
-        <path d="M50,45 C38,20 18,28 30,48 C10,38 8,60 30,62 C15,78 30,90 48,70 C48,85 52,85 52,70 C70,90 85,78 70,62 C92,60 90,38 70,48 C82,28 62,20 50,45 Z" fill="#3b5a45" />
+        <path d="M50,45 C38,20 18,28 30,48 C10,38 8,60 30,62 C15,78 30,90 48,70 C48,85 52,85 52,70 C70,90 85,78 70,62 Q92,60 90,38 70,48 C82,28 62,20 50,45 Z" fill="#3b5a45" />
         <path d="M50,68 C49,85 45,95 40,100" stroke="#3b5a45" stroke-width="4" fill="none" stroke-linecap="round" />
       </svg>
       Lucky Note
@@ -252,20 +250,32 @@
     <!-- 視窗 2：筆記詳細編輯器 -->
     <div class="editor-view" id="view-editor">
       <div class="editor-tools">
-        <button class="btn-tool btn-fmt" onclick="insertTag('<b>', '</b>')" title="粗體"><b>B</b></button>
-        <button class="btn-tool btn-fmt btn-highlight" onclick="insertTag('<mark>', '</mark>')" title="螢光筆">🖍️ 螢光筆</button>
-        <button class="btn-tool btn-fmt" style="color:#a84842;" onclick="insertTag('<span style=&quot;color:#a84842;font-weight:bold;&quot;>', '</span>')">🔴 紅字</button>
-        <button class="btn-tool btn-fmt" style="color:#2b5b84;" onclick="insertTag('<span style=&quot;color:#2b5b84;font-weight:bold;&quot;>', '</span>')">🔵 藍字</button>
-        <button class="btn-tool btn-fmt" style="color:#3b5a45;" onclick="insertTag('<span style=&quot;color:#3b5a45;font-weight:bold;&quot;>', '</span>')">🟢 綠字</button>
-
-        <span style="color:var(--border-color);">|</span>
-
-        <select id="editorTargetCategory" class="select-category" style="padding:4px 8px;font-size:0.8rem;">
+        <select id="editorTargetCategory" class="select-category" style="padding:5px 10px;font-size:0.85rem;">
           <option value="🤖 AI 智庫與筆記">🤖 AI 智庫與筆記</option>
           <option value="💼 工作任務">💼 工作任務</option>
           <option value="☑️ 待辦事項">☑️ 待辦事項</option>
           <option value="📖 學習筆記">📖 學習筆記</option>
         </select>
+
+        <span style="color:var(--border-color);">|</span>
+
+        <button class="btn-tool btn-fmt" onclick="insertTag('<b>', '</b>')" title="粗體"><b>B</b></button>
+
+        <select class="btn-tool" onchange="applyTextColor(this)" style="padding:4px 8px;">
+          <option value="">🎨 字體顏色</option>
+          <option value="red">🔴 紅字</option>
+          <option value="blue">🔵 藍字</option>
+          <option value="green">🟢 綠字</option>
+        </select>
+
+        <select class="btn-tool" onchange="applyHighlightColor(this)" style="padding:4px 8px;">
+          <option value="">🖍️ 螢光筆</option>
+          <option value="yellow">💛 黃色</option>
+          <option value="orange">🧡 橘色</option>
+          <option value="green">💚 綠色</option>
+        </select>
+
+        <span style="color:var(--border-color);">|</span>
 
         <button class="btn-tool btn-voice" id="voiceBtn" onclick="toggleVoiceRecognition()">🎙️ 語音輸入</button>
         <button class="btn-tool" onclick="document.getElementById('imageInput').click()">🖼️ 上傳圖片</button>
@@ -274,6 +284,7 @@
         <button class="btn-tool" style="color:var(--accent-blue);" onclick="exportSingleNote()">📤 匯出單篇 HTML</button>
         <button class="btn-tool" style="color:var(--accent-red);" onclick="deleteCurrentNote()">🗑️ 刪除筆記</button>
       </div>
+
       <input type="text" id="noteTitle" class="input-title" placeholder="請輸入筆記標題...">
       <textarea id="noteContent" class="input-content" placeholder="在此處自由書寫、使用語音或套用文字樣式..."></textarea>
 
@@ -287,7 +298,6 @@
 
   <button class="fab-btn" onclick="mobileQuickAdd()">+</button>
 
-  <!-- 📥 自訂匯出彈出 Modal -->
   <div class="modal-overlay" id="exportModal">
     <div class="modal-box">
       <div class="modal-header">
@@ -365,11 +375,27 @@
 * 相關連結/資料：
 * 預計完成時間：`;
 
-    /* 📥 開啟與關閉自訂匯出 Modal */
+    function applyTextColor(selectEl) {
+      const val = selectEl.value;
+      if (!val) return;
+      if (val === 'red') insertTag('<span style="color:#a84842;font-weight:bold;">', '</span>');
+      else if (val === 'blue') insertTag('<span style="color:#2b5b84;font-weight:bold;">', '</span>');
+      else if (val === 'green') insertTag('<span style="color:#3b5a45;font-weight:bold;">', '</span>');
+      selectEl.value = '';
+    }
+
+    function applyHighlightColor(selectEl) {
+      const val = selectEl.value;
+      if (!val) return;
+      if (val === 'yellow') insertTag('<mark style="background-color:#fef08a;">', '</mark>');
+      else if (val === 'orange') insertTag('<mark style="background-color:#fed7aa;">', '</mark>');
+      else if (val === 'green') insertTag('<mark style="background-color:#bbf7d0;">', '</mark>');
+      selectEl.value = '';
+    }
+
     function openExportModal() { document.getElementById('exportModal').style.display = 'flex'; }
     function closeExportModal() { document.getElementById('exportModal').style.display = 'none'; }
 
-    /* 🔒 白名單驗證與自訂匯出執行 */
     function processCustomExport() {
       const selectedChks = Array.from(document.querySelectorAll('.export-chk:checked')).map(c => c.value);
       if (selectedChks.length === 0) return alert('請至少勾選一個分類看板！');
@@ -455,7 +481,7 @@
     h1 { color: #3b5a45; border-bottom: 2px solid #e5e0d8; padding-bottom: 8px; font-size: 1.4rem; }
     .tag { display: inline-block; background: #f0ebd8; color: #6b5e43; padding: 2px 8px; border-radius: 12px; font-size: 0.8rem; font-weight: bold; margin-bottom: 15px; }
     .content { white-space: pre-wrap; font-size: 1.05rem; }
-    mark { background-color: #fef08a; padding: 2px 4px; border-radius: 4px; }
+    mark { padding: 2px 4px; border-radius: 4px; }
   </style>
 </head>
 <body>
@@ -627,8 +653,9 @@
       switchView('dashboard');
     }
 
+    /* 🗑️ 刪除筆記 (防誤刪二次確認警示) */
     function deleteCurrentNote() {
-      if (confirm('確定要刪除這篇筆記嗎？')) {
+      if (confirm('⚠️ 警告：確定要刪除這篇筆記嗎？刪除後將無法恢復！')) {
         if (currentEditingCard) {
           currentEditingCard.remove();
           currentEditingCard = null;
