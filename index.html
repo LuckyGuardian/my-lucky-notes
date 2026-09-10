@@ -120,7 +120,7 @@
     .cal-day-cell:hover { border-color: var(--accent-green); background-color: #faf8f5; }
     .cal-day-num { font-weight: bold; font-size: 0.85rem; color: var(--text-sub); }
     .cal-holiday { background: #fee2e2; color: #991b1b; font-size: 0.72rem; padding: 2px 4px; border-radius: 4px; font-weight: bold; }
-    .cal-event-tag { background: #e0e7ff; color: #2b5b84; font-size: 0.72rem; padding: 2px 4px; border-radius: 4px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; font-weight: bold; cursor: pointer; }
+    .cal-event-tag { background: #e0e7ff; color: #2b5b84; font-size: 0.72rem; padding: 2px 4px; border-radius: 4px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; font-weight: bold; cursor: pointer; display: block; margin-top: 2px; }
     .cal-event-tag:hover { background: #c7d2fe; }
 
     .fab-btn { display: none; position: fixed; bottom: 20px; right: 20px; width: 56px; height: 56px; background: var(--accent-green); color: white; border-radius: 50%; border: none; font-size: 1.8rem; box-shadow: 0 4px 12px rgba(0,0,0,0.25); cursor: pointer; z-index: 99; }
@@ -221,7 +221,8 @@
     <div class="menu-group">
       <div class="menu-item" style="cursor:pointer;" onclick="openSearchModal(); toggleSidebar();">🔍 <span class="menu-text">搜尋</span></div>
       <div class="menu-item" style="cursor:pointer;" onclick="openTagModal(); toggleSidebar();">🏷️ <span class="menu-text">Tag 瀏覽</span></div>
-      <div class="menu-item" style="cursor:pointer;" id="menu-cal" onclick="switchView('calendar', '📅 2026年 9月 行事曆'); updateMenuActive('menu-cal'); toggleSidebar();">📅 <span class="menu-text">行事曆檢視</span></div>
+      <!-- 修正選單名稱：行事曆 -->
+      <div class="menu-item" style="cursor:pointer;" id="menu-cal" onclick="switchView('calendar', '📅 2026年 9月 行事曆'); updateMenuActive('menu-cal'); toggleSidebar();">📅 <span class="menu-text">行事曆</span></div>
       <div class="menu-item export-btn" onclick="openExportModal(); toggleSidebar();">📥 <span class="menu-text">匯出資料 (自訂/全站)</span></div>
     </div>
 
@@ -246,7 +247,7 @@
       <span class="status-title" id="currentStatusText">🌐 全部看板模式</span>
     </div>
 
-    <!-- 視窗 1：看板模式 (初始乾淨清爽) -->
+    <!-- 視窗 1：看板模式 -->
     <div class="dashboard-view" id="view-dashboard">
       <div class="dashboard-grid" id="dashboardGrid">
         <div class="board-card" id="ai-board">
@@ -331,6 +332,9 @@
         <button class="btn-tool" style="color:var(--accent-red);" onclick="deleteCurrentNote()">🗑️ 刪除筆記</button>
       </div>
 
+      <!-- 用於暫存日期的隱藏欄位 -->
+      <input type="hidden" id="noteCalendarDay" value="">
+
       <input type="text" id="noteTitle" class="input-title" placeholder="請輸入筆記標題...">
       <div id="noteContent" class="input-content-editable" contenteditable="true" placeholder="在此處自由書寫或直接 Ctrl+V 貼上圖片/文字/網址..."></div>
 
@@ -346,49 +350,50 @@
         <h3 style="color:var(--accent-green);">📅 2026 年 9 月行程表</h3>
         <button class="btn-submit" onclick="clickCalendarDay(16)">+ 新增行程提醒</button>
       </div>
-      <div class="calendar-grid">
+      <div class="calendar-grid" id="calendarGrid">
         <div class="cal-day-header">日</div><div class="cal-day-header">一</div><div class="cal-day-header">二</div><div class="cal-day-header">三</div><div class="cal-day-header">四</div><div class="cal-day-header">五</div><div class="cal-day-header">六</div>
         
-        <div class="cal-day-cell" onclick="clickCalendarDay(1)"><span class="cal-day-num">1</span></div>
-        <div class="cal-day-cell" onclick="clickCalendarDay(2)"><span class="cal-day-num">2</span></div>
-        <div class="cal-day-cell" onclick="clickCalendarDay(3)"><span class="cal-day-num">3</span></div>
-        <div class="cal-day-cell" onclick="clickCalendarDay(4)"><span class="cal-day-num">4</span></div>
-        <div class="cal-day-cell" onclick="clickCalendarDay(5)"><span class="cal-day-num">5</span></div>
-        <div class="cal-day-cell" onclick="clickCalendarDay(6)"><span class="cal-day-num">6</span></div>
-        <div class="cal-day-cell" onclick="clickCalendarDay(7)"><span class="cal-day-num">7</span></div>
-        <div class="cal-day-cell" onclick="clickCalendarDay(8)"><span class="cal-day-num">8</span></div>
-        <div class="cal-day-cell" onclick="clickCalendarDay(9)"><span class="cal-day-num">9</span></div>
-        <div class="cal-day-cell" onclick="clickCalendarDay(10)"><span class="cal-day-num">10</span></div>
-        <div class="cal-day-cell" onclick="clickCalendarDay(11)"><span class="cal-day-num">11</span></div>
-        <div class="cal-day-cell" onclick="clickCalendarDay(12)"><span class="cal-day-num">12</span></div>
-        <div class="cal-day-cell" onclick="clickCalendarDay(13)"><span class="cal-day-num">13</span></div>
-        <div class="cal-day-cell" onclick="clickCalendarDay(14)"><span class="cal-day-num">14</span></div>
-        <div class="cal-day-cell" onclick="clickCalendarDay(15)"><span class="cal-day-num">15</span></div>
-        <div class="cal-day-cell" onclick="clickCalendarDay(16)"><span class="cal-day-num">16</span></div>
-        <div class="cal-day-cell" onclick="clickCalendarDay(17)"><span class="cal-day-num">17</span></div>
-        <div class="cal-day-cell" onclick="clickCalendarDay(18)"><span class="cal-day-num">18</span></div>
-        <div class="cal-day-cell" onclick="clickCalendarDay(19)"><span class="cal-day-num">19</span></div>
-        <div class="cal-day-cell" onclick="clickCalendarDay(20)"><span class="cal-day-num">20</span></div>
-        <div class="cal-day-cell" onclick="clickCalendarDay(21)"><span class="cal-day-num">21</span></div>
-        <div class="cal-day-cell" onclick="clickCalendarDay(22)"><span class="cal-day-num">22</span></div>
-        <div class="cal-day-cell" onclick="clickCalendarDay(23)"><span class="cal-day-num">23</span></div>
-        <div class="cal-day-cell" onclick="clickCalendarDay(24)"><span class="cal-day-num">24</span></div>
+        <!-- 動態帶有 id 的日期格子 -->
+        <div class="cal-day-cell" id="cal-day-1" onclick="clickCalendarDay(1)"><span class="cal-day-num">1</span></div>
+        <div class="cal-day-cell" id="cal-day-2" onclick="clickCalendarDay(2)"><span class="cal-day-num">2</span></div>
+        <div class="cal-day-cell" id="cal-day-3" onclick="clickCalendarDay(3)"><span class="cal-day-num">3</span></div>
+        <div class="cal-day-cell" id="cal-day-4" onclick="clickCalendarDay(4)"><span class="cal-day-num">4</span></div>
+        <div class="cal-day-cell" id="cal-day-5" onclick="clickCalendarDay(5)"><span class="cal-day-num">5</span></div>
+        <div class="cal-day-cell" id="cal-day-6" onclick="clickCalendarDay(6)"><span class="cal-day-num">6</span></div>
+        <div class="cal-day-cell" id="cal-day-7" onclick="clickCalendarDay(7)"><span class="cal-day-num">7</span></div>
+        <div class="cal-day-cell" id="cal-day-8" onclick="clickCalendarDay(8)"><span class="cal-day-num">8</span></div>
+        <div class="cal-day-cell" id="cal-day-9" onclick="clickCalendarDay(9)"><span class="cal-day-num">9</span></div>
+        <div class="cal-day-cell" id="cal-day-10" onclick="clickCalendarDay(10)"><span class="cal-day-num">10</span></div>
+        <div class="cal-day-cell" id="cal-day-11" onclick="clickCalendarDay(11)"><span class="cal-day-num">11</span></div>
+        <div class="cal-day-cell" id="cal-day-12" onclick="clickCalendarDay(12)"><span class="cal-day-num">12</span></div>
+        <div class="cal-day-cell" id="cal-day-13" onclick="clickCalendarDay(13)"><span class="cal-day-num">13</span></div>
+        <div class="cal-day-cell" id="cal-day-14" onclick="clickCalendarDay(14)"><span class="cal-day-num">14</span></div>
+        <div class="cal-day-cell" id="cal-day-15" onclick="clickCalendarDay(15)"><span class="cal-day-num">15</span></div>
+        <div class="cal-day-cell" id="cal-day-16" onclick="clickCalendarDay(16)"><span class="cal-day-num">16</span></div>
+        <div class="cal-day-cell" id="cal-day-17" onclick="clickCalendarDay(17)"><span class="cal-day-num">17</span></div>
+        <div class="cal-day-cell" id="cal-day-18" onclick="clickCalendarDay(18)"><span class="cal-day-num">18</span></div>
+        <div class="cal-day-cell" id="cal-day-19" onclick="clickCalendarDay(19)"><span class="cal-day-num">19</span></div>
+        <div class="cal-day-cell" id="cal-day-20" onclick="clickCalendarDay(20)"><span class="cal-day-num">20</span></div>
+        <div class="cal-day-cell" id="cal-day-21" onclick="clickCalendarDay(21)"><span class="cal-day-num">21</span></div>
+        <div class="cal-day-cell" id="cal-day-22" onclick="clickCalendarDay(22)"><span class="cal-day-num">22</span></div>
+        <div class="cal-day-cell" id="cal-day-23" onclick="clickCalendarDay(23)"><span class="cal-day-num">23</span></div>
+        <div class="cal-day-cell" id="cal-day-24" onclick="clickCalendarDay(24)"><span class="cal-day-num">24</span></div>
         
-        <div class="cal-day-cell" onclick="clickCalendarDay(25)">
+        <div class="cal-day-cell" id="cal-day-25" onclick="clickCalendarDay(25)">
           <span class="cal-day-num">25</span>
           <span class="cal-holiday">🥮 中秋節</span>
         </div>
         
-        <div class="cal-day-cell" onclick="clickCalendarDay(26)"><span class="cal-day-num">26</span></div>
-        <div class="cal-day-cell" onclick="clickCalendarDay(27)"><span class="cal-day-num">27</span></div>
+        <div class="cal-day-cell" id="cal-day-26" onclick="clickCalendarDay(26)"><span class="cal-day-num">26</span></div>
+        <div class="cal-day-cell" id="cal-day-27" onclick="clickCalendarDay(27)"><span class="cal-day-num">27</span></div>
         
-        <div class="cal-day-cell" onclick="clickCalendarDay(28)">
+        <div class="cal-day-cell" id="cal-day-28" onclick="clickCalendarDay(28)">
           <span class="cal-day-num">28</span>
           <span class="cal-holiday">🎓 教師節</span>
         </div>
         
-        <div class="cal-day-cell" onclick="clickCalendarDay(29)"><span class="cal-day-num">29</span></div>
-        <div class="cal-day-cell" onclick="clickCalendarDay(30)"><span class="cal-day-num">30</span></div>
+        <div class="cal-day-cell" id="cal-day-29" onclick="clickCalendarDay(29)"><span class="cal-day-num">29</span></div>
+        <div class="cal-day-cell" id="cal-day-30" onclick="clickCalendarDay(30)"><span class="cal-day-num">30</span></div>
       </div>
     </div>
 
@@ -438,7 +443,6 @@
     let currentImages = [];
     let currentEditingCard = null;
 
-    /* 結構化示範範本庫 */
     const webTemplate = `🌐 [文章或知識標題]
 
 【一、 基本資訊】
@@ -621,7 +625,6 @@
       alert('資料夾看板「' + folderName + '」已成功建立！');
     }
 
-    /* 點擊「+ 新增」時載入結構化示範卡片內容，供使用者自由編輯 */
     function openNewCategoryNote(categoryName) {
       currentEditingCard = null;
       currentImages = [];
@@ -644,10 +647,21 @@
         tpl = webTemplate;
       }
 
+      document.getElementById('noteCalendarDay').value = '';
       document.getElementById('noteTitle').value = defaultTitle;
       document.getElementById('noteContent').innerHTML = tpl.replace(/\n/g, '<br>');
       document.getElementById('editorTargetCategory').value = categoryName;
       switchView('editor', '📝 新增：' + categoryName);
+    }
+
+    /* 📅 點擊行事曆任意日期：帶入詳細地點、時間模板並紀錄日期 */
+    function clickCalendarDay(dayNum) {
+      const dayStr = dayNum < 10 ? '0' + dayNum : '' + dayNum;
+      document.getElementById('noteCalendarDay').value = dayNum; // 暫存日期數字
+      document.getElementById('noteTitle').value = `⏰ [9/${dayStr} 活動/會議提醒]`;
+      document.getElementById('noteContent').innerHTML = `⏰ 2026/09/${dayStr} 活動與會議行程<br><br><b>【一、 基本資訊與地點】</b><br>* 時間：2026 / 09 / ${dayStr} (三) 10:00 - 11:00<br>* 地點：會議室 A / 線上 Teams (連結：https://...)<br>* 主持人：專案負責人<br><br><b>【二、 內容摘要與待辦】</b><br>[ ] 準備討論資料與 PPT 簡報檔`;
+      document.getElementById('editorTargetCategory').value = '☑️ 待辦事項';
+      switchView('editor', `📝 新增 9/${dayStr} 行程提醒`);
     }
 
     window.addEventListener('popstate', (e) => {
@@ -667,14 +681,6 @@
 
     function formatDoc(cmd, value = null) {
       document.execCommand(cmd, false, value);
-    }
-
-    function clickCalendarDay(dayNum) {
-      const dayStr = dayNum < 10 ? '0' + dayNum : '' + dayNum;
-      document.getElementById('noteTitle').value = `⏰ [9/${dayStr} 活動/會議提醒]`;
-      document.getElementById('noteContent').innerHTML = `⏰ 2026/09/${dayStr} 活動與會議行程<br><br><b>【一、 基本資訊與地點】</b><br>* 時間：2026 / 09 / ${dayStr} (三) 10:00 - 11:00<br>* 地點：會議室 A<br><br><b>【二、 內容摘要與待辦】</b><br>[ ] 準備討論資料`;
-      document.getElementById('editorTargetCategory').value = '☑️ 待辦事項';
-      switchView('editor', `📝 新增 9/${dayStr} 行程提醒`);
     }
 
     function initDragAndDrop() {
@@ -715,14 +721,13 @@
     }
 
     function openQuickAddModal() {
-      const cat = prompt('請選擇分類數字 (1:AI智庫, 2:工作任務, 3:待辦事項, 4:學習筆記, 5:網路知識)：', '5');
+      const cat = prompt('請選擇分類數字 (1:AI智庫, 2:工作任務, 3:待辦事項, 4:學習筆記, 5:網路知識)：', '3');
       const title = prompt('請輸入卡片標題 (可加 #Tag)：');
       if (!title) return;
 
-      let targetListId = 'list-web';
+      let targetListId = 'list-todo';
       if (cat === '1') targetListId = 'list-ai';
       else if (cat === '2') targetListId = 'list-work';
-      else if (cat === '3') targetListId = 'list-todo';
       else if (cat === '4') targetListId = 'list-learn';
 
       const card = document.createElement('div');
@@ -950,10 +955,12 @@
       }
     }
 
+    /* 💾 儲存筆記：同時連動「看板卡片」與「行事曆行程標籤」 */
     function saveEditorNote() {
       const title = document.getElementById('noteTitle').value || '未命名筆記';
       const content = document.getElementById('noteContent').innerHTML;
       const targetCategory = document.getElementById('editorTargetCategory').value;
+      const dayNum = document.getElementById('noteCalendarDay').value;
 
       let targetListId = 'list-web';
       if (targetCategory.includes('AI')) targetListId = 'list-ai';
@@ -975,10 +982,27 @@
         
         const targetList = document.getElementById(targetListId);
         if (targetList) targetList.prepend(card);
-        alert('筆記「' + title + '」已儲存至看板！');
+
+        // 如果包含行事曆日期，自動同步貼到行事曆對應格子中
+        if (dayNum) {
+          const calCell = document.getElementById('cal-day-' + dayNum);
+          if (calCell) {
+            const eventTag = document.createElement('span');
+            eventTag.className = 'cal-event-tag';
+            eventTag.innerText = title.replace(/^⏰\s*\[\d+\/\d+\s*/, '').replace(/\]$/, ''); // 簡化短標題
+            eventTag.onclick = (e) => {
+              e.stopPropagation();
+              openNoteInEditor(title, content, targetCategory, card);
+            };
+            calCell.appendChild(eventTag);
+          }
+        }
+
+        alert('筆記「' + title + '」已同步儲存至看板與行事曆！');
       }
 
       currentEditingCard = null;
+      document.getElementById('noteCalendarDay').value = '';
       showAllBoards();
       switchView('dashboard', '🌐 全部看板模式');
     }
