@@ -39,12 +39,12 @@
     /* 主區域 */
     .main-container { flex: 1; display: flex; flex-direction: column; gap: 12px; overflow: hidden; position: relative; }
     
-    /* 視窗切換分頁 Header */
+    /* 視窗切換 Bar */
     .view-toggle-bar { display: flex; gap: 10px; border-bottom: 1px solid var(--border-color); padding-bottom: 8px; }
     .tab-btn { padding: 6px 16px; border-radius: 6px; border: 1px solid var(--border-color); background: white; cursor: pointer; font-weight: bold; font-size: 0.9rem; color: var(--text-sub); }
     .tab-btn.active { background: var(--accent-green); color: white; border-color: var(--accent-green); }
 
-    /* 視窗 1：看板檢視 */
+    /* 視窗 1：看板模式 */
     .dashboard-view { flex: 1; display: flex; flex-direction: column; gap: 12px; overflow: hidden; }
     .top-input-bar { background: var(--bg-panel); border-radius: 12px; padding: 10px 16px; display: flex; align-items: center; gap: 10px; border: 1px solid var(--border-color); }
     .select-category { padding: 8px 12px; border-radius: 8px; border: 1px solid var(--border-color); background: white; font-weight: bold; outline: none; }
@@ -64,7 +64,7 @@
     .tags-wrapper { display: flex; gap: 6px; flex-wrap: wrap; }
     .tag-badge { background: #f0ebd8; color: #6b5e43; font-size: 0.75rem; padding: 2px 8px; border-radius: 12px; font-weight: bold; }
 
-    /* 視窗 2：完整筆記編輯器 (包含語音與圖片上傳) */
+    /* 視窗 2：筆記編輯器 */
     .editor-view { display: none; flex: 1; flex-direction: column; background: var(--bg-panel); border-radius: 12px; padding: 20px; border: 1px solid var(--border-color); overflow-y: auto; }
     .editor-tools { display: flex; gap: 8px; margin-bottom: 12px; flex-wrap: wrap; justify-content: flex-end; }
     .btn-tool { background: #ffffff; border: 1px solid var(--border-color); padding: 6px 14px; border-radius: 6px; cursor: pointer; font-weight: bold; font-size: 0.85rem; }
@@ -83,7 +83,7 @@
 
     .fab-btn { display: none; position: fixed; bottom: 20px; right: 20px; width: 56px; height: 56px; background: var(--accent-green); color: white; border-radius: 50%; border: none; font-size: 1.8rem; box-shadow: 0 4px 12px rgba(0,0,0,0.25); cursor: pointer; z-index: 99; }
 
-    /* 🏷️ Tag Modal */
+    /* Modal */
     .modal-overlay { display: none; position: fixed; top: 0; left: 0; width: 100vw; height: 100vh; background: rgba(0,0,0,0.3); backdrop-filter: blur(2px); z-index: 999; justify-content: center; align-items: center; }
     .modal-box { background: #ffffff; width: 90%; max-width: 900px; height: 80vh; border-radius: 16px; padding: 20px; display: flex; flex-direction: column; gap: 12px; }
 
@@ -109,17 +109,14 @@
   <!-- 左側選單 -->
   <div class="sidebar" id="sidebar">
     <div class="mascot-box">
-      <!-- 向量畫質、不破圖的草帽藍莓卡皮巴拉 -->
       <svg class="mascot-svg" viewBox="0 0 100 100">
         <ellipse cx="50" cy="60" rx="35" ry="30" fill="#c49a6c" />
         <ellipse cx="50" cy="40" rx="25" ry="20" fill="#c49a6c" />
         <circle cx="40" cy="35" r="3" fill="#2c2a29" />
         <circle cx="60" cy="35" r="3" fill="#2c2a29" />
         <ellipse cx="50" cy="42" rx="4" ry="3" fill="#8c6d46" />
-        <!-- 草帽 -->
         <ellipse cx="50" cy="22" rx="28" ry="6" fill="#e6c875" />
         <path d="M32,22 Q50,5 68,22 Z" fill="#d4b253" />
-        <!-- 藍莓 -->
         <circle cx="50" cy="72" r="10" fill="#4c51bf" />
         <polygon points="50,65 47,68 53,68" fill="#312e81" />
       </svg>
@@ -137,7 +134,8 @@
     <div class="sidebar-section-title" style="margin-top: 10px;">分類看板</div>
     <div class="menu-group">
       <div class="menu-item active" onclick="switchView('dashboard'); toggleSidebar();">🌐 全部看板</div>
-      <div class="menu-item" onclick="switchView('dashboard'); scrollToBoard('dev-board'); toggleSidebar();">💻 進行中專案</div>
+      <div class="menu-item" onclick="switchView('dashboard'); scrollToBoard('ai-board'); toggleSidebar();">🤖 AI 智庫與筆記</div>
+      <div class="menu-item" onclick="switchView('dashboard'); scrollToBoard('work-board'); toggleSidebar();">💼 工作任務</div>
       <div class="menu-item" onclick="switchView('dashboard'); scrollToBoard('todo-board'); toggleSidebar();">☑️ 待辦事項</div>
       <div class="menu-item" onclick="switchView('editor'); toggleSidebar();">📖 學習筆記 (編輯器)</div>
     </div>
@@ -156,30 +154,56 @@
     <div class="dashboard-view" id="view-dashboard">
       <div class="top-input-bar">
         <select id="cardCategory" class="select-category">
-          <option value="💻 進行中專案">💻 進行中專案</option>
+          <option value="🤖 AI 智庫與筆記">🤖 AI 智庫與筆記</option>
+          <option value="💼 工作任務">💼 工作任務</option>
           <option value="☑️ 待辦事項">☑️ 待辦事項</option>
           <option value="📖 學習筆記">📖 學習筆記</option>
         </select>
-        <input type="text" id="quickInput" class="input-quick" placeholder="輸入標題或網址 (結尾可加 #AI工具 #開源)...">
+        <input type="text" id="quickInput" class="input-quick" placeholder="輸入標題或網址 (結尾可加 #AI工具 #Prompt)...">
         <button class="btn-submit" onclick="addCard()">送出卡片</button>
       </div>
 
       <div class="dashboard-grid">
-        <div class="board-card" id="dev-board">
+        <!-- 看板: AI 智庫與筆記 -->
+        <div class="board-card" id="ai-board">
           <div class="board-header">
-            <div class="board-title">💻 進行中專案 <span class="board-count">2</span></div>
+            <div class="board-title">🤖 AI 智庫與筆記 <span class="board-count">1</span></div>
           </div>
-          <div class="card-list" id="list-dev">
-            <div class="item-card" onclick="openNoteInEditor('環境變數管理', '這是環境變數管理的詳細內容...')">
+          <div class="card-list" id="list-ai">
+            <div class="item-card" onclick="openNoteInEditor('ChatGPT 萬用文案潤飾 Prompt', aiTemplate)">
               <div class="item-card-header">
                 <input type="checkbox">
-                <span class="item-card-title">環境變數管理</span>
+                <span class="item-card-title">ChatGPT 萬用文案潤飾 Prompt</span>
               </div>
-              <div class="tags-wrapper"><span class="tag-badge">開源</span><span class="tag-badge">AI提示詞</span></div>
+              <div class="tags-wrapper"><span class="tag-badge">AI工具</span><span class="tag-badge">Prompt</span></div>
             </div>
           </div>
         </div>
 
+        <!-- 看板: 工作任務 -->
+        <div class="board-card" id="work-board">
+          <div class="board-header">
+            <div class="board-title">💼 工作任務 <span class="board-count">2</span></div>
+          </div>
+          <div class="card-list" id="list-work">
+            <div class="item-card" onclick="openNoteInEditor('跨部門會議紀錄與進度追蹤', '【一、 核心目標與結論】\n* 本次會議重點：系統上線時程確認\n\n【二、 Action Items】\n[ ] 確定環境變數設定檔 (負責人: Lucky)')">
+              <div class="item-card-header">
+                <input type="checkbox">
+                <span class="item-card-title">跨部門會議紀錄與進度追蹤</span>
+              </div>
+              <div class="tags-wrapper"><span class="tag-badge">會議</span><span class="tag-badge">專案追蹤</span></div>
+            </div>
+            <div class="item-card" onclick="openNoteInEditor('月報撰寫標準 SOP', '1. 撈取後端數據資料\n2. 匯入 Excel 製作折線圖\n3. 填寫關鍵指標摘要')">
+              <div class="item-card-header">
+                <input type="checkbox">
+                <span class="item-card-title">月報撰寫標準 SOP</span>
+              </div>
+              <div class="tags-wrapper"><span class="tag-badge">SOP</span></div>
+            </div>
+          </div>
+        </div>
+
+        <!-- 看板: 待辦事項 -->
         <div class="board-card" id="todo-board">
           <div class="board-header">
             <div class="board-title">☑️ 待辦事項 <span class="board-count">1</span></div>
@@ -197,17 +221,18 @@
       </div>
     </div>
 
-    <!-- 視窗 2：筆記詳細編輯器 (包含語音輸入與圖片上傳) -->
+    <!-- 視窗 2：筆記詳細編輯器 -->
     <div class="editor-view" id="view-editor">
       <div class="editor-tools">
         <button class="btn-tool btn-voice" id="voiceBtn" onclick="toggleVoiceRecognition()">🎙️ 語音輸入</button>
         <button class="btn-tool" onclick="document.getElementById('imageInput').click()">🖼️ 上傳圖片</button>
         <input type="file" id="imageInput" accept="image/*" style="display: none;" onchange="handleImageUpload(event)">
+        <button class="btn-tool" onclick="applyAiTemplate()">🤖 帶入 AI 範本</button>
         <button class="btn-tool" onclick="applyEnglishTemplate()">🔤 帶入英文範本</button>
         <button class="btn-tool" onclick="applyWorkTemplate()">📋 帶入工作範本</button>
         <button class="btn-tool" onclick="saveEditorNote()">💾 儲存筆記</button>
       </div>
-      <input type="text" id="noteTitle" class="input-title" value="📖 我的學習筆記" placeholder="請輸入筆記標題...">
+      <input type="text" id="noteTitle" class="input-title" value="🤖 AI 提示詞 Prompt 庫" placeholder="請輸入筆記標題...">
       <textarea id="noteContent" class="input-content" placeholder="在此處自由書寫或使用語音輸入..."></textarea>
 
       <div class="image-section">
@@ -220,7 +245,7 @@
 
   <button class="fab-btn" onclick="mobileQuickAdd()">+</button>
 
-  <!-- 🏷️ Tag Modal -->
+  <!-- Tag Modal -->
   <div class="modal-overlay" id="tagModal">
     <div class="modal-box">
       <div style="display:flex;justify-content:space-between;">
@@ -228,15 +253,57 @@
         <button onclick="closeTagModal()" style="border:none;background:none;font-size:1.2rem;">✕</button>
       </div>
       <div class="tag-cloud-box">
-        <span class="tag-badge">開源</span>
-        <span class="tag-badge">AI提示詞</span>
-        <span class="tag-badge">前端開發</span>
+        <span class="tag-badge">AI工具</span>
+        <span class="tag-badge">Prompt</span>
+        <span class="tag-badge">會議</span>
+        <span class="tag-badge">SOP</span>
       </div>
     </div>
   </div>
 
   <script>
     let currentImages = [];
+
+    const aiTemplate = `🤖 [AI 工具與用途] (例如：ChatGPT 萬用文案潤飾)
+
+【一、 核心提示詞 (Prompt Template)】
+* 角色設定：你是一位專業的職場溝通專家。
+* 任務目標：幫我潤飾以下內文，使其兼具專業度與道地表達。
+* 輸入內容：[在此貼入原始文字]
+
+【二、 適用模型與參數】
+* 最佳工具：Gemini / ChatGPT / Claude
+* 建議語氣：Professional & Polite
+
+【三、 優秀輸出範例紀錄】
+* AI 回覆摘要：[在此貼入 AI 的最佳答案]`;
+
+    const workTemplate = `📌 [會議/專案名稱] 紀錄
+
+【一、 核心目標與結論】
+* 本次要解決的核心問題：
+* 最終決議與共識：
+
+【二、 Action Items (待辦追蹤)】
+[ ] 任務 A (負責人 / 預計完成日)
+[ ] 任務 B (負責人 / 預計完成日)
+
+【三、 詳細過程與背景資料】
+* 討論細節：
+* 參考連結與文件：`;
+
+    const englishTemplate = `🔤 [學習主題/情境名稱]
+
+【一、 萬用句型 / 情境短語】
+* 句型 1：I wanted to check in on the status of [事項].
+  (中譯：我想確認一下 [事項] 的目前進度。)
+
+【二、 核心單字與搭配詞】
+* 核心詞：Follow up (v.) 跟進
+  * 例句：I will follow up on this issue.`;
+
+    // 預設寫入 AI 範本
+    document.getElementById('noteContent').value = aiTemplate;
 
     function switchView(viewName) {
       const dash = document.getElementById('view-dashboard');
@@ -263,19 +330,32 @@
       switchView('editor');
     }
 
-    function toggleSidebar() {
-      document.getElementById('sidebar').classList.toggle('open');
+    function applyAiTemplate() {
+      if (confirm('是否帶入 AI 提示詞範本？')) {
+        document.getElementById('noteTitle').value = '🤖 [AI 工具與用途]';
+        document.getElementById('noteContent').value = aiTemplate;
+      }
     }
 
-    function openSearchModal() {
-      const query = prompt('請輸入搜尋關鍵字：');
-      if (query) alert('搜尋：' + query);
+    function applyWorkTemplate() {
+      if (confirm('是否帶入工作會議範本？')) {
+        document.getElementById('noteTitle').value = '📌 [專案/會議名稱] 紀錄';
+        document.getElementById('noteContent').value = workTemplate;
+      }
     }
 
+    function applyEnglishTemplate() {
+      if (confirm('是否帶入英文學習範本？')) {
+        document.getElementById('noteTitle').value = '🔤 [學習主題/情境名稱]';
+        document.getElementById('noteContent').value = englishTemplate;
+      }
+    }
+
+    function toggleSidebar() { document.getElementById('sidebar').classList.toggle('open'); }
+    function openSearchModal() { const query = prompt('請輸入搜尋關鍵字：'); if (query) alert('搜尋：' + query); }
     function openTagModal() { document.getElementById('tagModal').style.display = 'flex'; }
     function closeTagModal() { document.getElementById('tagModal').style.display = 'none'; }
 
-    /* 📷 圖片上傳 */
     function handleImageUpload(event) {
       const file = event.target.files[0];
       if (file) {
@@ -299,7 +379,6 @@
       });
     }
 
-    /* 🎙️ 語音轉文字 */
     let recognition = null;
     let isRecording = false;
     if ('webkitSpeechRecognition' in window || 'SpeechRecognition' in window) {
@@ -336,13 +415,26 @@
     }
 
     function addCard() {
+      const category = document.getElementById('cardCategory').value;
       const text = document.getElementById('quickInput').value.trim();
       if (!text) return;
+
+      let targetListId = 'list-ai';
+      if (category.includes('工作')) targetListId = 'list-work';
+      else if (category.includes('待辦')) targetListId = 'list-todo';
+
       const card = document.createElement('div');
       card.className = 'item-card';
+      card.onclick = () => openNoteInEditor(text, '');
       card.innerHTML = `<div class="item-card-header"><input type="checkbox"><span class="item-card-title">${text}</span></div>`;
-      document.getElementById('list-dev').prepend(card);
+      document.getElementById(targetListId).prepend(card);
       document.getElementById('quickInput').value = '';
+    }
+
+    function saveEditorNote() {
+      const title = document.getElementById('noteTitle').value || '未命名筆記';
+      alert('筆記「' + title + '」已成功儲存！');
+      switchView('dashboard');
     }
 
     function mobileQuickAdd() {
