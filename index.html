@@ -24,17 +24,28 @@
     .mobile-header h2 { font-size: 1.1rem; color: var(--accent-green); display: flex; align-items: center; gap: 8px; }
     .btn-hamburger { background: transparent; border: none; font-size: 1.4rem; cursor: pointer; }
 
-    .sidebar { width: 230px; background: var(--bg-panel); border-radius: 12px; padding: 16px 12px; display: flex; flex-direction: column; gap: 10px; border: 1px solid var(--border-color); overflow-y: auto; z-index: 100; transition: transform 0.3s ease; }
-    .mascot-box { display: flex; align-items: center; gap: 10px; padding: 8px 6px; border-bottom: 1px solid var(--border-color); margin-bottom: 4px; }
-    .mascot-svg { width: 42px; height: 42px; }
-    .mascot-title { font-size: 1.1rem; font-weight: bold; color: var(--accent-green); }
+    /* 側邊欄與可收折（Collapse）樣式 */
+    .sidebar { width: 230px; background: var(--bg-panel); border-radius: 12px; padding: 16px 12px; display: flex; flex-direction: column; gap: 10px; border: 1px solid var(--border-color); overflow-y: auto; z-index: 100; transition: width 0.3s ease, padding 0.3s ease, transform 0.3s ease; position: relative; }
+    .sidebar.collapsed { width: 64px; padding: 16px 8px; }
+    .sidebar.collapsed .mascot-title,
+    .sidebar.collapsed .sidebar-section-title,
+    .sidebar.collapsed .menu-text,
+    .sidebar.collapsed .btn-side-add-text { display: none; }
+    .sidebar.collapsed .menu-item { justify-content: center; padding: 10px 0; }
+    .sidebar.collapsed .btn-side-add { padding: 10px 0; }
 
-    .sidebar-section-title { font-size: 0.8rem; color: var(--text-sub); font-weight: bold; margin-top: 6px; margin-bottom: 2px; padding-left: 8px; }
+    .btn-toggle-collapse { position: absolute; top: 12px; right: 10px; background: transparent; border: none; font-size: 0.9rem; cursor: pointer; color: var(--text-sub); }
+    
+    .mascot-box { display: flex; align-items: center; gap: 10px; padding: 8px 6px; border-bottom: 1px solid var(--border-color); margin-bottom: 4px; }
+    .mascot-svg { width: 38px; height: 38px; flex-shrink: 0; }
+    .mascot-title { font-size: 1.1rem; font-weight: bold; color: var(--accent-green); white-space: nowrap; }
+
+    .sidebar-section-title { font-size: 0.8rem; color: var(--text-sub); font-weight: bold; margin-top: 6px; margin-bottom: 2px; padding-left: 8px; white-space: nowrap; }
     .menu-group { display: flex; flex-direction: column; gap: 4px; }
-    .menu-item { padding: 8px 12px; border-radius: 8px; cursor: pointer; color: var(--text-main); font-size: 0.9rem; font-weight: 500; display: flex; align-items: center; gap: 8px; }
+    .menu-item { padding: 8px 12px; border-radius: 8px; cursor: pointer; color: var(--text-main); font-size: 0.9rem; font-weight: 500; display: flex; align-items: center; gap: 8px; white-space: nowrap; }
     .menu-item:hover, .menu-item.active { background: #eee9e0; color: var(--accent-green); font-weight: bold; }
     
-    .btn-side-add { background: var(--accent-green); color: white; border: none; padding: 10px; border-radius: 8px; font-weight: bold; font-size: 0.9rem; cursor: pointer; display: flex; align-items: center; justify-content: center; gap: 6px; box-shadow: 0 2px 6px rgba(59,90,69,0.2); margin: 4px 0; }
+    .btn-side-add { background: var(--accent-green); color: white; border: none; padding: 10px; border-radius: 8px; font-weight: bold; font-size: 0.9rem; cursor: pointer; display: flex; align-items: center; justify-content: center; gap: 6px; box-shadow: 0 2px 6px rgba(59,90,69,0.2); margin: 4px 0; white-space: nowrap; }
     .btn-side-add:hover { opacity: 0.9; }
 
     .menu-item.export-btn { color: var(--accent-blue); background: #e0e7ff; margin-top: 2px; }
@@ -87,7 +98,7 @@
     .image-preview-box img { width: 100%; height: 100%; object-fit: cover; }
     .btn-delete-img { position: absolute; top: 2px; right: 2px; background: rgba(168,72,66,0.85); color: white; border: none; border-radius: 50%; width: 20px; height: 20px; cursor: pointer; }
 
-    /* 📅 行事曆 View 樣式 */
+    /* 📅 行事曆 View 樣式 (電腦與手機版雙重優化) */
     .calendar-view { display: none; flex: 1; flex-direction: column; background: var(--bg-panel); border-radius: 12px; padding: 20px; border: 1px solid var(--border-color); overflow-y: auto; gap: 15px; }
     .calendar-header { display: flex; justify-content: space-between; align-items: center; border-bottom: 1px solid var(--border-color); padding-bottom: 10px; }
     .calendar-grid { display: grid; grid-template-columns: repeat(7, 1fr); gap: 8px; text-align: center; }
@@ -108,13 +119,29 @@
     .export-option-item { display: flex; align-items: center; gap: 10px; font-size: 0.95rem; cursor: pointer; }
     .export-option-item input { width: 18px; height: 18px; cursor: pointer; }
 
+    /* 📱 手機版專屬美化調整 */
     @media (max-width: 768px) {
       body { flex-direction: column; padding: 8px; gap: 8px; }
       .mobile-header { display: flex; }
       .sidebar { position: fixed; top: 0; left: 0; height: 100vh; width: 260px; transform: translateX(-100%); box-shadow: 4px 0 15px rgba(0,0,0,0.1); }
       .sidebar.open { transform: translateX(0); }
+      .sidebar.collapsed { width: 260px; padding: 16px 12px; }
+      .sidebar.collapsed .mascot-title,
+      .sidebar.collapsed .sidebar-section-title,
+      .sidebar.collapsed .menu-text,
+      .sidebar.collapsed .btn-side-add-text { display: inline; }
+      .btn-toggle-collapse { display: none; }
+      
       .dashboard-grid { grid-template-columns: 1fr; }
       .fab-btn { display: flex; justify-content: center; align-items: center; }
+
+      /* 手機版行事曆精緻微調 */
+      .calendar-view { padding: 12px; gap: 10px; }
+      .calendar-grid { gap: 4px; }
+      .cal-day-header { padding: 4px; font-size: 0.75rem; }
+      .cal-day-cell { min-height: 58px; padding: 4px; gap: 2px; }
+      .cal-day-num { font-size: 0.75rem; }
+      .cal-holiday, .cal-event-tag { font-size: 0.65rem; padding: 1px 2px; }
     }
   </style>
 </head>
@@ -132,8 +159,10 @@
     <button class="btn-hamburger" onclick="toggleSidebar()">☰</button>
   </div>
 
-  <!-- 左側選單 -->
+  <!-- 左側選單 (支援開合收折) -->
   <div class="sidebar" id="sidebar">
+    <button class="btn-toggle-collapse" id="collapseBtn" onclick="toggleSidebarCollapse()" title="收起/展開側邊欄">◀</button>
+
     <div class="mascot-box">
       <svg class="mascot-svg" viewBox="0 0 100 100">
         <g fill="#3b5a45">
@@ -153,24 +182,25 @@
       <div class="mascot-title">Lucky Note</div>
     </div>
 
-    <button class="btn-side-add" onclick="openQuickAddModal(); toggleSidebar();">➕ 快速新增卡片</button>
+    <button class="btn-side-add" onclick="openQuickAddModal(); toggleSidebar();">
+      ➕ <span class="btn-side-add-text">快速新增卡片</span>
+    </button>
 
     <div class="sidebar-section-title">快速跳轉</div>
     <div class="menu-group">
-      <div class="menu-item" onclick="openSearchModal(); toggleSidebar();">🔍 搜尋</div>
-      <div class="menu-item" onclick="openTagModal(); toggleSidebar();">🏷️ Tag 瀏覽</div>
-      <div class="menu-item" id="menu-cal" onclick="switchView('calendar', '📅 2026年 9月 行事曆'); updateMenuActive('menu-cal'); toggleSidebar();">📅 行事曆檢視</div>
-      <div class="menu-item" onclick="alert('收件匣：集中管理未歸類網址與筆記'); toggleSidebar();">📥 收件匣</div>
-      <div class="menu-item export-btn" onclick="openExportModal(); toggleSidebar();">📥 匯出資料 (自訂/全站)</div>
+      <div class="menu-item" onclick="openSearchModal(); toggleSidebar();">🔍 <span class="menu-text">搜尋</span></div>
+      <div class="menu-item" onclick="openTagModal(); toggleSidebar();">🏷️ <span class="menu-text">Tag 瀏覽</span></div>
+      <div class="menu-item" id="menu-cal" onclick="switchView('calendar', '📅 2026年 9月 行事曆'); updateMenuActive('menu-cal'); toggleSidebar();">📅 <span class="menu-text">行事曆檢視</span></div>
+      <div class="menu-item export-btn" onclick="openExportModal(); toggleSidebar();">📥 <span class="menu-text">匯出資料 (自訂/全站)</span></div>
     </div>
 
     <div class="sidebar-section-title">分類看板與編輯</div>
     <div class="menu-group">
-      <div class="menu-item active" id="menu-all" onclick="switchView('dashboard', '🌐 全部看板'); updateMenuActive('menu-all'); toggleSidebar();">🌐 全部看板</div>
-      <div class="menu-item" id="menu-ai" onclick="openCategoryEditor('AI'); updateMenuActive('menu-ai'); toggleSidebar();">🤖 AI 智庫與筆記</div>
-      <div class="menu-item" id="menu-work" onclick="openCategoryEditor('Work'); updateMenuActive('menu-work'); toggleSidebar();">💼 工作任務</div>
-      <div class="menu-item" id="menu-todo" onclick="openCategoryEditor('Todo'); updateMenuActive('menu-todo'); toggleSidebar();">☑️ 待辦事項</div>
-      <div class="menu-item" id="menu-learn" onclick="openCategoryEditor('Learn'); updateMenuActive('menu-learn'); toggleSidebar();">📖 學習筆記 (編輯器)</div>
+      <div class="menu-item active" id="menu-all" onclick="switchView('dashboard', '🌐 全部看板'); updateMenuActive('menu-all'); toggleSidebar();">🌐 <span class="menu-text">全部看板</span></div>
+      <div class="menu-item" id="menu-ai" onclick="openCategoryEditor('AI'); updateMenuActive('menu-ai'); toggleSidebar();">🤖 <span class="menu-text">AI 智庫與筆記</span></div>
+      <div class="menu-item" id="menu-work" onclick="openCategoryEditor('Work'); updateMenuActive('menu-work'); toggleSidebar();">💼 <span class="menu-text">工作任務</span></div>
+      <div class="menu-item" id="menu-todo" onclick="openCategoryEditor('Todo'); updateMenuActive('menu-todo'); toggleSidebar();">☑️ <span class="menu-text">待辦事項</span></div>
+      <div class="menu-item" id="menu-learn" onclick="openCategoryEditor('Learn'); updateMenuActive('menu-learn'); toggleSidebar();">📖 <span class="menu-text">學習筆記 (編輯器)</span></div>
     </div>
   </div>
 
@@ -312,11 +342,11 @@
       </div>
     </div>
 
-    <!-- 視窗 3：📅 行事曆 (點擊格子直接編輯) -->
+    <!-- 視窗 3：📅 行事曆 -->
     <div class="calendar-view" id="view-calendar">
       <div class="calendar-header">
         <h3 style="color:var(--accent-green);">📅 2026 年 9 月行程表</h3>
-        <button class="btn-submit" onclick="clickCalendarDay(16)">+ 新增會議/活動提醒</button>
+        <button class="btn-submit" onclick="clickCalendarDay(16)">+ 新增行程提醒</button>
       </div>
       <div class="calendar-grid">
         <div class="cal-day-header">日</div><div class="cal-day-header">一</div><div class="cal-day-header">二</div><div class="cal-day-header">三</div><div class="cal-day-header">四</div><div class="cal-day-header">五</div><div class="cal-day-header">六</div>
@@ -344,7 +374,7 @@
         
         <div class="cal-day-cell" onclick="clickCalendarDay(16)">
           <span class="cal-day-num">16</span>
-          <span class="cal-event-tag" onclick="event.stopPropagation(); openNoteInEditor('9/16與Headquarter.ai討論會', meetingTemplate, '☑️ 待辦事項')">Headquarter討論會</span>
+          <span class="cal-event-tag" onclick="event.stopPropagation(); openNoteInEditor('9/16與Headquarter.ai討論會', meetingTemplate, '☑️ 待辦事項')">HQ討論會</span>
         </div>
         
         <div class="cal-day-cell" onclick="clickCalendarDay(17)"><span class="cal-day-num">17</span></div>
@@ -452,11 +482,22 @@
 【一、 任務細節說明】
 * 相關連結/資料：`;
 
+    /* ◀ 收折/展開側邊欄 */
+    function toggleSidebarCollapse() {
+      const sidebar = document.getElementById('sidebar');
+      const collapseBtn = document.getElementById('collapseBtn');
+      sidebar.classList.toggle('collapsed');
+      if (sidebar.classList.contains('collapsed')) {
+        collapseBtn.innerText = '▶';
+      } else {
+        collapseBtn.innerText = '◀';
+      }
+    }
+
     document.addEventListener('DOMContentLoaded', () => {
       initDragAndDrop();
     });
 
-    /* 📅 點擊行事曆任意日期格子：帶入該日期的範本並切換至編輯器 */
     function clickCalendarDay(dayNum) {
       const dayStr = dayNum < 10 ? '0' + dayNum : '' + dayNum;
       document.getElementById('noteTitle').value = `⏰ [9/${dayStr} 活動/會議提醒]`;
@@ -474,7 +515,6 @@
 
     function initDragAndDrop() {
       const lists = document.querySelectorAll('.card-list');
-      
       lists.forEach(list => {
         list.addEventListener('dragover', e => {
           e.preventDefault();
@@ -491,12 +531,8 @@
     }
 
     function bindCardDragEvents(card) {
-      card.addEventListener('dragstart', () => {
-        card.classList.add('dragging');
-      });
-      card.addEventListener('dragend', () => {
-        card.classList.remove('dragging');
-      });
+      card.addEventListener('dragstart', () => card.classList.add('dragging'));
+      card.addEventListener('dragend', () => card.classList.remove('dragging'));
     }
 
     document.querySelectorAll('.item-card').forEach(bindCardDragEvents);
