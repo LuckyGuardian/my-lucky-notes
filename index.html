@@ -56,16 +56,15 @@
     .btn-board-add { background: #ffffff; border: 1px solid var(--border-color); padding: 3px 10px; border-radius: 6px; font-size: 0.8rem; font-weight: bold; cursor: pointer; color: var(--accent-green); transition: 0.2s; }
     .btn-board-add:hover { background: var(--accent-green); color: white; border-color: var(--accent-green); }
 
-    .card-list { padding: 12px; overflow-y: auto; flex: 1; display: flex; flex-direction: column; gap: 10px; }
+    .card-list { padding: 12px; overflow-y: auto; flex: 1; display: flex; flex-direction: column; gap: 10px; min-height: 100px; }
     
-    .item-card { background: var(--bg-card); border-radius: 8px; border: 1px solid var(--border-color); padding: 12px; display: flex; flex-direction: column; gap: 8px; cursor: pointer; transition: 0.2s; position: relative; }
+    /* 拖曳卡片樣式 */
+    .item-card { background: var(--bg-card); border-radius: 8px; border: 1px solid var(--border-color); padding: 12px; display: flex; flex-direction: column; gap: 8px; cursor: grab; transition: 0.2s; user-select: none; }
+    .item-card:active { cursor: grabbing; }
+    .item-card.dragging { opacity: 0.4; border: 2px dashed var(--accent-green); }
     .item-card:hover { border-color: var(--accent-green); box-shadow: 0 2px 8px rgba(0,0,0,0.05); }
     .item-card-header { display: flex; align-items: center; gap: 8px; }
     .item-card-title { font-size: 0.95rem; font-weight: bold; flex: 1; }
-    
-    .card-move-btns { display: flex; gap: 2px; }
-    .btn-move { background: #f0ebd8; border: 1px solid var(--border-color); color: var(--text-sub); border-radius: 4px; padding: 1px 6px; font-size: 0.75rem; cursor: pointer; }
-    .btn-move:hover { background: var(--accent-green); color: white; }
 
     .tags-wrapper { display: flex; gap: 6px; flex-wrap: wrap; }
     .tag-badge { background: #f0ebd8; color: #6b5e43; font-size: 0.75rem; padding: 2px 8px; border-radius: 12px; font-weight: bold; }
@@ -90,7 +89,6 @@
     .image-preview-box img { width: 100%; height: 100%; object-fit: cover; }
     .btn-delete-img { position: absolute; top: 2px; right: 2px; background: rgba(168,72,66,0.85); color: white; border: none; border-radius: 50%; width: 20px; height: 20px; cursor: pointer; }
 
-    /* 📅 行事曆 View 樣式 */
     .calendar-view { display: none; flex: 1; flex-direction: column; background: var(--bg-panel); border-radius: 12px; padding: 20px; border: 1px solid var(--border-color); overflow-y: auto; gap: 15px; }
     .calendar-header { display: flex; justify-content: space-between; align-items: center; border-bottom: 1px solid var(--border-color); padding-bottom: 10px; }
     .calendar-grid { display: grid; grid-template-columns: repeat(7, 1fr); gap: 8px; text-align: center; }
@@ -160,7 +158,7 @@
     <div class="menu-group">
       <div class="menu-item" onclick="openSearchModal(); toggleSidebar();">🔍 搜尋</div>
       <div class="menu-item" onclick="openTagModal(); toggleSidebar();">🏷️ Tag 瀏覽</div>
-      <div class="menu-item" id="menu-cal" onclick="switchView('calendar', '📅 2026年 9月 行事曆 (含國定假日)'); updateMenuActive('menu-cal'); toggleSidebar();">📅 行事曆檢視</div>
+      <div class="menu-item" id="menu-cal" onclick="switchView('calendar', '📅 2026年 9月 行事曆'); updateMenuActive('menu-cal'); toggleSidebar();">📅 行事曆檢視</div>
       <div class="menu-item" onclick="alert('收件匣：集中管理未歸類網址與筆記'); toggleSidebar();">📥 收件匣</div>
       <div class="menu-item export-btn" onclick="openExportModal(); toggleSidebar();">📥 匯出資料 (自訂/全站)</div>
     </div>
@@ -202,14 +200,10 @@
             <button class="btn-board-add" onclick="openCategoryEditor('AI')">+ 新增</button>
           </div>
           <div class="card-list" id="list-ai">
-            <div class="item-card" onclick="openNoteInEditor('ChatGPT 萬用文案潤飾 Prompt', aiTemplate, '🤖 AI 智庫與筆記', this)">
+            <div class="item-card" draggable="true" onclick="openNoteInEditor('ChatGPT 萬用文案潤飾 Prompt', aiTemplate, '🤖 AI 智庫與筆記', this)">
               <div class="item-card-header">
                 <input type="checkbox" onclick="event.stopPropagation()">
                 <span class="item-card-title">ChatGPT 萬用文案潤飾 Prompt</span>
-                <div class="card-move-btns">
-                  <button class="btn-move" onclick="moveCard(event, this, 'up')">▲</button>
-                  <button class="btn-move" onclick="moveCard(event, this, 'down')">▼</button>
-                </div>
               </div>
               <div class="tags-wrapper"><span class="tag-badge">AI工具</span><span class="tag-badge">Prompt</span></div>
             </div>
@@ -222,14 +216,10 @@
             <button class="btn-board-add" onclick="openCategoryEditor('Work')">+ 新增</button>
           </div>
           <div class="card-list" id="list-work">
-            <div class="item-card" onclick="openNoteInEditor('跨部門會議紀錄與進度追蹤', workTemplate, '💼 工作任務', this)">
+            <div class="item-card" draggable="true" onclick="openNoteInEditor('跨部門會議紀錄與進度追蹤', workTemplate, '💼 工作任務', this)">
               <div class="item-card-header">
                 <input type="checkbox" onclick="event.stopPropagation()">
                 <span class="item-card-title">跨部門會議紀錄與進度追蹤</span>
-                <div class="card-move-btns">
-                  <button class="btn-move" onclick="moveCard(event, this, 'up')">▲</button>
-                  <button class="btn-move" onclick="moveCard(event, this, 'down')">▼</button>
-                </div>
               </div>
               <div class="tags-wrapper"><span class="tag-badge">會議</span><span class="tag-badge">專案追蹤</span></div>
             </div>
@@ -242,36 +232,24 @@
             <button class="btn-board-add" onclick="openCategoryEditor('Todo')">+ 新增</button>
           </div>
           <div class="card-list" id="list-todo">
-            <div class="item-card" onclick="openNoteInEditor('9/16與Headquarter.ai討論會', meetingTemplate, '☑️ 待辦事項', this)">
+            <div class="item-card" draggable="true" onclick="openNoteInEditor('9/16與Headquarter.ai討論會', meetingTemplate, '☑️ 待辦事項', this)">
               <div class="item-card-header">
                 <input type="checkbox" onclick="event.stopPropagation()">
                 <span class="item-card-title">☑️ 9/16與Headquarter.ai討論會</span>
-                <div class="card-move-btns">
-                  <button class="btn-move" onclick="moveCard(event, this, 'up')">▲</button>
-                  <button class="btn-move" onclick="moveCard(event, this, 'down')">▼</button>
-                </div>
               </div>
             </div>
 
-            <div class="item-card" onclick="openNoteInEditor('9/14設定署內Claude', '任務進度：權限申請中...', '☑️ 待辦事項', this)">
+            <div class="item-card" draggable="true" onclick="openNoteInEditor('9/14設定署內Claude', '任務進度：權限申請中...', '☑️ 待辦事項', this)">
               <div class="item-card-header">
                 <input type="checkbox" onclick="event.stopPropagation()">
                 <span class="item-card-title">☑️ 9/14設定署內Claude</span>
-                <div class="card-move-btns">
-                  <button class="btn-move" onclick="moveCard(event, this, 'up')">▲</button>
-                  <button class="btn-move" onclick="moveCard(event, this, 'down')">▼</button>
-                </div>
               </div>
             </div>
 
-            <div class="item-card" onclick="openNoteInEditor('拼圖遊戲開發與測試', '詳細測試步驟...', '☑️ 待辦事項', this)">
+            <div class="item-card" draggable="true" onclick="openNoteInEditor('拼圖遊戲開發與測試', '詳細測試步驟...', '☑️ 待辦事項', this)">
               <div class="item-card-header">
                 <input type="checkbox" onclick="event.stopPropagation()">
                 <span class="item-card-title">拼圖遊戲開發與測試</span>
-                <div class="card-move-btns">
-                  <button class="btn-move" onclick="moveCard(event, this, 'up')">▲</button>
-                  <button class="btn-move" onclick="moveCard(event, this, 'down')">▼</button>
-                </div>
               </div>
               <div class="tags-wrapper"><span class="tag-badge">前端開發</span></div>
             </div>
@@ -284,14 +262,10 @@
             <button class="btn-board-add" onclick="openCategoryEditor('Learn')">+ 新增</button>
           </div>
           <div class="card-list" id="list-learn">
-            <div class="item-card" onclick="openNoteInEditor('英文句型與搭配詞指南', englishTemplate, '📖 學習筆記', this)">
+            <div class="item-card" draggable="true" onclick="openNoteInEditor('英文句型與搭配詞指南', englishTemplate, '📖 學習筆記', this)">
               <div class="item-card-header">
                 <input type="checkbox" onclick="event.stopPropagation()">
                 <span class="item-card-title">英文句型與搭配詞指南</span>
-                <div class="card-move-btns">
-                  <button class="btn-move" onclick="moveCard(event, this, 'up')">▲</button>
-                  <button class="btn-move" onclick="moveCard(event, this, 'down')">▼</button>
-                </div>
               </div>
               <div class="tags-wrapper"><span class="tag-badge">英文學習</span></div>
             </div>
@@ -348,7 +322,7 @@
       </div>
     </div>
 
-    <!-- 視窗 3：📅 行事曆 (含國定假日標註) -->
+    <!-- 視窗 3：📅 行事曆 -->
     <div class="calendar-view" id="view-calendar">
       <div class="calendar-header">
         <h3 style="color:var(--accent-green);">📅 2026 年 9 月行程表</h3>
@@ -424,17 +398,13 @@
 
 【二、 會前準備與攜帶物品】
 [ ] 準備專案簡報檔 (PPT)
-[ ] 帶筆電與簡報簡報筆
-
-【三、 討論大綱與目標】
-* 核心議題：系統上線時程確認`;
+[ ] 帶筆電與簡報筆`;
 
     const aiTemplate = `🤖 [AI 工具與用途] (例如：ChatGPT 萬用文案潤飾)
 
 【一、 核心提示詞 (Prompt Template)】
 * 角色設定：你是一位專業的職場溝通專家。
-* 任務目標：幫我潤飾以下內文，使其兼具專業度與道地表達。
-* 輸入內容：[在此貼入原始文字]`;
+* 任務目標：幫我潤飾以下內文，使其兼具專業度與道地表達。`;
 
     const workTemplate = `📌 [會議/專案名稱] 紀錄
 
@@ -452,24 +422,58 @@
 【一、 任務細節說明】
 * 相關連結/資料：`;
 
+    /* 🖐️ 綁定拖曳功能 (Drag & Drop) */
+    document.addEventListener('DOMContentLoaded', () => {
+      initDragAndDrop();
+    });
+
+    function initDragAndDrop() {
+      const lists = document.querySelectorAll('.card-list');
+      
+      lists.forEach(list => {
+        list.addEventListener('dragover', e => {
+          e.preventDefault();
+          const draggingCard = document.querySelector('.dragging');
+          if (!draggingCard) return;
+          const afterElement = getDragAfterElement(list, e.clientY);
+          if (afterElement == null) {
+            list.appendChild(draggingCard);
+          } else {
+            list.insertBefore(draggingCard, afterElement);
+          }
+        });
+      });
+    }
+
+    function bindCardDragEvents(card) {
+      card.addEventListener('dragstart', () => {
+        card.classList.add('dragging');
+      });
+      card.addEventListener('dragend', () => {
+        card.classList.remove('dragging');
+      });
+    }
+
+    // 初始化舊卡片拖曳
+    document.querySelectorAll('.item-card').forEach(bindCardDragEvents);
+
+    function getDragAfterElement(container, y) {
+      const draggableElements = [...container.querySelectorAll('.item-card:not(.dragging)')];
+      return draggableElements.reduce((closest, child) => {
+        const box = child.getBoundingClientRect();
+        const offset = y - box.top - box.height / 2;
+        if (offset < 0 && offset > closest.offset) {
+          return { offset: offset, element: child };
+        } else {
+          return closest;
+        }
+      }, { offset: Number.NEGATIVE_INFINITY }).element;
+    }
+
     function applyMeetingTemplate() {
       document.getElementById('noteTitle').value = '⏰ [9/16 會議/活動名稱]';
       document.getElementById('noteContent').value = meetingTemplate;
       document.getElementById('editorTargetCategory').value = '💼 工作任務';
-    }
-
-    function moveCard(event, btn, direction) {
-      event.stopPropagation();
-      const card = btn.closest('.item-card');
-      if (!card) return;
-
-      if (direction === 'up') {
-        const prev = card.previousElementSibling;
-        if (prev) card.parentNode.insertBefore(card, prev);
-      } else if (direction === 'down') {
-        const next = card.nextElementSibling;
-        if (next) card.parentNode.insertBefore(next, card);
-      }
     }
 
     function updateMenuActive(menuId) {
@@ -754,8 +758,10 @@
       } else {
         const card = document.createElement('div');
         card.className = 'item-card';
+        card.setAttribute('draggable', 'true');
+        bindCardDragEvents(card);
         card.onclick = () => openNoteInEditor(title, content, targetCategory, card);
-        card.innerHTML = `<div class="item-card-header"><input type="checkbox" onclick="event.stopPropagation()"><span class="item-card-title">${title}</span><div class="card-move-btns"><button class="btn-move" onclick="moveCard(event, this, 'up')">▲</button><button class="btn-move" onclick="moveCard(event, this, 'down')">▼</button></div></div>`;
+        card.innerHTML = `<div class="item-card-header"><input type="checkbox" onclick="event.stopPropagation()"><span class="item-card-title">${title}</span></div>`;
         document.getElementById(targetListId).prepend(card);
         alert('筆記「' + title + '」已儲存至看板！');
       }
@@ -796,8 +802,10 @@
 
       const card = document.createElement('div');
       card.className = 'item-card';
+      card.setAttribute('draggable', 'true');
+      bindCardDragEvents(card);
       card.onclick = () => openNoteInEditor(text, '', category, card);
-      card.innerHTML = `<div class="item-card-header"><input type="checkbox" onclick="event.stopPropagation()"><span class="item-card-title">${text}</span><div class="card-move-btns"><button class="btn-move" onclick="moveCard(event, this, 'up')">▲</button><button class="btn-move" onclick="moveCard(event, this, 'down')">▼</button></div></div>`;
+      card.innerHTML = `<div class="item-card-header"><input type="checkbox" onclick="event.stopPropagation()"><span class="item-card-title">${text}</span></div>`;
       document.getElementById(targetListId).prepend(card);
       document.getElementById('quickInput').value = '';
     }
