@@ -6,33 +6,37 @@
   <title>雅韻個人知識庫</title>
   <style>
     :root {
-      --bg-main: #ecefe6;       /* 淡綠宣紙底色 */
-      --bg-panel: rgba(245, 247, 242, 0.88); /* 透光面板 */
-      --bg-card: rgba(255, 255, 255, 0.9);  /* 白色卡片 */
+      --bg-main: #f7f5f0;       /* 乾淨素雅暖米白底色 */
+      --bg-panel: rgba(255, 255, 255, 0.92); /* 極簡透光白面板 */
+      --bg-card: #ffffff;       /* 純白卡片 */
       --accent-green: #3b5a45;   /* 松柏綠 */
       --accent-blue: #2b5b84;    /* 典雅藍 */
-      --accent-purple: #6b4c9a;  /* 紫藤色 */
-      --accent-red: #a84842;     /* 朱砂紅 */
-      --text-main: #2b332c;     /* 墨綠黑字體 */
-      --text-sub: #5c665e;      /* 灰綠字體 */
-      --border-color: rgba(180, 195, 175, 0.6);
+      --text-main: #2b332c;     /* 沉穩字體色 */
+      --text-sub: #6e776f;      /* 灰綠字體 */
+      --border-color: #e5e0d8;  /* 柔和細邊框 */
     }
 
     * { box-sizing: border-box; margin: 0; padding: 0; font-family: "Microsoft JhengHei", "微軟正黑體", sans-serif; }
-    body { display: flex; height: 100vh; background: var(--bg-main) url('https://i.imgur.com/8Q8N4Zb.png') center/cover no-repeat; color: var(--text-main); overflow: hidden; padding: 12px; gap: 12px; }
+    body { display: flex; height: 100vh; background-color: var(--bg-main); color: var(--text-main); overflow: hidden; padding: 12px; gap: 12px; }
 
     /* 左側導覽列 */
-    .sidebar { width: 220px; background: var(--bg-panel); backdrop-filter: blur(10px); border-radius: 12px; padding: 18px 12px; display: flex; flex-direction: column; gap: 15px; border: 1px solid var(--border-color); overflow-y: auto; }
-    .sidebar-section-title { font-size: 0.8rem; color: var(--text-sub); font-weight: bold; margin-bottom: 6px; padding-left: 8px; }
+    .sidebar { width: 230px; background: var(--bg-panel); border-radius: 12px; padding: 16px 12px; display: flex; flex-direction: column; gap: 12px; border: 1px solid var(--border-color); overflow-y: auto; box-shadow: 0 2px 10px rgba(0,0,0,0.02); }
+    
+    /* 水豚吉祥物標題區 */
+    .mascot-box { display: flex; align-items: center; gap: 10px; padding: 8px 6px; border-bottom: 1px solid var(--border-color); margin-bottom: 4px; }
+    .mascot-img { width: 50px; height: 50px; border-radius: 50%; object-fit: cover; border: 2px solid var(--border-color); }
+    .mascot-title { font-size: 1.05rem; font-weight: bold; color: var(--accent-green); }
+
+    .sidebar-section-title { font-size: 0.8rem; color: var(--text-sub); font-weight: bold; margin-bottom: 4px; padding-left: 8px; }
     .menu-group { display: flex; flex-direction: column; gap: 4px; }
     .menu-item { padding: 8px 12px; border-radius: 8px; cursor: pointer; color: var(--text-main); font-size: 0.9rem; font-weight: 500; display: flex; align-items: center; gap: 8px; transition: 0.2s; }
-    .menu-item:hover, .menu-item.active { background: rgba(220, 228, 215, 0.8); color: var(--accent-green); font-weight: bold; }
+    .menu-item:hover, .menu-item.active { background: #eee9e0; color: var(--accent-green); font-weight: bold; }
     
     /* 右側主內容區 */
     .main-container { flex: 1; display: flex; flex-direction: column; gap: 12px; overflow: hidden; }
 
     /* 頂部快速輸入列 */
-    .top-input-bar { background: var(--bg-panel); backdrop-filter: blur(10px); border-radius: 12px; padding: 10px 16px; display: flex; align-items: center; gap: 10px; border: 1px solid var(--border-color); }
+    .top-input-bar { background: var(--bg-panel); border-radius: 12px; padding: 10px 16px; display: flex; align-items: center; gap: 10px; border: 1px solid var(--border-color); }
     .select-category { padding: 8px 12px; border-radius: 8px; border: 1px solid var(--border-color); background: white; color: var(--text-main); font-weight: bold; outline: none; }
     .input-quick { flex: 1; padding: 8px 14px; border-radius: 8px; border: 1px solid var(--border-color); background: white; outline: none; font-size: 0.95rem; }
     .btn-submit { background: var(--accent-green); color: white; border: none; padding: 8px 16px; border-radius: 8px; cursor: pointer; font-weight: bold; transition: 0.2s; }
@@ -42,37 +46,35 @@
     .dashboard-grid { flex: 1; display: grid; grid-template-columns: 1fr 1fr; gap: 14px; overflow-y: auto; padding-right: 4px; }
 
     /* 看板單元 */
-    .board-card { background: var(--bg-panel); backdrop-filter: blur(8px); border-radius: 12px; border: 1px solid var(--border-color); display: flex; flex-direction: column; max-height: 480px; box-shadow: 0 4px 12px rgba(0,0,0,0.03); }
+    .board-card { background: var(--bg-panel); border-radius: 12px; border: 1px solid var(--border-color); display: flex; flex-direction: column; max-height: 480px; box-shadow: 0 2px 8px rgba(0,0,0,0.02); }
     .board-header { padding: 14px 16px; border-bottom: 1px solid var(--border-color); display: flex; justify-content: space-between; align-items: center; }
     .board-title { display: flex; align-items: center; gap: 8px; font-size: 1.05rem; font-weight: bold; color: var(--accent-green); }
     .board-count { background: #e2e8f0; color: #475569; font-size: 0.75rem; padding: 2px 8px; border-radius: 12px; }
-    .board-tools { display: flex; gap: 6px; }
-    .btn-small { background: white; border: 1px solid var(--border-color); padding: 4px 8px; border-radius: 6px; font-size: 0.75rem; cursor: pointer; color: var(--text-sub); }
-    .btn-small:hover { border-color: var(--accent-green); color: var(--accent-green); }
 
     /* 卡片與 Tag 膠囊標籤 */
     .card-list { padding: 12px; overflow-y: auto; flex: 1; display: flex; flex-direction: column; gap: 10px; }
     .item-card { background: var(--bg-card); border-radius: 8px; border: 1px solid var(--border-color); padding: 12px; display: flex; flex-direction: column; gap: 8px; transition: 0.2s; }
+    .item-card:hover { border-color: var(--accent-green); box-shadow: 0 2px 8px rgba(0,0,0,0.04); }
     .item-card-header { display: flex; align-items: center; gap: 8px; }
     .item-card-header input[type="checkbox"] { width: 16px; height: 16px; cursor: pointer; }
     .item-card-title { font-size: 0.95rem; font-weight: bold; color: var(--text-main); flex: 1; }
     
     .tags-wrapper { display: flex; gap: 6px; flex-wrap: wrap; margin-top: 2px; }
-    .tag-badge { background: #e0e7ff; color: #3730a3; font-size: 0.75rem; padding: 2px 8px; border-radius: 12px; font-weight: bold; }
+    .tag-badge { background: #f0ebd8; color: #6b5e43; font-size: 0.75rem; padding: 2px 8px; border-radius: 12px; font-weight: bold; }
 
     /* 連結預覽區 */
-    .link-preview-box { background: rgba(236, 239, 230, 0.6); border-radius: 6px; padding: 8px 12px; border: 1px solid var(--border-color); display: flex; justify-content: space-between; align-items: center; }
+    .link-preview-box { background: #fdfbf7; border-radius: 6px; padding: 8px 12px; border: 1px solid var(--border-color); display: flex; justify-content: space-between; align-items: center; }
     .link-url { font-size: 0.85rem; color: var(--accent-blue); text-decoration: none; word-break: break-all; }
     .btn-study { background: #e0e7ff; color: #3730a3; border: none; padding: 4px 10px; border-radius: 6px; font-size: 0.75rem; font-weight: bold; cursor: pointer; }
 
-    /* 🏷️ 跨分類 Tag 瀏覽彈出視窗 (Modal) */
-    .modal-overlay { display: none; position: fixed; top: 0; left: 0; width: 100vw; height: 100vh; background: rgba(0,0,0,0.4); backdrop-filter: blur(4px); z-index: 999; justify-content: center; align-items: center; }
-    .modal-box { background: #ffffff; width: 85%; max-width: 900px; height: 80vh; border-radius: 16px; padding: 24px; display: flex; flex-direction: column; gap: 16px; box-shadow: 0 10px 30px rgba(0,0,0,0.15); overflow: hidden; }
+    /* 🏷️ 跨分類 Tag 瀏覽 Modal */
+    .modal-overlay { display: none; position: fixed; top: 0; left: 0; width: 100vw; height: 100vh; background: rgba(0,0,0,0.3); backdrop-filter: blur(2px); z-index: 999; justify-content: center; align-items: center; }
+    .modal-box { background: #ffffff; width: 85%; max-width: 900px; height: 80vh; border-radius: 16px; padding: 24px; display: flex; flex-direction: column; gap: 16px; box-shadow: 0 10px 30px rgba(0,0,0,0.1); overflow: hidden; }
     .modal-header { display: flex; justify-content: space-between; align-items: center; border-bottom: 1px solid #e2e8f0; padding-bottom: 12px; }
     .modal-header h3 { font-size: 1.2rem; color: var(--accent-green); display: flex; align-items: center; gap: 8px; }
     .btn-close { background: transparent; border: none; font-size: 1.4rem; cursor: pointer; color: var(--text-sub); }
 
-    .tag-cloud-box { display: flex; gap: 8px; flex-wrap: wrap; background: #f8fafc; padding: 14px; border-radius: 10px; border: 1px solid #e2e8f0; }
+    .tag-cloud-box { display: flex; gap: 8px; flex-wrap: wrap; background: #fdfbf7; padding: 14px; border-radius: 10px; border: 1px solid #e2e8f0; }
     .tag-pill { background: white; border: 1px solid #cbd5e1; padding: 6px 14px; border-radius: 20px; font-size: 0.85rem; cursor: pointer; transition: 0.2s; font-weight: 500; }
     .tag-pill.selected, .tag-pill:hover { background: var(--accent-green); color: white; border-color: var(--accent-green); }
 
@@ -83,12 +85,18 @@
 
   <!-- 左側選單 -->
   <div class="sidebar">
+    <!-- 草帽藍莓卡皮巴拉區域 -->
+    <div class="mascot-box">
+      <img src="https://i.imgur.com/39A86mQ.png" alt="Capybara Mascot" class="mascot-img">
+      <div class="mascot-title">雅韻知識庫</div>
+    </div>
+
     <div class="sidebar-section-title">快速跳轉</div>
     <div class="menu-group">
       <div class="menu-item" onclick="alert('收件匣：集中管理尚未歸類的快記與網址')">📥 收件匣</div>
       <div class="menu-item" onclick="openTagModal()">🏷️ Tag 瀏覽</div>
       <div class="menu-item" onclick="alert('研讀紀錄：呈現已學習完畢的雲端卡片')">🕒 研讀紀錄</div>
-      <div class="menu-item" onclick="alert('雅韻知識庫 v3.0 - 支援 Tag 跨分類篩選與雲端卡片庫')">❓ 使用說明</div>
+      <div class="menu-item" onclick="alert('雅韻知識庫 - 支援 Tag 跨分類篩選與雲端卡片庫')">❓ 使用說明</div>
     </div>
 
     <div class="sidebar-section-title" style="margin-top: 10px;">分類看板</div>
@@ -113,7 +121,7 @@
         <option value="💡 個人開發專案">💡 個人開發專案</option>
         <option value="📖 學習筆記">📖 學習筆記</option>
       </select>
-      <input type="text" id="quickInput" class="input-quick" placeholder="貼上文字、標題或網址連結 (可在結尾加上 #AI工具 #開源)...">
+      <input type="text" id="quickInput" class="input-quick" placeholder="貼上文字、標題或網址連結 (結尾可加 #AI工具 #開源)...">
       <button class="btn-submit" onclick="addCard()">送出卡片</button>
     </div>
 
@@ -153,20 +161,6 @@
               <button class="btn-study">☁️ 雲端研讀</button>
             </div>
           </div>
-
-          <div class="item-card">
-            <div class="item-card-header">
-              <input type="checkbox">
-              <span class="item-card-title">headroom taskobserver</span>
-            </div>
-            <div class="tags-wrapper">
-              <span class="tag-badge">Claude Code</span><span class="tag-badge">軟體開發</span>
-            </div>
-            <div class="link-preview-box">
-              <a href="https://www.instagram.com" target="_blank" class="link-url">🔗 https://www.instagram.com/reel/C8x...</a>
-              <button class="btn-study">☁️ 雲端研讀</button>
-            </div>
-          </div>
         </div>
       </div>
 
@@ -191,7 +185,7 @@
     </div>
   </div>
 
-  <!-- 🏷️ 跨分類 Tag 瀏覽 Modal (彈出視窗) -->
+  <!-- 🏷️ 跨分類 Tag 瀏覽 Modal -->
   <div class="modal-overlay" id="tagModal">
     <div class="modal-box">
       <div class="modal-header">
@@ -200,23 +194,18 @@
       </div>
 
       <div class="tag-cloud-box">
-        <span class="tag-pill selected" onclick="filterTag(this, '全部')">全部 (6)</span>
-        <span class="tag-pill" onclick="filterTag(this, '開源')">開源 (2)</span>
-        <span class="tag-pill" onclick="filterTag(this, 'AI提示詞')">AI提示詞 (1)</span>
-        <span class="tag-pill" onclick="filterTag(this, 'AI工具')">AI工具 (1)</span>
-        <span class="tag-pill" onclick="filterTag(this, 'AI Agent')">AI Agent (1)</span>
-        <span class="tag-pill" onclick="filterTag(this, 'Claude Code')">Claude Code (1)</span>
-        <span class="tag-pill" onclick="filterTag(this, '軟體開發')">軟體開發 (2)</span>
+        <span class="tag-pill selected" onclick="filterTag(this, '全部')">全部</span>
+        <span class="tag-pill" onclick="filterTag(this, '開源')">開源</span>
+        <span class="tag-pill" onclick="filterTag(this, 'AI提示詞')">AI提示詞</span>
+        <span class="tag-pill" onclick="filterTag(this, 'AI工具')">AI工具</span>
+        <span class="tag-pill" onclick="filterTag(this, 'AI Agent')">AI Agent</span>
       </div>
 
-      <div class="tag-result-container" id="tagResultContainer">
-        <!-- 搜尋結果會顯示在此 -->
-      </div>
+      <div class="tag-result-container" id="tagResultContainer"></div>
     </div>
   </div>
 
   <script>
-    /* 彈出與關閉 Modal */
     function openTagModal() {
       document.getElementById('tagModal').style.display = 'flex';
       renderTagResults('全部');
@@ -226,7 +215,6 @@
       document.getElementById('tagModal').style.display = 'none';
     }
 
-    /* Tag 標籤動態點擊篩選 */
     function filterTag(element, tag) {
       document.querySelectorAll('.tag-pill').forEach(pill => pill.classList.remove('selected'));
       element.classList.add('selected');
@@ -247,7 +235,6 @@
       });
     }
 
-    /* 快速新增卡片 (自動解析 #Tag) */
     function addCard() {
       const category = document.getElementById('cardCategory').value;
       const text = document.getElementById('quickInput').value.trim();
@@ -257,7 +244,6 @@
         return;
       }
 
-      // 自動解析 #Tag 標籤
       const tagMatches = text.match(/#[\u4e00-\u9fa5a-zA-Z0-9]+/g) || [];
       const cleanText = text.replace(/#[\u4e00-\u9fa5a-zA-Z0-9]+/g, '').trim();
 
