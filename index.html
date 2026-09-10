@@ -6,15 +6,15 @@
   <title>雅韻知識庫</title>
   <style>
     :root {
-      --bg-main: #f2ebe1;       /* 淺咖啡古籍宣紙底色 */
-      --bg-panel: #fcf9f2;      /* 暖白米色面板 */
-      --bg-card: #e8ded1;       /* 淺褐卡片色 */
-      --accent-blue: #2b5b84;    /* 典雅青藍色 */
-      --accent-blue-hover: #1f4363;
+      --bg-main: #ecefe6;       /* 淡綠宣紙底色 */
+      --bg-panel: rgba(245, 247, 242, 0.82); /* 半透明透光米綠面板 */
+      --bg-card: rgba(220, 228, 215, 0.6);  /* 淡雅竹綠卡片色 */
+      --accent-blue: #3b5a45;    /* 松柏深綠色 */
+      --accent-blue-hover: #2a4232;
       --accent-red: #a84842;     /* 朱砂紅 */
-      --text-main: #2c2a29;     /* 墨黑字體 */
-      --text-sub: #6e675f;      /* 灰褐色字體 */
-      --border-color: #d8cdbe;  /* 柔和竹簡邊框 */
+      --text-main: #2b332c;     /* 沉穩墨綠黑字體 */
+      --text-sub: #5c665e;      /* 灰綠色字體 */
+      --border-color: rgba(180, 195, 175, 0.6); /* 淡綠竹簡邊框 */
     }
     
     * { 
@@ -28,23 +28,29 @@
       display: flex; 
       height: 100vh; 
       background-color: var(--bg-main); 
+      /* 載入您提供的水墨山水背景圖 */
+      background-image: url('https://i.imgur.com/8Q8N4Zb.png'); 
+      background-size: cover;
+      background-position: center;
+      background-repeat: no-repeat;
       color: var(--text-main); 
       overflow: hidden; 
-      padding: 12px; 
-      gap: 12px; 
+      padding: 14px; 
+      gap: 14px; 
     }
     
     /* 側邊欄 */
     .sidebar { 
       width: 210px; 
       background-color: var(--bg-panel); 
-      border-radius: 8px; 
+      backdrop-filter: blur(8px);
+      border-radius: 10px; 
       padding: 20px 15px; 
       display: flex; 
       flex-direction: column; 
       gap: 12px; 
       border: 1px solid var(--border-color); 
-      box-shadow: 2px 0 8px rgba(0, 0, 0, 0.03);
+      box-shadow: 0 4px 15px rgba(0, 0, 0, 0.04);
     }
     
     .sidebar h3 { 
@@ -80,12 +86,13 @@
     .note-list-panel { 
       width: 270px; 
       background-color: var(--bg-panel); 
-      border-radius: 8px; 
+      backdrop-filter: blur(8px);
+      border-radius: 10px; 
       border: 1px solid var(--border-color); 
       display: flex; 
       flex-direction: column; 
       overflow: hidden; 
-      box-shadow: 2px 0 8px rgba(0, 0, 0, 0.03);
+      box-shadow: 0 4px 15px rgba(0, 0, 0, 0.04);
     }
     
     .list-header { 
@@ -94,7 +101,7 @@
       display: flex; 
       justify-content: space-between; 
       align-items: center; 
-      background-color: var(--bg-main);
+      background-color: rgba(236, 239, 230, 0.5);
     }
     
     .list-header h4 { 
@@ -130,14 +137,14 @@
       border-radius: 6px; 
       margin-bottom: 8px; 
       cursor: pointer; 
-      background-color: #ffffff; 
+      background-color: rgba(255, 255, 255, 0.7); 
       border: 1px solid var(--border-color); 
       transition: 0.2s; 
     }
     
     .note-item:hover { 
       border-color: var(--accent-blue); 
-      background-color: var(--bg-main); 
+      background-color: var(--bg-card); 
     }
     
     .note-item h4 { 
@@ -160,10 +167,11 @@
       display: flex; 
       flex-direction: column; 
       background-color: var(--bg-panel); 
-      border-radius: 8px; 
+      backdrop-filter: blur(8px);
+      border-radius: 10px; 
       padding: 25px; 
       border: 1px solid var(--border-color); 
-      box-shadow: 2px 0 8px rgba(0, 0, 0, 0.03);
+      box-shadow: 0 4px 15px rgba(0, 0, 0, 0.04);
       overflow-y: auto;
     }
     
@@ -176,7 +184,7 @@
     }
     
     .btn-tool { 
-      background: #ffffff; 
+      background: rgba(255, 255, 255, 0.8); 
       color: var(--text-main); 
       border: 1px solid var(--border-color); 
       padding: 6px 14px; 
@@ -188,7 +196,7 @@
     }
     
     .btn-tool:hover { 
-      background-color: var(--bg-main); 
+      background-color: #ffffff; 
       border-color: var(--accent-blue);
     }
 
@@ -302,7 +310,8 @@
 <body>
   <div class="sidebar">
     <h3>🦫 雅韻知識庫</h3>
-    <div class="menu-item active">📖 英文筆記</div>
+    <div class="menu-item active">🤖 AI 智庫</div>
+    <div class="menu-item">📖 英文筆記</div>
     <div class="menu-item">💼 工作筆記</div>
   </div>
 
@@ -312,6 +321,10 @@
       <button class="btn-add" onclick="createNote()">+ 新增</button>
     </div>
     <div class="note-items" id="noteItems">
+      <div class="note-item" onclick="loadAiSample()">
+        <h4>🤖 AI 提示詞 Prompt 庫</h4>
+        <p>點擊載入高效 Prompt 模板與生成範例...</p>
+      </div>
       <div class="note-item" onclick="loadEnglishSample()">
         <h4>🔤 英文句型與搭配詞範本</h4>
         <p>點擊載入職場 Email 萬用句型與單字卡範本...</p>
@@ -328,12 +341,13 @@
       <button class="btn-tool btn-voice" id="voiceBtn" onclick="toggleVoiceRecognition()">🎙️ 語音輸入</button>
       <button class="btn-tool" onclick="document.getElementById('imageInput').click()">🖼️ 上傳圖片</button>
       <input type="file" id="imageInput" accept="image/*" style="display: none;" onchange="handleImageUpload(event)">
+      <button class="btn-tool" onclick="applyAiTemplate()">🤖 帶入 AI 範本</button>
       <button class="btn-tool" onclick="applyEnglishTemplate()">🔤 帶入英文範本</button>
       <button class="btn-tool" onclick="applyWorkTemplate()">📋 帶入工作範本</button>
       <button class="btn-tool" onclick="saveNote()">💾 儲存筆記</button>
       <button class="btn-tool" style="color: var(--accent-red);" onclick="deleteNote()">🗑️ 刪除筆記</button>
     </div>
-    <input type="text" id="noteTitle" class="input-title" value="🔤 英文句型與搭配詞範本" placeholder="請輸入標題...">
+    <input type="text" id="noteTitle" class="input-title" value="🤖 AI 提示詞 Prompt 庫" placeholder="請輸入標題...">
     <textarea id="noteContent" class="input-content" placeholder="在此記錄知識與思考..."></textarea>
 
     <!-- 📷 筆記附件圖片展示區 -->
@@ -347,6 +361,20 @@
 
   <script>
     let currentImages = [];
+
+    const aiTemplate = `🤖 [AI 工具與用途] (例如：ChatGPT 萬用文案修正)
+
+【一、 核心提示詞 (Prompt Template)】
+* 角色設定：你是一位專業的英文與職場溝通專家。
+* 任務目標：幫我潤飾以下內文，使其兼具專業度與道地表達。
+* 輸入內容：[在此貼入原始文字]
+
+【二、 適用情境與參數設定】
+* 適用工具：Gemini / ChatGPT / Claude
+* 最佳參數：Tone: Professional & Polite
+
+【三、 優秀輸出範例紀錄】
+* AI 回覆摘要：[在此貼入 AI 的優秀回答，方便日後直接複製]`;
 
     const englishTemplate = `🔤 [學習主題/情境名稱] (範例：職場 Email 跟進)
 
@@ -379,7 +407,7 @@
 * 討論細節：
 * 參考數據與連結：`;
 
-    document.getElementById('noteContent').value = englishTemplate;
+    document.getElementById('noteContent').value = aiTemplate;
 
     function createNote() {
       document.getElementById('noteTitle').value = '';
@@ -421,6 +449,13 @@
       });
     }
 
+    function applyAiTemplate() {
+      if (confirm('是否載入「AI 提示詞範本」？')) {
+        document.getElementById('noteTitle').value = '🤖 [AI 工具與用途]';
+        document.getElementById('noteContent').value = aiTemplate;
+      }
+    }
+
     function applyEnglishTemplate() {
       if (confirm('是否載入「英文句型範本」？')) {
         document.getElementById('noteTitle').value = '🔤 [學習主題/情境名稱]';
@@ -440,6 +475,10 @@
       document.getElementById('noteContent').value = content;
       currentImages = [];
       renderImages();
+    }
+
+    function loadAiSample() {
+      selectNote('🤖 AI 提示詞 Prompt 庫', aiTemplate);
     }
 
     function loadEnglishSample() {
