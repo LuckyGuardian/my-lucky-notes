@@ -24,17 +24,20 @@
     .mobile-header h2 { font-size: 1.1rem; color: var(--accent-green); display: flex; align-items: center; gap: 8px; }
     .btn-hamburger { background: transparent; border: none; font-size: 1.4rem; cursor: pointer; }
 
-    .sidebar { width: 230px; background: var(--bg-panel); border-radius: 12px; padding: 16px 12px; display: flex; flex-direction: column; gap: 12px; border: 1px solid var(--border-color); overflow-y: auto; z-index: 100; transition: transform 0.3s ease; }
+    .sidebar { width: 230px; background: var(--bg-panel); border-radius: 12px; padding: 16px 12px; display: flex; flex-direction: column; gap: 10px; border: 1px solid var(--border-color); overflow-y: auto; z-index: 100; transition: transform 0.3s ease; }
     .mascot-box { display: flex; align-items: center; gap: 10px; padding: 8px 6px; border-bottom: 1px solid var(--border-color); margin-bottom: 4px; }
     .mascot-svg { width: 42px; height: 42px; }
     .mascot-title { font-size: 1.1rem; font-weight: bold; color: var(--accent-green); }
 
-    .sidebar-section-title { font-size: 0.8rem; color: var(--text-sub); font-weight: bold; margin-bottom: 4px; padding-left: 8px; }
+    .sidebar-section-title { font-size: 0.8rem; color: var(--text-sub); font-weight: bold; margin-top: 6px; margin-bottom: 2px; padding-left: 8px; }
     .menu-group { display: flex; flex-direction: column; gap: 4px; }
     .menu-item { padding: 8px 12px; border-radius: 8px; cursor: pointer; color: var(--text-main); font-size: 0.9rem; font-weight: 500; display: flex; align-items: center; gap: 8px; }
     .menu-item:hover, .menu-item.active { background: #eee9e0; color: var(--accent-green); font-weight: bold; }
     
-    .menu-item.export-btn { color: var(--accent-blue); background: #e0e7ff; margin-top: 5px; }
+    .btn-side-add { background: var(--accent-green); color: white; border: none; padding: 10px; border-radius: 8px; font-weight: bold; font-size: 0.9rem; cursor: pointer; display: flex; align-items: center; justify-content: center; gap: 6px; box-shadow: 0 2px 6px rgba(59,90,69,0.2); margin: 4px 0; }
+    .btn-side-add:hover { opacity: 0.9; }
+
+    .menu-item.export-btn { color: var(--accent-blue); background: #e0e7ff; margin-top: 2px; }
     .menu-item.export-btn:hover { background: #c7d2fe; }
 
     .main-container { flex: 1; display: flex; flex-direction: column; gap: 10px; overflow: hidden; position: relative; }
@@ -43,10 +46,6 @@
     .status-title { font-size: 0.9rem; font-weight: bold; color: var(--text-sub); }
 
     .dashboard-view { flex: 1; display: flex; flex-direction: column; gap: 12px; overflow: hidden; }
-    .top-input-bar { background: var(--bg-panel); border-radius: 12px; padding: 10px 16px; display: flex; align-items: center; gap: 10px; border: 1px solid var(--border-color); }
-    .select-category { padding: 8px 12px; border-radius: 8px; border: 1px solid var(--border-color); background: white; font-weight: bold; outline: none; }
-    .input-quick { flex: 1; padding: 8px 14px; border-radius: 8px; border: 1px solid var(--border-color); outline: none; font-size: 0.95rem; }
-    .btn-submit { background: var(--accent-green); color: white; border: none; padding: 8px 16px; border-radius: 8px; cursor: pointer; font-weight: bold; }
 
     .dashboard-grid { flex: 1; display: grid; grid-template-columns: 1fr 1fr; gap: 14px; overflow-y: auto; }
     .board-card { background: var(--bg-panel); border-radius: 12px; border: 1px solid var(--border-color); display: flex; flex-direction: column; max-height: 100%; }
@@ -58,7 +57,6 @@
 
     .card-list { padding: 12px; overflow-y: auto; flex: 1; display: flex; flex-direction: column; gap: 10px; min-height: 100px; }
     
-    /* 拖曳卡片樣式 */
     .item-card { background: var(--bg-card); border-radius: 8px; border: 1px solid var(--border-color); padding: 12px; display: flex; flex-direction: column; gap: 8px; cursor: grab; transition: 0.2s; user-select: none; }
     .item-card:active { cursor: grabbing; }
     .item-card.dragging { opacity: 0.4; border: 2px dashed var(--accent-green); }
@@ -113,7 +111,6 @@
       .mobile-header { display: flex; }
       .sidebar { position: fixed; top: 0; left: 0; height: 100vh; width: 260px; transform: translateX(-100%); box-shadow: 4px 0 15px rgba(0,0,0,0.1); }
       .sidebar.open { transform: translateX(0); }
-      .top-input-bar { display: none; }
       .dashboard-grid { grid-template-columns: 1fr; }
       .fab-btn { display: flex; justify-content: center; align-items: center; }
     }
@@ -154,6 +151,9 @@
       <div class="mascot-title">Lucky Note</div>
     </div>
 
+    <!-- 側邊欄快速新增按鈕 -->
+    <button class="btn-side-add" onclick="openQuickAddModal(); toggleSidebar();">➕ 快速新增卡片</button>
+
     <div class="sidebar-section-title">快速跳轉</div>
     <div class="menu-group">
       <div class="menu-item" onclick="openSearchModal(); toggleSidebar();">🔍 搜尋</div>
@@ -163,7 +163,7 @@
       <div class="menu-item export-btn" onclick="openExportModal(); toggleSidebar();">📥 匯出資料 (自訂/全站)</div>
     </div>
 
-    <div class="sidebar-section-title" style="margin-top: 10px;">分類看板與編輯</div>
+    <div class="sidebar-section-title">分類看板與編輯</div>
     <div class="menu-group">
       <div class="menu-item active" id="menu-all" onclick="switchView('dashboard', '🌐 全部看板'); updateMenuActive('menu-all'); toggleSidebar();">🌐 全部看板</div>
       <div class="menu-item" id="menu-ai" onclick="openCategoryEditor('AI'); updateMenuActive('menu-ai'); toggleSidebar();">🤖 AI 智庫與筆記</div>
@@ -182,17 +182,6 @@
 
     <!-- 視窗 1：看板模式 -->
     <div class="dashboard-view" id="view-dashboard">
-      <div class="top-input-bar">
-        <select id="cardCategory" class="select-category">
-          <option value="🤖 AI 智庫與筆記">🤖 AI 智庫與筆記</option>
-          <option value="💼 工作任務">💼 工作任務</option>
-          <option value="☑️ 待辦事項">☑️ 待辦事項</option>
-          <option value="📖 學習筆記">📖 學習筆記</option>
-        </select>
-        <input type="text" id="quickInput" class="input-quick" placeholder="輸入標題或網址 (結尾可加 #AI工具 #Prompt)...">
-        <button class="btn-submit" onclick="addCard()">送出卡片</button>
-      </div>
-
       <div class="dashboard-grid">
         <div class="board-card" id="ai-board">
           <div class="board-header">
@@ -422,7 +411,6 @@
 【一、 任務細節說明】
 * 相關連結/資料：`;
 
-    /* 🖐️ 綁定拖曳功能 (Drag & Drop) */
     document.addEventListener('DOMContentLoaded', () => {
       initDragAndDrop();
     });
@@ -454,7 +442,6 @@
       });
     }
 
-    // 初始化舊卡片拖曳
     document.querySelectorAll('.item-card').forEach(bindCardDragEvents);
 
     function getDragAfterElement(container, y) {
@@ -468,6 +455,26 @@
           return closest;
         }
       }, { offset: Number.NEGATIVE_INFINITY }).element;
+    }
+
+    function openQuickAddModal() {
+      const cat = prompt('請選擇分類數字 (1:AI智庫, 2:工作任務, 3:待辦事項, 4:學習筆記)：', '3');
+      const title = prompt('請輸入卡片標題 (可加 #Tag)：');
+      if (!title) return;
+
+      let targetListId = 'list-todo';
+      if (cat === '1') targetListId = 'list-ai';
+      else if (cat === '2') targetListId = 'list-work';
+      else if (cat === '4') targetListId = 'list-learn';
+
+      const card = document.createElement('div');
+      card.className = 'item-card';
+      card.setAttribute('draggable', 'true');
+      bindCardDragEvents(card);
+      card.onclick = () => openNoteInEditor(title, '', '快速新增卡片', card);
+      card.innerHTML = `<div class="item-card-header"><input type="checkbox" onclick="event.stopPropagation()"><span class="item-card-title">${title}</span></div>`;
+      document.getElementById(targetListId).prepend(card);
+      alert('卡片「' + title + '」已新增！');
     }
 
     function applyMeetingTemplate() {
@@ -790,32 +797,8 @@
     function openTagModal() { document.getElementById('tagModal').style.display = 'flex'; }
     function closeTagModal() { document.getElementById('tagModal').style.display = 'none'; }
 
-    function addCard() {
-      const category = document.getElementById('cardCategory').value;
-      const text = document.getElementById('quickInput').value.trim();
-      if (!text) return;
-
-      let targetListId = 'list-ai';
-      if (category.includes('工作')) targetListId = 'list-work';
-      else if (category.includes('待辦')) targetListId = 'list-todo';
-      else if (category.includes('學習')) targetListId = 'list-learn';
-
-      const card = document.createElement('div');
-      card.className = 'item-card';
-      card.setAttribute('draggable', 'true');
-      bindCardDragEvents(card);
-      card.onclick = () => openNoteInEditor(text, '', category, card);
-      card.innerHTML = `<div class="item-card-header"><input type="checkbox" onclick="event.stopPropagation()"><span class="item-card-title">${text}</span></div>`;
-      document.getElementById(targetListId).prepend(card);
-      document.getElementById('quickInput').value = '';
-    }
-
     function mobileQuickAdd() {
-      const text = prompt('快速手動紀錄/新增卡片：');
-      if (text) {
-        document.getElementById('quickInput').value = text;
-        addCard();
-      }
+      openQuickAddModal();
     }
   </script>
 </body>
