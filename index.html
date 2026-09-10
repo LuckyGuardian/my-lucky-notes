@@ -110,6 +110,8 @@
       overflow-wrap: anywhere; 
     }
     .input-content-editable:focus { border-color: var(--accent-green); }
+    .input-content-editable ul, .input-content-editable ol { padding-left: 20px; margin: 4px 0; }
+    .input-content-editable p { margin-bottom: 6px; }
 
     .image-section { margin-top: 8px; padding-top: 6px; border-top: 1px dashed var(--border-color); }
     .image-preview-container { display: flex; gap: 8px; flex-wrap: wrap; margin-top: 4px; }
@@ -117,7 +119,6 @@
     .image-preview-box img { width: 100%; height: 100%; object-fit: cover; }
     .btn-delete-img { position: absolute; top: 2px; right: 2px; background: rgba(168,72,66,0.85); color: white; border: none; border-radius: 50%; width: 18px; height: 18px; cursor: pointer; font-size: 0.7rem; }
 
-    /* 📅 行事曆 View 電腦版樣式 */
     .calendar-view { display: none; flex: 1; flex-direction: column; background: var(--bg-panel); border-radius: 10px; padding: 12px; border: 1px solid var(--border-color); overflow-y: auto; gap: 10px; }
     .calendar-header { display: flex; justify-content: space-between; align-items: center; border-bottom: 1px solid var(--border-color); padding-bottom: 6px; }
     .calendar-controls { display: flex; align-items: center; gap: 6px; }
@@ -140,7 +141,6 @@
     .modal-box { background: #ffffff; width: 90%; max-width: 450px; border-radius: 12px; padding: 18px; display: flex; flex-direction: column; gap: 12px; box-shadow: 0 10px 25px rgba(0,0,0,0.1); }
     .modal-header { display: flex; justify-content: space-between; align-items: center; border-bottom: 1px solid #e2e8f0; padding-bottom: 6px; }
 
-    /* 📱 手機版專屬美化與行事曆極致優化 */
     @media (max-width: 768px) {
       body { flex-direction: column; padding: 4px; gap: 4px; }
       .mobile-header { display: flex; }
@@ -152,7 +152,6 @@
       .editor-view { padding: 8px 10px; }
       .input-content-editable { padding: 8px; font-size: 0.95rem; }
 
-      /* 📱 手機版行事曆縮小排版，不重疊不破版 */
       .calendar-view { padding: 6px; gap: 6px; }
       .calendar-grid { gap: 2px; }
       .cal-day-header { padding: 3px 0; font-size: 0.7rem; border-radius: 3px; }
@@ -312,11 +311,12 @@
 
         <button class="btn-tool btn-fmt" onclick="formatDoc('bold')" title="粗體"><b>B</b></button>
 
+        <!-- 🎨 高對比度鮮明標準字體顏色選項 -->
         <select class="btn-tool" onchange="formatDoc('foreColor', this.value); this.value='';" style="padding:3px 6px;">
           <option value="">🎨 字體顏色</option>
-          <option value="#a84842">🔴 紅字</option>
-          <option value="#2b5b84">🔵 藍字</option>
-          <option value="#3b5a45">🟢 綠字</option>
+          <option value="#dc2626" style="color:#dc2626;font-weight:bold;">🔴 鮮紅字</option>
+          <option value="#2563eb" style="color:#2563eb;font-weight:bold;">🔵 寶藍字</option>
+          <option value="#16a34a" style="color:#16a34a;font-weight:bold;">🟢 翠綠字</option>
         </select>
 
         <select class="btn-tool" onchange="formatDoc('hiliteColor', this.value); this.value='';" style="padding:3px 6px;">
@@ -1061,7 +1061,6 @@
       });
     }
 
-    /* 🎙️ 優化語音辨識機制（包含瀏覽器相容性與錯誤捕捉） */
     let recognition = null;
     let isRecording = false;
 
@@ -1106,7 +1105,7 @@
       }
 
       if (!recognition) {
-        return alert('⚠️ 您的瀏覽器（或 Safari/手機環境）不支援語音辨識功能。\n建議使用電腦版 Google Chrome 瀏覽器開啟！');
+        return alert('⚠️ 您的瀏覽器不支援語音辨識功能。\n建議使用電腦版 Google Chrome 瀏覽器開啟！');
       }
 
       const btn = document.getElementById('voiceBtn');
