@@ -3,578 +3,289 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>雅韻知識庫</title>
+  <title>雅韻個人知識庫</title>
   <style>
     :root {
       --bg-main: #ecefe6;       /* 淡綠宣紙底色 */
-      --bg-panel: rgba(245, 247, 242, 0.82); /* 半透明透光米綠面板 */
-      --bg-card: rgba(220, 228, 215, 0.6);  /* 淡雅竹綠卡片色 */
-      --accent-blue: #3b5a45;    /* 松柏深綠色 */
-      --accent-blue-hover: #2a4232;
+      --bg-panel: rgba(245, 247, 242, 0.88); /* 透光面板 */
+      --bg-card: rgba(255, 255, 255, 0.9);  /* 白色卡片 */
+      --accent-green: #3b5a45;   /* 松柏綠 */
+      --accent-blue: #2b5b84;    /* 典雅藍 */
+      --accent-purple: #6b4c9a;  /* 紫藤色 */
       --accent-red: #a84842;     /* 朱砂紅 */
-      --text-main: #2b332c;     /* 沉穩墨綠黑字體 */
-      --text-sub: #5c665e;      /* 灰綠色字體 */
-      --border-color: rgba(180, 195, 175, 0.6); /* 淡綠竹簡邊框 */
-    }
-    
-    * { 
-      box-sizing: border-box; 
-      margin: 0; 
-      padding: 0; 
-      font-family: "Microsoft JhengHei", "微軟正黑體", sans-serif; 
-    }
-    
-    body { 
-      display: flex; 
-      height: 100vh; 
-      background-color: var(--bg-main); 
-      /* 載入您提供的水墨山水背景圖 */
-      background-image: url('https://i.imgur.com/8Q8N4Zb.png'); 
-      background-size: cover;
-      background-position: center;
-      background-repeat: no-repeat;
-      color: var(--text-main); 
-      overflow: hidden; 
-      padding: 14px; 
-      gap: 14px; 
-    }
-    
-    /* 側邊欄 */
-    .sidebar { 
-      width: 210px; 
-      background-color: var(--bg-panel); 
-      backdrop-filter: blur(8px);
-      border-radius: 10px; 
-      padding: 20px 15px; 
-      display: flex; 
-      flex-direction: column; 
-      gap: 12px; 
-      border: 1px solid var(--border-color); 
-      box-shadow: 0 4px 15px rgba(0, 0, 0, 0.04);
-    }
-    
-    .sidebar h3 { 
-      font-size: 1.15rem; 
-      color: var(--accent-blue); 
-      margin-bottom: 10px; 
-      font-weight: bold;
-      letter-spacing: 1px;
-      border-bottom: 2px solid var(--accent-blue);
-      padding-bottom: 8px;
-      display: flex;
-      align-items: center;
-      gap: 6px;
-    }
-    
-    .menu-item { 
-      padding: 10px 14px; 
-      border-radius: 6px; 
-      cursor: pointer; 
-      color: var(--text-sub); 
-      transition: 0.2s; 
-      font-size: 0.95rem; 
-      font-weight: bold;
-    }
-    
-    .menu-item.active, .menu-item:hover { 
-      background-color: var(--bg-card); 
-      color: var(--accent-blue); 
-      border-left: 4px solid var(--accent-blue);
+      --text-main: #2b332c;     /* 墨綠黑字體 */
+      --text-sub: #5c665e;      /* 灰綠字體 */
+      --border-color: rgba(180, 195, 175, 0.6);
     }
 
-    /* 筆記列表 */
-    .note-list-panel { 
-      width: 270px; 
-      background-color: var(--bg-panel); 
-      backdrop-filter: blur(8px);
-      border-radius: 10px; 
-      border: 1px solid var(--border-color); 
-      display: flex; 
-      flex-direction: column; 
-      overflow: hidden; 
-      box-shadow: 0 4px 15px rgba(0, 0, 0, 0.04);
-    }
-    
-    .list-header { 
-      padding: 16px; 
-      border-bottom: 1px solid var(--border-color); 
-      display: flex; 
-      justify-content: space-between; 
-      align-items: center; 
-      background-color: rgba(236, 239, 230, 0.5);
-    }
-    
-    .list-header h4 { 
-      color: var(--text-main); 
-      font-size: 1rem;
-      letter-spacing: 1px;
-    }
-    
-    .btn-add { 
-      background: var(--accent-blue); 
-      color: white; 
-      border: none; 
-      padding: 6px 14px; 
-      border-radius: 4px; 
-      cursor: pointer; 
-      font-weight: bold; 
-      font-size: 0.9rem;
-      transition: 0.2s; 
-    }
-    
-    .btn-add:hover { 
-      background: var(--accent-blue-hover); 
-    }
-    
-    .note-items { 
-      overflow-y: auto; 
-      flex: 1; 
-      padding: 10px; 
-    }
-    
-    .note-item { 
-      padding: 12px 14px; 
-      border-radius: 6px; 
-      margin-bottom: 8px; 
-      cursor: pointer; 
-      background-color: rgba(255, 255, 255, 0.7); 
-      border: 1px solid var(--border-color); 
-      transition: 0.2s; 
-    }
-    
-    .note-item:hover { 
-      border-color: var(--accent-blue); 
-      background-color: var(--bg-card); 
-    }
-    
-    .note-item h4 { 
-      font-size: 0.95rem; 
-      margin-bottom: 6px; 
-      color: var(--text-main); 
-    }
-    
-    .note-item p { 
-      font-size: 0.85rem; 
-      color: var(--text-sub); 
-      white-space: nowrap; 
-      overflow: hidden; 
-      text-overflow: ellipsis; 
-    }
+    * { box-sizing: border-box; margin: 0; padding: 0; font-family: "Microsoft JhengHei", "微軟正黑體", sans-serif; }
+    body { display: flex; height: 100vh; background: var(--bg-main) url('https://i.imgur.com/8Q8N4Zb.png') center/cover no-repeat; color: var(--text-main); overflow: hidden; padding: 12px; gap: 12px; }
 
-    /* 編輯器區域 */
-    .editor-panel { 
-      flex: 1; 
-      display: flex; 
-      flex-direction: column; 
-      background-color: var(--bg-panel); 
-      backdrop-filter: blur(8px);
-      border-radius: 10px; 
-      padding: 25px; 
-      border: 1px solid var(--border-color); 
-      box-shadow: 0 4px 15px rgba(0, 0, 0, 0.04);
-      overflow-y: auto;
-    }
+    /* 左側導覽列 */
+    .sidebar { width: 220px; background: var(--bg-panel); backdrop-filter: blur(10px); border-radius: 12px; padding: 18px 12px; display: flex; flex-direction: column; gap: 15px; border: 1px solid var(--border-color); overflow-y: auto; }
+    .sidebar-section-title { font-size: 0.8rem; color: var(--text-sub); font-weight: bold; margin-bottom: 6px; padding-left: 8px; }
+    .menu-group { display: flex; flex-direction: column; gap: 4px; }
+    .menu-item { padding: 8px 12px; border-radius: 8px; cursor: pointer; color: var(--text-main); font-size: 0.9rem; font-weight: 500; display: flex; align-items: center; gap: 8px; transition: 0.2s; }
+    .menu-item:hover, .menu-item.active { background: rgba(220, 228, 215, 0.8); color: var(--accent-green); font-weight: bold; }
     
-    .editor-tools { 
-      display: flex; 
-      gap: 8px; 
-      margin-bottom: 15px; 
-      justify-content: flex-end; 
-      flex-wrap: wrap;
-    }
+    /* 右側主內容區 */
+    .main-container { flex: 1; display: flex; flex-direction: column; gap: 12px; overflow: hidden; }
+
+    /* 頂部快速輸入列 */
+    .top-input-bar { background: var(--bg-panel); backdrop-filter: blur(10px); border-radius: 12px; padding: 10px 16px; display: flex; align-items: center; gap: 10px; border: 1px solid var(--border-color); }
+    .select-category { padding: 8px 12px; border-radius: 8px; border: 1px solid var(--border-color); background: white; color: var(--text-main); font-weight: bold; outline: none; }
+    .input-quick { flex: 1; padding: 8px 14px; border-radius: 8px; border: 1px solid var(--border-color); background: white; outline: none; font-size: 0.95rem; }
+    .btn-submit { background: var(--accent-green); color: white; border: none; padding: 8px 16px; border-radius: 8px; cursor: pointer; font-weight: bold; transition: 0.2s; }
+    .btn-submit:hover { background: #2a4232; }
+
+    /* 看板區域（兩欄網格） */
+    .dashboard-grid { flex: 1; display: grid; grid-template-columns: 1fr 1fr; gap: 14px; overflow-y: auto; padding-right: 4px; }
+
+    /* 看板單元 (Board Block) */
+    .board-card { background: var(--bg-panel); backdrop-filter: blur(8px); border-radius: 12px; border: 1px solid var(--border-color); display: flex; flex-direction: column; max-height: 480px; box-shadow: 0 4px 12px rgba(0,0,0,0.03); }
+    .board-header { padding: 14px 16px; border-bottom: 1px solid var(--border-color); display: flex; justify-content: space-between; align-items: center; }
+    .board-title { display: flex; align-items: center; gap: 8px; font-size: 1.05rem; font-weight: bold; color: var(--accent-green); }
+    .board-count { background: #e2e8f0; color: #475569; font-size: 0.75rem; padding: 2px 8px; border-radius: 12px; }
+    .board-tools { display: flex; gap: 6px; }
+    .btn-small { background: white; border: 1px solid var(--border-color); padding: 4px 8px; border-radius: 6px; font-size: 0.75rem; cursor: pointer; color: var(--text-sub); }
+    .btn-small:hover { border-color: var(--accent-green); color: var(--accent-green); }
+
+    /* 卡片列表 */
+    .card-list { padding: 12px; overflow-y: auto; flex: 1; display: flex; flex-direction: column; gap: 10px; }
+    .item-card { background: var(--bg-card); border-radius: 8px; border: 1px solid var(--border-color); padding: 12px; display: flex; flex-direction: column; gap: 8px; transition: 0.2s; }
+    .item-card:hover { border-color: var(--accent-green); box-shadow: 0 2px 8px rgba(0,0,0,0.05); }
+    .item-card-header { display: flex; align-items: center; gap: 8px; }
+    .item-card-header input[type="checkbox"] { width: 16px; height: 16px; cursor: pointer; }
+    .item-card-title { font-size: 0.95rem; font-weight: bold; color: var(--text-main); flex: 1; }
     
-    .btn-tool { 
-      background: rgba(255, 255, 255, 0.8); 
-      color: var(--text-main); 
-      border: 1px solid var(--border-color); 
-      padding: 6px 14px; 
-      border-radius: 4px; 
-      cursor: pointer; 
-      font-weight: bold; 
-      font-size: 0.85rem;
-      transition: 0.2s; 
-    }
-    
-    .btn-tool:hover { 
-      background-color: #ffffff; 
-      border-color: var(--accent-blue);
-    }
+    /* 連結卡片樣式 */
+    .link-preview-box { background: rgba(236, 239, 230, 0.6); border-radius: 6px; padding: 8px 12px; border: 1px solid var(--border-color); display: flex; justify-content: space-between; align-items: center; }
+    .link-url { font-size: 0.85rem; color: var(--accent-blue); text-decoration: none; word-break: break-all; }
+    .btn-study { background: #e0e7ff; color: #3730a3; border: none; padding: 4px 10px; border-radius: 6px; font-size: 0.75rem; font-weight: bold; cursor: pointer; }
 
-    .btn-voice {
-      background-color: #fef3c7;
-      border-color: #f59e0b;
-      color: #92400e;
-    }
+    /* 搜尋列隱藏提示 */
+    .search-bar-panel { display: none; background: white; padding: 10px; border-radius: 8px; border: 1px solid var(--border-color); margin-bottom: 10px; }
 
-    .btn-voice.recording {
-      background-color: #fee2e2;
-      border-color: #ef4444;
-      color: #991b1b;
-      animation: pulse 1.5s infinite;
-    }
-
-    @keyframes pulse {
-      0% { opacity: 1; }
-      50% { opacity: 0.5; }
-      100% { opacity: 1; }
-    }
-    
-    .input-title { 
-      background: transparent; 
-      border: none; 
-      border-bottom: 2px solid var(--border-color);
-      color: var(--accent-blue); 
-      font-size: 1.5rem; 
-      font-weight: bold; 
-      margin-bottom: 20px; 
-      padding-bottom: 8px;
-      outline: none; 
-    }
-    
-    .input-content { 
-      min-height: 250px; 
-      background: transparent; 
-      border: none; 
-      color: var(--text-main); 
-      font-size: 1.05rem; 
-      line-height: 1.8; 
-      resize: vertical; 
-      outline: none; 
-    }
-
-    /* 圖片預覽區塊 */
-    .image-section {
-      margin-top: 20px;
-      padding-top: 15px;
-      border-top: 1px dashed var(--border-color);
-    }
-
-    .image-section-header {
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-      margin-bottom: 12px;
-    }
-
-    .image-section-header h5 {
-      font-size: 0.95rem;
-      color: var(--text-sub);
-    }
-
-    .image-preview-container {
-      display: flex;
-      gap: 12px;
-      flex-wrap: wrap;
-    }
-
-    .image-preview-box {
-      position: relative;
-      width: 140px;
-      height: 140px;
-      border-radius: 6px;
-      border: 1px solid var(--border-color);
-      overflow: hidden;
-      background-color: var(--bg-card);
-    }
-
-    .image-preview-box img {
-      width: 100%;
-      height: 100%;
-      object-fit: cover;
-    }
-
-    .btn-delete-img {
-      position: absolute;
-      top: 4px;
-      right: 4px;
-      background: rgba(168, 72, 66, 0.85);
-      color: white;
-      border: none;
-      border-radius: 50%;
-      width: 22px;
-      height: 22px;
-      font-size: 12px;
-      cursor: pointer;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-    }
-
-    @media (max-width: 767px) {
-      body { flex-direction: column; }
-      .sidebar { width: 100%; height: auto; flex-direction: row; justify-content: space-around; }
-      .note-list-panel { width: 100%; height: 180px; }
-    }
+    @media (max-width: 900px) { .dashboard-grid { grid-template-columns: 1fr; } }
   </style>
 </head>
 <body>
+
+  <!-- 左側選單 -->
   <div class="sidebar">
-    <h3>🦫 雅韻知識庫</h3>
-    <div class="menu-item active">🤖 AI 智庫</div>
-    <div class="menu-item">📖 英文筆記</div>
-    <div class="menu-item">💼 工作筆記</div>
-  </div>
-
-  <div class="note-list-panel">
-    <div class="list-header">
-      <h4>📑 筆記清單</h4>
-      <button class="btn-add" onclick="createNote()">+ 新增</button>
+    <div class="sidebar-section-title">快速跳轉</div>
+    <div class="menu-group">
+      <div class="menu-item" onclick="filterCategory('收件匣')">📥 收件匣</div>
+      <div class="menu-item" onclick="toggleSearchPanel()">🔍 搜尋</div>
+      <div class="menu-item" onclick="alert('標籤總覽功能：正在匯集所有 #Tag...')">🏷️ Tag 瀏覽</div>
+      <div class="menu-item" onclick="alert('研讀紀錄：紀錄您已完成雲端研讀的項目')">🕒 研讀紀錄</div>
+      <div class="menu-item" onclick="alert('雅韻知識庫 v2.0 - 支援多看板與快速收集')">❓ 使用說明</div>
     </div>
-    <div class="note-items" id="noteItems">
-      <div class="note-item" onclick="loadAiSample()">
-        <h4>🤖 AI 提示詞 Prompt 庫</h4>
-        <p>點擊載入高效 Prompt 模板與生成範例...</p>
-      </div>
-      <div class="note-item" onclick="loadEnglishSample()">
-        <h4>🔤 英文句型與搭配詞範本</h4>
-        <p>點擊載入職場 Email 萬用句型與單字卡範本...</p>
-      </div>
-      <div class="note-item" onclick="loadWorkSample()">
-        <h4>📌 工作會議與任務範本</h4>
-        <p>點擊載入標準職場會議紀錄與待辦事項模板...</p>
-      </div>
+
+    <div class="sidebar-section-title" style="margin-top: 10px;">分類看板</div>
+    <div class="menu-group">
+      <div class="menu-item active" onclick="filterCategory('全部')">🌐 全部看板</div>
+      <div class="menu-item" onclick="scrollToBoard('cdc-board')">💻 CDC開發中專案</div>
+      <div class="menu-item" onclick="scrollToBoard('todo-board')">☑️ 待辦事項</div>
+      <div class="menu-item" onclick="scrollToBoard('dev-board')">💡 個人開發專案</div>
+      <div class="menu-item" onclick="scrollToBoard('learn-board')">📖 學習筆記</div>
+      <div class="menu-item">💡 靈感與想法</div>
+      <div class="menu-item">🔖 稍後閱讀</div>
+      <div class="menu-item">🍳 食譜</div>
+      <div class="menu-item">🤖 AI工具</div>
     </div>
   </div>
 
-  <div class="editor-panel">
-    <div class="editor-tools">
-      <button class="btn-tool btn-voice" id="voiceBtn" onclick="toggleVoiceRecognition()">🎙️ 語音輸入</button>
-      <button class="btn-tool" onclick="document.getElementById('imageInput').click()">🖼️ 上傳圖片</button>
-      <input type="file" id="imageInput" accept="image/*" style="display: none;" onchange="handleImageUpload(event)">
-      <button class="btn-tool" onclick="applyAiTemplate()">🤖 帶入 AI 範本</button>
-      <button class="btn-tool" onclick="applyEnglishTemplate()">🔤 帶入英文範本</button>
-      <button class="btn-tool" onclick="applyWorkTemplate()">📋 帶入工作範本</button>
-      <button class="btn-tool" onclick="saveNote()">💾 儲存筆記</button>
-      <button class="btn-tool" style="color: var(--accent-red);" onclick="deleteNote()">🗑️ 刪除筆記</button>
-    </div>
-    <input type="text" id="noteTitle" class="input-title" value="🤖 AI 提示詞 Prompt 庫" placeholder="請輸入標題...">
-    <textarea id="noteContent" class="input-content" placeholder="在此記錄知識與思考..."></textarea>
+  <!-- 右側主內容區 -->
+  <div class="main-container">
 
-    <!-- 📷 筆記附件圖片展示區 -->
-    <div class="image-section">
-      <div class="image-section-header">
-        <h5>📷 筆記圖片附件</h5>
+    <!-- 頂部快速新增欄 -->
+    <div class="top-input-bar">
+      <select id="cardCategory" class="select-category">
+        <option value="☑️ 待辦事項">☑️ 待辦事項</option>
+        <option value="💻 CDC開發中專案">💻 CDC開發中專案</option>
+        <option value="💡 個人開發專案">💡 個人開發專案</option>
+        <option value="📖 學習筆記">📖 學習筆記</option>
+      </select>
+      <input type="text" id="quickInput" class="input-quick" placeholder="貼上文字、標題或網址連結...">
+      <button class="btn-submit" onclick="addCard()">送出卡片</button>
+    </div>
+
+    <!-- 關鍵字搜尋列 (點擊左側搜尋時展開) -->
+    <div id="searchPanel" class="search-bar-panel">
+      🔍 搜尋關鍵字：<input type="text" id="searchInput" oninput="searchCards()" placeholder="輸入關鍵字比對所有卡片..." style="padding: 4px 8px; width: 80%;">
+    </div>
+
+    <!-- 看板區域 ( Grid 兩欄並排 ) -->
+    <div class="dashboard-grid">
+
+      <!-- 看板 1: CDC開發中專案 -->
+      <div class="board-card" id="cdc-board">
+        <div class="board-header">
+          <div class="board-title">💻 CDC開發中專案 <span class="board-count" id="count-cdc">2</span></div>
+          <div class="board-tools">
+            <button class="btn-small">+ 新增</button>
+            <button class="btn-small">👁️ 隱藏已完成</button>
+          </div>
+        </div>
+        <div class="card-list" id="list-cdc">
+          <div class="item-card">
+            <div class="item-card-header">
+              <input type="checkbox">
+              <span class="item-card-title">app流程圖</span>
+            </div>
+            <div class="link-preview-box">
+              <a href="https://www.threads.net" target="_blank" class="link-url">🔗 https://www.threads.com/share/_vmWk9bXT/</a>
+              <button class="btn-study">☁️ 雲端研讀</button>
+            </div>
+          </div>
+          <div class="item-card">
+            <div class="item-card-header">
+              <input type="checkbox">
+              <span class="item-card-title">session搜尋機制</span>
+            </div>
+            <div class="link-preview-box">
+              <a href="https://www.threads.net" target="_blank" class="link-url">🔗 https://www.threads.com/share/_xFmBOZAL/</a>
+              <button class="btn-study">☁️ 雲端研讀</button>
+            </div>
+          </div>
+        </div>
       </div>
-      <div class="image-preview-container" id="imageContainer"></div>
+
+      <!-- 看板 2: 待辦事項 -->
+      <div class="board-card" id="todo-board">
+        <div class="board-header">
+          <div class="board-title">☑️ 待辦事項 <span class="board-count" id="count-todo">2</span></div>
+          <div class="board-tools">
+            <button class="btn-small">+ 新增</button>
+            <button class="btn-small">🗑️ 清空已完成</button>
+          </div>
+        </div>
+        <div class="card-list" id="list-todo">
+          <div class="item-card">
+            <div class="item-card-header">
+              <input type="checkbox">
+              <span class="item-card-title">完成知識庫系統介面重構</span>
+            </div>
+          </div>
+          <div class="item-card">
+            <div class="item-card-header">
+              <input type="checkbox">
+              <span class="item-card-title">拼圖遊戲開發驗證</span>
+            </div>
+            <div class="link-preview-box">
+              <a href="https://www.threads.net" target="_blank" class="link-url">🔗 https://www.threads.com/share/BATDrasvPH/</a>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- 看板 3: 個人開發專案 -->
+      <div class="board-card" id="dev-board">
+        <div class="board-header">
+          <div class="board-title">💡 個人開發專案 <span class="board-count" id="count-dev">1</span></div>
+          <div class="board-tools"><button class="btn-small">+ 新增</button></div>
+        </div>
+        <div class="card-list" id="list-dev">
+          <div class="item-card">
+            <div class="item-card-header">
+              <input type="checkbox">
+              <span class="item-card-title">My Lucky Notes 雲端筆記專案</span>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- 看板 4: 學習筆記 -->
+      <div class="board-card" id="learn-board">
+        <div class="board-header">
+          <div class="board-title">📖 學習筆記 <span class="board-count" id="count-learn">1</span></div>
+          <div class="board-tools"><button class="btn-small">+ 新增</button></div>
+        </div>
+        <div class="card-list" id="list-learn">
+          <div class="item-card">
+            <div class="item-card-header">
+              <input type="checkbox">
+              <span class="item-card-title">Web Speech 語音識別 API 應用技巧</span>
+            </div>
+          </div>
+        </div>
+      </div>
+
     </div>
   </div>
 
   <script>
-    let currentImages = [];
+    /* 快速新增卡片邏輯 */
+    function addCard() {
+      const category = document.getElementById('cardCategory').value;
+      const text = document.getElementById('quickInput').value.trim();
 
-    const aiTemplate = `🤖 [AI 工具與用途] (例如：ChatGPT 萬用文案修正)
-
-【一、 核心提示詞 (Prompt Template)】
-* 角色設定：你是一位專業的英文與職場溝通專家。
-* 任務目標：幫我潤飾以下內文，使其兼具專業度與道地表達。
-* 輸入內容：[在此貼入原始文字]
-
-【二、 適用情境與參數設定】
-* 適用工具：Gemini / ChatGPT / Claude
-* 最佳參數：Tone: Professional & Polite
-
-【三、 優秀輸出範例紀錄】
-* AI 回覆摘要：[在此貼入 AI 的優秀回答，方便日後直接複製]`;
-
-    const englishTemplate = `🔤 [學習主題/情境名稱] (範例：職場 Email 跟進)
-
-【一、 萬用句型 / 情境短語】
-* 句型 1：I wanted to check in on the status of [專案/事項].
-  (中譯：我想確認一下 [專案/事項] 的目前進度。)
-* 句型 2：Just a gentle reminder regarding [事項].
-  (中譯：溫馨提醒一下關於 [事項]。)
-
-【二、 核心單字與搭配詞 (Collocations)】
-* 核心詞：Follow up (v.) 跟進
-  * 常見搭配：follow up on something
-  * 實用例句：I will follow up on this issue tomorrow.
-
-【三、 避坑指南 (台式英文校正)】
-* ❌ 錯誤：I very like this project.
-* ⭕ 正確：I really like this project. / I like this project very much.`;
-
-    const workTemplate = `📌 [專案/會議名稱] 紀錄
-
-【一、 核心目標與結論】
-* 本次會議要解決的最重要問題：
-* 最終決議與共識：
-
-【二、 Action Items (待辦追蹤)】
-[ ] 任務 A (負責人 / 預計完成日)
-[ ] 任務 B (負責人 / 預計完成日)
-
-【三、 詳細過程與背景資料】
-* 討論細節：
-* 參考數據與連結：`;
-
-    document.getElementById('noteContent').value = aiTemplate;
-
-    function createNote() {
-      document.getElementById('noteTitle').value = '';
-      document.getElementById('noteContent').value = '';
-      currentImages = [];
-      renderImages();
-      document.getElementById('noteTitle').focus();
-    }
-
-    /* 📷 圖片上傳處理 */
-    function handleImageUpload(event) {
-      const file = event.target.files[0];
-      if (file) {
-        const reader = new FileReader();
-        reader.onload = function(e) {
-          currentImages.push(e.target.result);
-          renderImages();
-        };
-        reader.readAsDataURL(file);
-      }
-    }
-
-    function removeImage(index) {
-      currentImages.splice(index, 1);
-      renderImages();
-    }
-
-    function renderImages() {
-      const container = document.getElementById('imageContainer');
-      container.innerHTML = '';
-      currentImages.forEach((src, idx) => {
-        const box = document.createElement('div');
-        box.className = 'image-preview-box';
-        box.innerHTML = `
-          <img src="${src}" alt="筆記圖片">
-          <button class="btn-delete-img" onclick="removeImage(${idx})">✕</button>
-        `;
-        container.appendChild(box);
-      });
-    }
-
-    function applyAiTemplate() {
-      if (confirm('是否載入「AI 提示詞範本」？')) {
-        document.getElementById('noteTitle').value = '🤖 [AI 工具與用途]';
-        document.getElementById('noteContent').value = aiTemplate;
-      }
-    }
-
-    function applyEnglishTemplate() {
-      if (confirm('是否載入「英文句型範本」？')) {
-        document.getElementById('noteTitle').value = '🔤 [學習主題/情境名稱]';
-        document.getElementById('noteContent').value = englishTemplate;
-      }
-    }
-
-    function applyWorkTemplate() {
-      if (confirm('是否載入「工作會議範本」？')) {
-        document.getElementById('noteTitle').value = '📌 [專案/會議名稱] 紀錄';
-        document.getElementById('noteContent').value = workTemplate;
-      }
-    }
-
-    function selectNote(title, content) {
-      document.getElementById('noteTitle').value = title;
-      document.getElementById('noteContent').value = content;
-      currentImages = [];
-      renderImages();
-    }
-
-    function loadAiSample() {
-      selectNote('🤖 AI 提示詞 Prompt 庫', aiTemplate);
-    }
-
-    function loadEnglishSample() {
-      selectNote('🔤 英文句型與搭配詞範本', englishTemplate);
-    }
-
-    function loadWorkSample() {
-      selectNote('📌 工作會議與任務範本', workTemplate);
-    }
-
-    function saveNote() {
-      const title = document.getElementById('noteTitle').value || '未命名筆記';
-      const content = document.getElementById('noteContent').value;
-      
-      const container = document.getElementById('noteItems');
-      const newItem = document.createElement('div');
-      newItem.className = 'note-item';
-      newItem.onclick = () => selectNote(title, content);
-      newItem.innerHTML = `<h4>${title}</h4><p>${content}</p>`;
-      
-      container.prepend(newItem);
-      alert('筆記已成功儲存！');
-    }
-
-    function deleteNote() {
-      if (confirm('確定要刪除此篇筆記嗎？')) {
-        document.getElementById('noteTitle').value = '';
-        document.getElementById('noteContent').value = '';
-        currentImages = [];
-        renderImages();
-      }
-    }
-
-    /* 🎙️ 語音轉文字功能 */
-    let recognition = null;
-    let isRecording = false;
-
-    if ('webkitSpeechRecognition' in window || 'SpeechRecognition' in window) {
-      const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
-      recognition = new SpeechRecognition();
-      recognition.continuous = true;
-      recognition.interimResults = true;
-      recognition.lang = 'zh-TW';
-
-      recognition.onresult = (event) => {
-        let transcript = '';
-        for (let i = event.resultIndex; i < event.results.length; i++) {
-          if (event.results[i].isFinal) {
-            transcript += event.results[i][0].transcript;
-          }
-        }
-        if (transcript) {
-          const textarea = document.getElementById('noteContent');
-          textarea.value += (textarea.value ? '\n' : '') + transcript;
-        }
-      };
-
-      recognition.onerror = (event) => {
-        console.error('語音辨識錯誤：', event.error);
-        stopRecording();
-      };
-
-      recognition.onend = () => {
-        if (isRecording) {
-          recognition.start();
-        }
-      };
-    }
-
-    function toggleVoiceRecognition() {
-      if (!recognition) {
-        alert('您的瀏覽器不支援語音辨識，建議使用 Chrome 或 Edge 瀏覽器開啟！');
+      if (!text) {
+        alert('請輸入內容或貼上網址！');
         return;
       }
 
-      if (isRecording) {
-        stopRecording();
+      let targetListId = '';
+      if (category.includes('CDC')) targetListId = 'list-cdc';
+      else if (category.includes('待辦')) targetListId = 'list-todo';
+      else if (category.includes('個人')) targetListId = 'list-dev';
+      else targetListId = 'list-learn';
+
+      const listContainer = document.getElementById(targetListId);
+      const isLink = text.startsWith('http://') || text.startsWith('https://');
+
+      const card = document.createElement('div');
+      card.className = 'item-card';
+
+      if (isLink) {
+        card.innerHTML = `
+          <div class="item-card-header">
+            <input type="checkbox">
+            <span class="item-card-title">新收集網址資源</span>
+          </div>
+          <div class="link-preview-box">
+            <a href="${text}" target="_blank" class="link-url">🔗 ${text}</a>
+            <button class="btn-study">☁️ 雲端研讀</button>
+          </div>
+        `;
       } else {
-        startRecording();
+        card.innerHTML = `
+          <div class="item-card-header">
+            <input type="checkbox">
+            <span class="item-card-title">${text}</span>
+          </div>
+        `;
       }
+
+      listContainer.prepend(card);
+      document.getElementById('quickInput').value = '';
+      alert('卡片已成功加入「' + category + '」！');
     }
 
-    function startRecording() {
-      isRecording = true;
-      recognition.start();
-      const btn = document.getElementById('voiceBtn');
-      btn.innerText = '🔴 錄音辨識中...';
-      btn.classList.add('recording');
+    /* 切換搜尋面板 */
+    function toggleSearchPanel() {
+      const panel = document.getElementById('searchPanel');
+      panel.style.display = panel.style.display === 'block' ? 'none' : 'block';
+      if (panel.style.display === 'block') document.getElementById('searchInput').focus();
     }
 
-    function stopRecording() {
-      isRecording = false;
-      if (recognition) recognition.stop();
-      const btn = document.getElementById('voiceBtn');
-      btn.innerText = '🎙️ 語音輸入';
-      btn.classList.remove('recording');
+    /* 關鍵字即時搜尋 */
+    function searchCards() {
+      const query = document.getElementById('searchInput').value.toLowerCase();
+      const cards = document.querySelectorAll('.item-card');
+      cards.forEach(card => {
+        const text = card.innerText.toLowerCase();
+        card.style.display = text.includes(query) ? 'flex' : 'none';
+      });
+    }
+
+    /* 捲動至特定看板 */
+    function scrollToBoard(boardId) {
+      const board = document.getElementById(boardId);
+      if (board) {
+        board.scrollIntoView({ behavior: 'smooth' });
+      }
     }
   </script>
 </body>
