@@ -117,7 +117,8 @@
     .calendar-grid { display: grid; grid-template-columns: repeat(7, 1fr); gap: 8px; text-align: center; }
     .cal-day-header { font-weight: bold; color: var(--accent-green); padding: 8px; background: #eee9e0; border-radius: 6px; }
     .cal-day-cell { background: white; border: 1px solid var(--border-color); border-radius: 8px; min-height: 85px; padding: 6px; display: flex; flex-direction: column; gap: 4px; cursor: pointer; text-align: left; transition: 0.2s; }
-    .cal-day-cell:hover { border-color: var(--accent-green); background-color: #faf8f5; }
+    .cal-day-cell.empty-cell { background: transparent; border: none; cursor: default; }
+    .cal-day-cell:not(.empty-cell):hover { border-color: var(--accent-green); background-color: #faf8f5; }
     .cal-day-num { font-weight: bold; font-size: 0.85rem; color: var(--text-sub); }
     .cal-holiday { background: #fee2e2; color: #991b1b; font-size: 0.72rem; padding: 2px 4px; border-radius: 4px; font-weight: bold; }
     .cal-event-tag { background: #e0e7ff; color: #2b5b84; font-size: 0.72rem; padding: 2px 4px; border-radius: 4px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; font-weight: bold; cursor: pointer; display: block; margin-top: 2px; }
@@ -221,7 +222,6 @@
     <div class="menu-group">
       <div class="menu-item" style="cursor:pointer;" onclick="openSearchModal(); toggleSidebar();">🔍 <span class="menu-text">搜尋</span></div>
       <div class="menu-item" style="cursor:pointer;" onclick="openTagModal(); toggleSidebar();">🏷️ <span class="menu-text">Tag 瀏覽</span></div>
-      <!-- 修正選單名稱：行事曆 -->
       <div class="menu-item" style="cursor:pointer;" id="menu-cal" onclick="switchView('calendar', '📅 2026年 9月 行事曆'); updateMenuActive('menu-cal'); toggleSidebar();">📅 <span class="menu-text">行事曆</span></div>
       <div class="menu-item export-btn" onclick="openExportModal(); toggleSidebar();">📥 <span class="menu-text">匯出資料 (自訂/全站)</span></div>
     </div>
@@ -332,7 +332,6 @@
         <button class="btn-tool" style="color:var(--accent-red);" onclick="deleteCurrentNote()">🗑️ 刪除筆記</button>
       </div>
 
-      <!-- 用於暫存日期的隱藏欄位 -->
       <input type="hidden" id="noteCalendarDay" value="">
 
       <input type="text" id="noteTitle" class="input-title" placeholder="請輸入筆記標題...">
@@ -344,7 +343,7 @@
       </div>
     </div>
 
-    <!-- 視窗 3：📅 行事曆 -->
+    <!-- 視窗 3：📅 行事曆 (完美修正 2026/9/1 為星期二對齊) -->
     <div class="calendar-view" id="view-calendar">
       <div class="calendar-header">
         <h3 style="color:var(--accent-green);">📅 2026 年 9 月行程表</h3>
@@ -353,7 +352,11 @@
       <div class="calendar-grid" id="calendarGrid">
         <div class="cal-day-header">日</div><div class="cal-day-header">一</div><div class="cal-day-header">二</div><div class="cal-day-header">三</div><div class="cal-day-header">四</div><div class="cal-day-header">五</div><div class="cal-day-header">六</div>
         
-        <!-- 動態帶有 id 的日期格子 -->
+        <!-- 2026/9/1 為星期二，前兩格 (日、一) 為空白留白 -->
+        <div class="cal-day-cell empty-cell"></div>
+        <div class="cal-day-cell empty-cell"></div>
+
+        <!-- 1日 ~ 30日 對齊真實星期 -->
         <div class="cal-day-cell" id="cal-day-1" onclick="clickCalendarDay(1)"><span class="cal-day-num">1</span></div>
         <div class="cal-day-cell" id="cal-day-2" onclick="clickCalendarDay(2)"><span class="cal-day-num">2</span></div>
         <div class="cal-day-cell" id="cal-day-3" onclick="clickCalendarDay(3)"><span class="cal-day-num">3</span></div>
@@ -495,6 +498,13 @@
 【一、 任務細節說明】
 * 相關連結/資料：
 * 預計完成時間：`;
+
+    /* 算真實星期的工具函式 (2026/09/01 為星期二) */
+    const weekNames = ['日', '一', '二', '三', '四', '五', '六'];
+    function getWeekName2026Sep(dayNum) {
+      const date = new Date(2026, 8, dayNum); // 8 代表 9 月
+      return weekNames[date.getDay()];
+    }
 
     document.addEventListener('DOMContentLoaded', () => {
       initDragAndDrop();
@@ -654,12 +664,13 @@
       switchView('editor', '📝 新增：' + categoryName);
     }
 
-    /* 📅 點擊行事曆任意日期：帶入詳細地點、時間模板並紀錄日期 */
+    /* 📅 點擊行事曆任意日期：自動計算真實星期並帶入精準範本 */
     function clickCalendarDay(dayNum) {
       const dayStr = dayNum < 10 ? '0' + dayNum : '' + dayNum;
-      document.getElementById('noteCalendarDay').value = dayNum; // 暫存日期數字
+      const wName = getWeekName2026Sep(dayNum);
+      document.getElementById('noteCalendarDay').value = dayNum;
       document.getElementById('noteTitle').value = `⏰ [9/${dayStr} 活動/會議提醒]`;
-      document.getElementById('noteContent').innerHTML = `⏰ 2026/09/${dayStr} 活動與會議行程<br><br><b>【一、 基本資訊與地點】</b><br>* 時間：2026 / 09 / ${dayStr} (三) 10:00 - 11:00<br>* 地點：會議室 A / 線上 Teams (連結：https://...)<br>* 主持人：專案負責人<br><br><b>【二、 內容摘要與待辦】</b><br>[ ] 準備討論資料與 PPT 簡報檔`;
+      document.getElementById('noteContent').innerHTML = `⏰ 2026/09/${dayStr} (${wName}) 活動與會議行程<br><br><b>【一、 基本資訊與地點】</b><br>* 時間：2026 / 09 / ${dayStr} (${wName}) 10:00 - 11:00<br>* 地點：會議室 A / 線上 Teams<br>* 主持人：專案負責人<br><br><b>【二、 內容摘要與待辦】</b><br>[ ] 準備討論資料與 PPT 簡報檔`;
       document.getElementById('editorTargetCategory').value = '☑️ 待辦事項';
       switchView('editor', `📝 新增 9/${dayStr} 行程提醒`);
     }
@@ -741,8 +752,10 @@
     }
 
     function applyMeetingTemplate(month = '09', day = '16') {
+      const dNum = parseInt(day, 10);
+      const wName = isNaN(dNum) ? '三' : getWeekName2026Sep(dNum);
       document.getElementById('noteTitle').value = `⏰ [${month}/${day} 會議/活動名稱]`;
-      document.getElementById('noteContent').innerHTML = meetingTemplate.replace(/\n/g, '<br>');
+      document.getElementById('noteContent').innerHTML = meetingTemplate.replace('2026 / 09 / 16 (三)', `2026 / ${month} / ${day} (${wName})`).replace(/\n/g, '<br>');
       document.getElementById('editorTargetCategory').value = '💼 工作任務';
     }
 
@@ -955,7 +968,6 @@
       }
     }
 
-    /* 💾 儲存筆記：同時連動「看板卡片」與「行事曆行程標籤」 */
     function saveEditorNote() {
       const title = document.getElementById('noteTitle').value || '未命名筆記';
       const content = document.getElementById('noteContent').innerHTML;
@@ -983,13 +995,12 @@
         const targetList = document.getElementById(targetListId);
         if (targetList) targetList.prepend(card);
 
-        // 如果包含行事曆日期，自動同步貼到行事曆對應格子中
         if (dayNum) {
           const calCell = document.getElementById('cal-day-' + dayNum);
           if (calCell) {
             const eventTag = document.createElement('span');
             eventTag.className = 'cal-event-tag';
-            eventTag.innerText = title.replace(/^⏰\s*\[\d+\/\d+\s*/, '').replace(/\]$/, ''); // 簡化短標題
+            eventTag.innerText = title.replace(/^⏰\s*\[\d+\/\d+\s*/, '').replace(/\]$/, '');
             eventTag.onclick = (e) => {
               e.stopPropagation();
               openNoteInEditor(title, content, targetCategory, card);
