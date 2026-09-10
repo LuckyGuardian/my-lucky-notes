@@ -48,13 +48,16 @@
     .btn-add-folder:hover { transform: scale(1.1); }
 
     .menu-group { display: flex; flex-direction: column; gap: 4px; }
-    .menu-item { padding: 8px 12px; border-radius: 8px; cursor: pointer; color: var(--text-main); font-size: 0.9rem; font-weight: 500; display: flex; align-items: center; gap: 8px; white-space: nowrap; }
+    
+    .menu-item { padding: 8px 12px; border-radius: 8px; cursor: grab; color: var(--text-main); font-size: 0.9rem; font-weight: 500; display: flex; align-items: center; gap: 8px; white-space: nowrap; transition: 0.2s; user-select: none; }
+    .menu-item:active { cursor: grabbing; }
+    .menu-item.dragging { opacity: 0.4; background: #eee9e0; border: 1px dashed var(--accent-green); }
     .menu-item:hover, .menu-item.active { background: #eee9e0; color: var(--accent-green); font-weight: bold; }
     
     .btn-side-add { background: var(--accent-green); color: white; border: none; padding: 10px; border-radius: 8px; font-weight: bold; font-size: 0.9rem; cursor: pointer; display: flex; align-items: center; justify-content: center; gap: 6px; box-shadow: 0 2px 6px rgba(59,90,69,0.2); margin: 4px 0; white-space: nowrap; }
     .btn-side-add:hover { opacity: 0.9; }
 
-    .menu-item.export-btn { color: var(--accent-blue); background: #e0e7ff; margin-top: 2px; }
+    .menu-item.export-btn { color: var(--accent-blue); background: #e0e7ff; margin-top: 2px; cursor: pointer; }
     .menu-item.export-btn:hover { background: #c7d2fe; }
 
     .main-container { flex: 1; display: flex; flex-direction: column; gap: 10px; overflow: hidden; position: relative; }
@@ -216,22 +219,22 @@
       <span class="sidebar-section-title">快速跳轉</span>
     </div>
     <div class="menu-group">
-      <div class="menu-item" onclick="openSearchModal(); toggleSidebar();">🔍 <span class="menu-text">搜尋</span></div>
-      <div class="menu-item" onclick="openTagModal(); toggleSidebar();">🏷️ <span class="menu-text">Tag 瀏覽</span></div>
-      <div class="menu-item" id="menu-cal" onclick="switchView('calendar', '📅 2026年 9月 行事曆'); updateMenuActive('menu-cal'); toggleSidebar();">📅 <span class="menu-text">行事曆檢視</span></div>
+      <div class="menu-item" style="cursor:pointer;" onclick="openSearchModal(); toggleSidebar();">🔍 <span class="menu-text">搜尋</span></div>
+      <div class="menu-item" style="cursor:pointer;" onclick="openTagModal(); toggleSidebar();">🏷️ <span class="menu-text">Tag 瀏覽</span></div>
+      <div class="menu-item" style="cursor:pointer;" id="menu-cal" onclick="switchView('calendar', '📅 2026年 9月 行事曆'); updateMenuActive('menu-cal'); toggleSidebar();">📅 <span class="menu-text">行事曆檢視</span></div>
       <div class="menu-item export-btn" onclick="openExportModal(); toggleSidebar();">📥 <span class="menu-text">匯出資料 (自訂/全站)</span></div>
     </div>
 
     <div class="sidebar-section-title-box">
-      <span class="sidebar-section-title">新增筆記 (分類範本)</span>
+      <span class="sidebar-section-title">新增筆記 (可拖曳排序)</span>
       <button class="btn-add-folder" onclick="addNewFolder()" title="新增資料夾/分類看板">➕</button>
     </div>
     <div class="menu-group" id="categoryMenuGroup">
-      <div class="menu-item" id="menu-ai" onclick="openNewCategoryNote('🤖 AI 智庫與筆記'); updateMenuActive('menu-ai'); toggleSidebar();">🤖 <span class="menu-text">AI 智庫與筆記</span></div>
-      <div class="menu-item" id="menu-work" onclick="openNewCategoryNote('💼 工作任務'); updateMenuActive('menu-work'); toggleSidebar();">💼 <span class="menu-text">工作任務</span></div>
-      <div class="menu-item" id="menu-todo" onclick="openNewCategoryNote('☑️ 待辦事項'); updateMenuActive('menu-todo'); toggleSidebar();">☑️ <span class="menu-text">待辦事項</span></div>
-      <div class="menu-item" id="menu-learn" onclick="openNewCategoryNote('📖 學習筆記'); updateMenuActive('menu-learn'); toggleSidebar();">📖 <span class="menu-text">學習筆記</span></div>
-      <div class="menu-item" id="menu-web" onclick="openNewCategoryNote('🌐 網路知識收集站'); updateMenuActive('menu-web'); toggleSidebar();">🌐 <span class="menu-text">網路知識收集站</span></div>
+      <div class="menu-item" draggable="true" data-target-board="ai-board" id="menu-ai" onclick="openNewCategoryNote('🤖 AI 智庫與筆記'); updateMenuActive('menu-ai'); toggleSidebar();">🤖 <span class="menu-text">AI 智庫與筆記</span></div>
+      <div class="menu-item" draggable="true" data-target-board="work-board" id="menu-work" onclick="openNewCategoryNote('💼 工作任務'); updateMenuActive('menu-work'); toggleSidebar();">💼 <span class="menu-text">工作任務</span></div>
+      <div class="menu-item" draggable="true" data-target-board="todo-board" id="menu-todo" onclick="openNewCategoryNote('☑️ 待辦事項'); updateMenuActive('menu-todo'); toggleSidebar();">☑️ <span class="menu-text">待辦事項</span></div>
+      <div class="menu-item" draggable="true" data-target-board="learn-board" id="menu-learn" onclick="openNewCategoryNote('📖 學習筆記'); updateMenuActive('menu-learn'); toggleSidebar();">📖 <span class="menu-text">學習筆記</span></div>
+      <div class="menu-item" draggable="true" data-target-board="web-board" id="menu-web" onclick="openNewCategoryNote('🌐 網路知識收集站'); updateMenuActive('menu-web'); toggleSidebar();">🌐 <span class="menu-text">網路知識收集站</span></div>
     </div>
   </div>
 
@@ -243,7 +246,7 @@
       <span class="status-title" id="currentStatusText">🌐 全部看板模式</span>
     </div>
 
-    <!-- 視窗 1：看板模式 -->
+    <!-- 視窗 1：看板模式 (初始乾淨清爽) -->
     <div class="dashboard-view" id="view-dashboard">
       <div class="dashboard-grid" id="dashboardGrid">
         <div class="board-card" id="ai-board">
@@ -251,15 +254,7 @@
             <div class="board-title">🤖 AI 智庫與筆記</div>
             <button class="btn-board-add" onclick="openNewCategoryNote('🤖 AI 智庫與筆記')">+ 新增</button>
           </div>
-          <div class="card-list" id="list-ai">
-            <div class="item-card" draggable="true" onclick="openNoteInEditor('ChatGPT 萬用文案潤飾 Prompt', aiTemplate, '🤖 AI 智庫與筆記', this)">
-              <div class="item-card-header">
-                <input type="checkbox" onclick="event.stopPropagation()">
-                <span class="item-card-title">ChatGPT 萬用文案潤飾 Prompt</span>
-              </div>
-              <div class="tags-wrapper"><span class="tag-badge">AI工具</span><span class="tag-badge">Prompt</span></div>
-            </div>
-          </div>
+          <div class="card-list" id="list-ai"></div>
         </div>
 
         <div class="board-card" id="work-board">
@@ -267,15 +262,7 @@
             <div class="board-title">💼 工作任務</div>
             <button class="btn-board-add" onclick="openNewCategoryNote('💼 工作任務')">+ 新增</button>
           </div>
-          <div class="card-list" id="list-work">
-            <div class="item-card" draggable="true" onclick="openNoteInEditor('跨部門會議紀錄與進度追蹤', workTemplate, '💼 工作任務', this)">
-              <div class="item-card-header">
-                <input type="checkbox" onclick="event.stopPropagation()">
-                <span class="item-card-title">跨部門會議紀錄與進度追蹤</span>
-              </div>
-              <div class="tags-wrapper"><span class="tag-badge">會議</span><span class="tag-badge">專案追蹤</span></div>
-            </div>
-          </div>
+          <div class="card-list" id="list-work"></div>
         </div>
 
         <div class="board-card" id="todo-board">
@@ -283,29 +270,7 @@
             <div class="board-title">☑️ 待辦事項</div>
             <button class="btn-board-add" onclick="openNewCategoryNote('☑️ 待辦事項')">+ 新增</button>
           </div>
-          <div class="card-list" id="list-todo">
-            <div class="item-card" draggable="true" onclick="openNoteInEditor('9/16與Headquarter.ai討論會', meetingTemplate, '☑️ 待辦事項', this)">
-              <div class="item-card-header">
-                <input type="checkbox" onclick="event.stopPropagation()">
-                <span class="item-card-title">☑️ 9/16與Headquarter.ai討論會</span>
-              </div>
-            </div>
-
-            <div class="item-card" draggable="true" onclick="openNoteInEditor('9/14設定署內Claude', '任務進度：權限申請中...', '☑️ 待辦事項', this)">
-              <div class="item-card-header">
-                <input type="checkbox" onclick="event.stopPropagation()">
-                <span class="item-card-title">☑️ 9/14設定署內Claude</span>
-              </div>
-            </div>
-
-            <div class="item-card" draggable="true" onclick="openNoteInEditor('拼圖遊戲開發與測試', '詳細測試步驟...', '☑️ 待辦事項', this)">
-              <div class="item-card-header">
-                <input type="checkbox" onclick="event.stopPropagation()">
-                <span class="item-card-title">拼圖遊戲開發與測試</span>
-              </div>
-              <div class="tags-wrapper"><span class="tag-badge">前端開發</span></div>
-            </div>
-          </div>
+          <div class="card-list" id="list-todo"></div>
         </div>
 
         <div class="board-card" id="learn-board">
@@ -313,32 +278,15 @@
             <div class="board-title">📖 學習筆記</div>
             <button class="btn-board-add" onclick="openNewCategoryNote('📖 學習筆記')">+ 新增</button>
           </div>
-          <div class="card-list" id="list-learn">
-            <div class="item-card" draggable="true" onclick="openNoteInEditor('英文句型與搭配詞指南', englishTemplate, '📖 學習筆記', this)">
-              <div class="item-card-header">
-                <input type="checkbox" onclick="event.stopPropagation()">
-                <span class="item-card-title">英文句型與搭配詞指南</span>
-              </div>
-              <div class="tags-wrapper"><span class="tag-badge">英文學習</span></div>
-            </div>
-          </div>
+          <div class="card-list" id="list-learn"></div>
         </div>
 
-        <!-- 🌐 網路知識收集站看板 -->
         <div class="board-card" id="web-board">
           <div class="board-header">
             <div class="board-title">🌐 網路知識收集站</div>
             <button class="btn-board-add" onclick="openNewCategoryNote('🌐 網路知識收集站')">+ 新增</button>
           </div>
-          <div class="card-list" id="list-web">
-            <div class="item-card" draggable="true" onclick="openNoteInEditor('網路知識收集範例', webTemplate, '🌐 網路知識收集站', this)">
-              <div class="item-card-header">
-                <input type="checkbox" onclick="event.stopPropagation()">
-                <span class="item-card-title">🌐 AI 趨勢導讀與整理</span>
-              </div>
-              <div class="tags-wrapper"><span class="tag-badge">科技</span><span class="tag-badge">AI</span></div>
-            </div>
-          </div>
+          <div class="card-list" id="list-web"></div>
         </div>
       </div>
     </div>
@@ -384,7 +332,7 @@
       </div>
 
       <input type="text" id="noteTitle" class="input-title" placeholder="請輸入筆記標題...">
-      <div id="noteContent" class="input-content-editable" contenteditable="true" placeholder="在此處自由書寫..."></div>
+      <div id="noteContent" class="input-content-editable" contenteditable="true" placeholder="在此處自由書寫或直接 Ctrl+V 貼上圖片/文字/網址..."></div>
 
       <div class="image-section">
         <span style="font-size:0.85rem;color:var(--text-sub);">📷 圖片附件：</span>
@@ -414,19 +362,9 @@
         <div class="cal-day-cell" onclick="clickCalendarDay(11)"><span class="cal-day-num">11</span></div>
         <div class="cal-day-cell" onclick="clickCalendarDay(12)"><span class="cal-day-num">12</span></div>
         <div class="cal-day-cell" onclick="clickCalendarDay(13)"><span class="cal-day-num">13</span></div>
-        
-        <div class="cal-day-cell" onclick="clickCalendarDay(14)">
-          <span class="cal-day-num">14</span>
-          <span class="cal-event-tag" onclick="event.stopPropagation(); openNoteInEditor('9/14設定署內Claude', '任務進度：權限申請中...', '☑️ 待辦事項')">署內Claude</span>
-        </div>
-        
+        <div class="cal-day-cell" onclick="clickCalendarDay(14)"><span class="cal-day-num">14</span></div>
         <div class="cal-day-cell" onclick="clickCalendarDay(15)"><span class="cal-day-num">15</span></div>
-        
-        <div class="cal-day-cell" onclick="clickCalendarDay(16)">
-          <span class="cal-day-num">16</span>
-          <span class="cal-event-tag" onclick="event.stopPropagation(); openNoteInEditor('9/16與Headquarter.ai討論會', meetingTemplate, '☑️ 待辦事項')">HQ討論會</span>
-        </div>
-        
+        <div class="cal-day-cell" onclick="clickCalendarDay(16)"><span class="cal-day-num">16</span></div>
         <div class="cal-day-cell" onclick="clickCalendarDay(17)"><span class="cal-day-num">17</span></div>
         <div class="cal-day-cell" onclick="clickCalendarDay(18)"><span class="cal-day-num">18</span></div>
         <div class="cal-day-cell" onclick="clickCalendarDay(19)"><span class="cal-day-num">19</span></div>
@@ -500,7 +438,7 @@
     let currentImages = [];
     let currentEditingCard = null;
 
-    /* 🌐 專屬「網路知識收集」範本 */
+    /* 結構化示範範本庫 */
     const webTemplate = `🌐 [文章或知識標題]
 
 【一、 基本資訊】
@@ -525,27 +463,101 @@
 [ ] 準備專案簡報檔 (PPT)
 [ ] 帶筆電與簡報筆`;
 
-    const aiTemplate = `🤖 [AI 工具與用途] (例如：ChatGPT 萬用文案潤飾)
+    const aiTemplate = `🤖 [ChatGPT 萬用文案潤飾 Prompt]
 
 【一、 核心提示詞 (Prompt Template)】
 * 角色設定：你是一位專業的職場溝通專家。
-* 任務目標：幫我潤飾以下內文，使其兼具專業度與道地表達。`;
+* 任務目標：幫我潤飾以下內文，使其兼具專業度與道地表達。
+* 輸入內容：[在此貼入原始文字]`;
 
-    const workTemplate = `📌 [會議/專案名稱] 紀錄
+    const workTemplate = `📌 [跨部門會議紀錄與進度追蹤] 紀錄
 
 【一、 核心目標與結論】
 * 本次要解決的核心問題：
-* 最終決議與共識：`;
+* 最終決議與共識：
 
-    const englishTemplate = `🔤 [學習主題/情境名稱]
+【二、 Action Items (待辦追蹤)】
+[ ] 任務 A (負責人 / 預計完成日)
+[ ] 任務 B (負責人 / 預計完成日)`;
+
+    const englishTemplate = `🔤 [英文句型與搭配詞指南]
 
 【一、 萬用句型 / 情境短語】
-* 句型 1：I wanted to check in on the status of [事項].`;
+* 句型 1：I wanted to check in on the status of [事項].
+  (中譯：我想確認一下 [事項] 的目前進度。)`;
 
     const todoTemplate = `☑️ [待辦事項標題]
 
 【一、 任務細節說明】
-* 相關連結/資料：`;
+* 相關連結/資料：
+* 預計完成時間：`;
+
+    document.addEventListener('DOMContentLoaded', () => {
+      initDragAndDrop();
+      initCategoryMenuDragAndDrop();
+
+      const editorEl = document.getElementById('noteContent');
+      if (editorEl) {
+        editorEl.addEventListener('paste', (e) => {
+          const items = (e.clipboardData || e.originalEvent.clipboardData).items;
+          for (let item of items) {
+            if (item.type.indexOf('image') === 0) {
+              e.preventDefault();
+              const file = item.getAsFile();
+              const reader = new FileReader();
+              reader.onload = (event) => {
+                currentImages.push(event.target.result);
+                renderImages();
+              };
+              reader.readAsDataURL(file);
+            }
+          }
+        });
+      }
+    });
+
+    function initCategoryMenuDragAndDrop() {
+      const menuGroup = document.getElementById('categoryMenuGroup');
+      if (!menuGroup) return;
+
+      const menuItems = menuGroup.querySelectorAll('.menu-item[draggable="true"]');
+      menuItems.forEach(item => bindMenuItemDragEvents(item));
+
+      menuGroup.addEventListener('dragover', e => {
+        e.preventDefault();
+        const draggingItem = menuGroup.querySelector('.dragging');
+        if (!draggingItem) return;
+
+        const afterElement = getDragAfterElement(menuGroup, e.clientY, '.menu-item:not(.dragging)');
+        if (afterElement == null) {
+          menuGroup.appendChild(draggingItem);
+        } else {
+          menuGroup.insertBefore(draggingItem, afterElement);
+        }
+
+        syncDashboardGridOrder();
+      });
+    }
+
+    function bindMenuItemDragEvents(item) {
+      item.addEventListener('dragstart', () => item.classList.add('dragging'));
+      item.addEventListener('dragend', () => item.classList.remove('dragging'));
+    }
+
+    function syncDashboardGridOrder() {
+      const menuGroup = document.getElementById('categoryMenuGroup');
+      const grid = document.getElementById('dashboardGrid');
+      if (!menuGroup || !grid) return;
+
+      const items = menuGroup.querySelectorAll('.menu-item');
+      items.forEach(item => {
+        const targetBoardId = item.getAttribute('data-target-board');
+        if (targetBoardId) {
+          const boardEl = document.getElementById(targetBoardId);
+          if (boardEl) grid.appendChild(boardEl);
+        }
+      });
+    }
 
     function applyWebKnowledgeTemplate() {
       document.getElementById('noteTitle').value = '🌐 [網路知識文章標題]';
@@ -574,6 +586,10 @@
       const menuItem = document.createElement('div');
       menuItem.className = 'menu-item';
       menuItem.id = 'menu-' + safeId;
+      menuItem.setAttribute('draggable', 'true');
+      menuItem.setAttribute('data-target-board', safeId);
+      bindMenuItemDragEvents(menuItem);
+
       menuItem.onclick = () => {
         openNewCategoryNote(folderName);
         updateMenuActive('menu-' + safeId);
@@ -605,19 +621,30 @@
       alert('資料夾看板「' + folderName + '」已成功建立！');
     }
 
+    /* 點擊「+ 新增」時載入結構化示範卡片內容，供使用者自由編輯 */
     function openNewCategoryNote(categoryName) {
       currentEditingCard = null;
       currentImages = [];
       renderImages();
 
-      document.getElementById('noteTitle').value = categoryName + ' - 新筆記';
-      
+      let defaultTitle = categoryName + ' - 新筆記';
       let tpl = todoTemplate;
-      if (categoryName.includes('AI')) tpl = aiTemplate;
-      else if (categoryName.includes('工作')) tpl = workTemplate;
-      else if (categoryName.includes('學習')) tpl = englishTemplate;
-      else if (categoryName.includes('網路')) tpl = webTemplate;
 
+      if (categoryName.includes('AI')) {
+        defaultTitle = '🤖 ChatGPT 萬用文案潤飾 Prompt';
+        tpl = aiTemplate;
+      } else if (categoryName.includes('工作')) {
+        defaultTitle = '📌 跨部門會議紀錄與進度追蹤';
+        tpl = workTemplate;
+      } else if (categoryName.includes('學習')) {
+        defaultTitle = '📖 英文句型與搭配詞指南';
+        tpl = englishTemplate;
+      } else if (categoryName.includes('網路')) {
+        defaultTitle = '🌐 網路知識收集文章';
+        tpl = webTemplate;
+      }
+
+      document.getElementById('noteTitle').value = defaultTitle;
       document.getElementById('noteContent').innerHTML = tpl.replace(/\n/g, '<br>');
       document.getElementById('editorTargetCategory').value = categoryName;
       switchView('editor', '📝 新增：' + categoryName);
@@ -638,10 +665,6 @@
       collapseBtn.innerText = sidebar.classList.contains('collapsed') ? '▶' : '◀';
     }
 
-    document.addEventListener('DOMContentLoaded', () => {
-      initDragAndDrop();
-    });
-
     function formatDoc(cmd, value = null) {
       document.execCommand(cmd, false, value);
     }
@@ -661,7 +684,7 @@
           e.preventDefault();
           const draggingCard = document.querySelector('.dragging');
           if (!draggingCard) return;
-          const afterElement = getDragAfterElement(list, e.clientY);
+          const afterElement = getDragAfterElement(list, e.clientY, '.item-card:not(.dragging)');
           if (afterElement == null) {
             list.appendChild(draggingCard);
           } else {
@@ -678,8 +701,8 @@
 
     document.querySelectorAll('.item-card').forEach(bindCardDragEvents);
 
-    function getDragAfterElement(container, y) {
-      const draggableElements = [...container.querySelectorAll('.item-card:not(.dragging)')];
+    function getDragAfterElement(container, y, selector) {
+      const draggableElements = [...container.querySelectorAll(selector)];
       return draggableElements.reduce((closest, child) => {
         const box = child.getBoundingClientRect();
         const offset = y - box.top - box.height / 2;
@@ -987,19 +1010,3 @@
   </script>
 </body>
 </html>
-// 📸 支援直接 Ctrl+V / 剪貼簿貼上圖片
-document.getElementById('noteContent').addEventListener('paste', function (e) {
-  const items = (e.clipboardData || e.originalEvent.clipboardData).items;
-  for (let item of items) {
-    if (item.type.indexOf('image') === 0) {
-      e.preventDefault(); // 避免貼出原生 base64 字串
-      const file = item.getAsFile();
-      const reader = new FileReader();
-      reader.onload = function (event) {
-        currentImages.push(event.target.result);
-        renderImages(); // 自動顯示在下方圖片附件區
-      };
-      reader.readAsDataURL(file);
-    }
-  }
-});
