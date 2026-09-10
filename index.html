@@ -45,8 +45,6 @@
       gap: 12px; 
       border: 1px solid var(--border-color); 
       box-shadow: 2px 0 8px rgba(0, 0, 0, 0.03);
-      position: relative;
-      overflow: hidden;
     }
     
     .sidebar h3 { 
@@ -57,6 +55,9 @@
       letter-spacing: 1px;
       border-bottom: 2px solid var(--accent-blue);
       padding-bottom: 8px;
+      display: flex;
+      align-items: center;
+      gap: 6px;
     }
     
     .menu-item { 
@@ -67,25 +68,12 @@
       transition: 0.2s; 
       font-size: 0.95rem; 
       font-weight: bold;
-      z-index: 1;
     }
     
     .menu-item.active, .menu-item:hover { 
       background-color: var(--bg-card); 
       color: var(--accent-blue); 
       border-left: 4px solid var(--accent-blue);
-    }
-
-    /* 左下角薩摩耶圖案 */
-    .samoyed-dog {
-      position: absolute;
-      bottom: -5px;
-      left: -5px;
-      width: 120px;
-      height: 120px;
-      opacity: 0.45; /* 半透明浮雕質感 */
-      pointer-events: none;
-      z-index: 0;
     }
 
     /* 筆記列表 */
@@ -176,6 +164,7 @@
       padding: 25px; 
       border: 1px solid var(--border-color); 
       box-shadow: 2px 0 8px rgba(0, 0, 0, 0.03);
+      overflow-y: auto;
     }
     
     .editor-tools { 
@@ -202,6 +191,25 @@
       background-color: var(--bg-main); 
       border-color: var(--accent-blue);
     }
+
+    .btn-voice {
+      background-color: #fef3c7;
+      border-color: #f59e0b;
+      color: #92400e;
+    }
+
+    .btn-voice.recording {
+      background-color: #fee2e2;
+      border-color: #ef4444;
+      color: #991b1b;
+      animation: pulse 1.5s infinite;
+    }
+
+    @keyframes pulse {
+      0% { opacity: 1; }
+      50% { opacity: 0.5; }
+      100% { opacity: 1; }
+    }
     
     .input-title { 
       background: transparent; 
@@ -216,54 +224,86 @@
     }
     
     .input-content { 
-      flex: 1; 
+      min-height: 250px; 
       background: transparent; 
       border: none; 
       color: var(--text-main); 
       font-size: 1.05rem; 
       line-height: 1.8; 
-      resize: none; 
+      resize: vertical; 
       outline: none; 
+    }
+
+    /* 圖片預覽區塊 */
+    .image-section {
+      margin-top: 20px;
+      padding-top: 15px;
+      border-top: 1px dashed var(--border-color);
+    }
+
+    .image-section-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 12px;
+    }
+
+    .image-section-header h5 {
+      font-size: 0.95rem;
+      color: var(--text-sub);
+    }
+
+    .image-preview-container {
+      display: flex;
+      gap: 12px;
+      flex-wrap: wrap;
+    }
+
+    .image-preview-box {
+      position: relative;
+      width: 140px;
+      height: 140px;
+      border-radius: 6px;
+      border: 1px solid var(--border-color);
+      overflow: hidden;
+      background-color: var(--bg-card);
+    }
+
+    .image-preview-box img {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+    }
+
+    .btn-delete-img {
+      position: absolute;
+      top: 4px;
+      right: 4px;
+      background: rgba(168, 72, 66, 0.85);
+      color: white;
+      border: none;
+      border-radius: 50%;
+      width: 22px;
+      height: 22px;
+      font-size: 12px;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: center;
     }
 
     @media (max-width: 767px) {
       body { flex-direction: column; }
       .sidebar { width: 100%; height: auto; flex-direction: row; justify-content: space-around; }
       .note-list-panel { width: 100%; height: 180px; }
-      .samoyed-dog { display: none; }
     }
   </style>
 </head>
 <body>
   <div class="sidebar">
-    <h3>📜 雅韻知識庫</h3>
+    <h3>🦫 雅韻知識庫</h3>
     <div class="menu-item active">📖 英文筆記</div>
     <div class="menu-item">💼 工作筆記</div>
-    
-    <!-- 白色薩摩耶向量圖案 -->
-    <svg class="samoyed-dog" viewBox="0 0 100 100">
-      <!-- 身體與胸毛 -->
-      <path d="M20,95 Q25,65 45,60 Q65,65 70,95 Z" fill="#ffffff" />
-      <path d="M15,90 Q30,75 45,80 Q60,75 75,90 Z" fill="#e8ded1" />
-      <!-- 頭部毛髮 -->
-      <circle cx="45" cy="45" r="24" fill="#ffffff" />
-      <!-- 左耳 -->
-      <polygon points="25,35 22,12 38,26" fill="#ffffff" />
-      <polygon points="27,33 24,16 36,26" fill="#e8ded1" />
-      <!-- 右耳 -->
-      <polygon points="65,35 68,12 52,26" fill="#ffffff" />
-      <polygon points="63,33 66,16 54,26" fill="#e8ded1" />
-      <!-- 嘴吻部 -->
-      <ellipse cx="45" cy="50" rx="10" ry="8" fill="#ffffff" />
-      <!-- 眼睛 -->
-      <circle cx="37" cy="40" r="2.5" fill="#2c2a29" />
-      <circle cx="53" cy="40" r="2.5" fill="#2c2a29" />
-      <circle cx="38" cy="39" r="0.8" fill="#ffffff" />
-      <circle cx="54" cy="39" r="0.8" fill="#ffffff" />
-      <!-- 鼻子與微笑嘴巴 -->
-      <ellipse cx="45" cy="47" rx="3" ry="2" fill="#2c2a29" />
-      <path d="M42,51 Q45,54 48,51" stroke="#2c2a29" stroke-width="1.5" fill="none" stroke-linecap="round" />
-    </svg>
   </div>
 
   <div class="note-list-panel">
@@ -285,6 +325,9 @@
 
   <div class="editor-panel">
     <div class="editor-tools">
+      <button class="btn-tool btn-voice" id="voiceBtn" onclick="toggleVoiceRecognition()">🎙️ 語音輸入</button>
+      <button class="btn-tool" onclick="document.getElementById('imageInput').click()">🖼️ 上傳圖片</button>
+      <input type="file" id="imageInput" accept="image/*" style="display: none;" onchange="handleImageUpload(event)">
       <button class="btn-tool" onclick="applyEnglishTemplate()">🔤 帶入英文範本</button>
       <button class="btn-tool" onclick="applyWorkTemplate()">📋 帶入工作範本</button>
       <button class="btn-tool" onclick="saveNote()">💾 儲存筆記</button>
@@ -292,9 +335,19 @@
     </div>
     <input type="text" id="noteTitle" class="input-title" value="🔤 英文句型與搭配詞範本" placeholder="請輸入標題...">
     <textarea id="noteContent" class="input-content" placeholder="在此記錄知識與思考..."></textarea>
+
+    <!-- 📷 筆記附件圖片展示區 -->
+    <div class="image-section">
+      <div class="image-section-header">
+        <h5>📷 筆記圖片附件</h5>
+      </div>
+      <div class="image-preview-container" id="imageContainer"></div>
+    </div>
   </div>
 
   <script>
+    let currentImages = [];
+
     const englishTemplate = `🔤 [學習主題/情境名稱] (範例：職場 Email 跟進)
 
 【一、 萬用句型 / 情境短語】
@@ -331,7 +384,41 @@
     function createNote() {
       document.getElementById('noteTitle').value = '';
       document.getElementById('noteContent').value = '';
+      currentImages = [];
+      renderImages();
       document.getElementById('noteTitle').focus();
+    }
+
+    /* 📷 圖片上傳處理 */
+    function handleImageUpload(event) {
+      const file = event.target.files[0];
+      if (file) {
+        const reader = new FileReader();
+        reader.onload = function(e) {
+          currentImages.push(e.target.result);
+          renderImages();
+        };
+        reader.readAsDataURL(file);
+      }
+    }
+
+    function removeImage(index) {
+      currentImages.splice(index, 1);
+      renderImages();
+    }
+
+    function renderImages() {
+      const container = document.getElementById('imageContainer');
+      container.innerHTML = '';
+      currentImages.forEach((src, idx) => {
+        const box = document.createElement('div');
+        box.className = 'image-preview-box';
+        box.innerHTML = `
+          <img src="${src}" alt="筆記圖片">
+          <button class="btn-delete-img" onclick="removeImage(${idx})">✕</button>
+        `;
+        container.appendChild(box);
+      });
     }
 
     function applyEnglishTemplate() {
@@ -351,6 +438,8 @@
     function selectNote(title, content) {
       document.getElementById('noteTitle').value = title;
       document.getElementById('noteContent').value = content;
+      currentImages = [];
+      renderImages();
     }
 
     function loadEnglishSample() {
@@ -379,7 +468,74 @@
       if (confirm('確定要刪除此篇筆記嗎？')) {
         document.getElementById('noteTitle').value = '';
         document.getElementById('noteContent').value = '';
+        currentImages = [];
+        renderImages();
       }
+    }
+
+    /* 🎙️ 語音轉文字功能 */
+    let recognition = null;
+    let isRecording = false;
+
+    if ('webkitSpeechRecognition' in window || 'SpeechRecognition' in window) {
+      const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
+      recognition = new SpeechRecognition();
+      recognition.continuous = true;
+      recognition.interimResults = true;
+      recognition.lang = 'zh-TW';
+
+      recognition.onresult = (event) => {
+        let transcript = '';
+        for (let i = event.resultIndex; i < event.results.length; i++) {
+          if (event.results[i].isFinal) {
+            transcript += event.results[i][0].transcript;
+          }
+        }
+        if (transcript) {
+          const textarea = document.getElementById('noteContent');
+          textarea.value += (textarea.value ? '\n' : '') + transcript;
+        }
+      };
+
+      recognition.onerror = (event) => {
+        console.error('語音辨識錯誤：', event.error);
+        stopRecording();
+      };
+
+      recognition.onend = () => {
+        if (isRecording) {
+          recognition.start();
+        }
+      };
+    }
+
+    function toggleVoiceRecognition() {
+      if (!recognition) {
+        alert('您的瀏覽器不支援語音辨識，建議使用 Chrome 或 Edge 瀏覽器開啟！');
+        return;
+      }
+
+      if (isRecording) {
+        stopRecording();
+      } else {
+        startRecording();
+      }
+    }
+
+    function startRecording() {
+      isRecording = true;
+      recognition.start();
+      const btn = document.getElementById('voiceBtn');
+      btn.innerText = '🔴 錄音辨識中...';
+      btn.classList.add('recording');
+    }
+
+    function stopRecording() {
+      isRecording = false;
+      if (recognition) recognition.stop();
+      const btn = document.getElementById('voiceBtn');
+      btn.innerText = '🎙️ 語音輸入';
+      btn.classList.remove('recording');
     }
   </script>
 </body>
