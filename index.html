@@ -28,7 +28,7 @@
     /* 側邊欄 */
     .sidebar { width: 230px; background: var(--bg-panel); border-radius: 12px; padding: 16px 12px; display: flex; flex-direction: column; gap: 12px; border: 1px solid var(--border-color); overflow-y: auto; z-index: 100; transition: transform 0.3s ease; }
     .mascot-box { display: flex; align-items: center; gap: 10px; padding: 8px 6px; border-bottom: 1px solid var(--border-color); margin-bottom: 4px; }
-    .mascot-svg { width: 45px; height: 45px; }
+    .mascot-svg { width: 42px; height: 42px; }
     .mascot-title { font-size: 1.1rem; font-weight: bold; color: var(--accent-green); }
 
     .sidebar-section-title { font-size: 0.8rem; color: var(--text-sub); font-weight: bold; margin-bottom: 4px; padding-left: 8px; }
@@ -107,23 +107,41 @@
 
   <!-- 手機版 Header -->
   <div class="mobile-header">
-    <h2>Lucky Note</h2>
+    <h2>
+      <svg class="mascot-svg" style="width:24px;height:24px;" viewBox="0 0 100 100">
+        <path d="M50,45 C38,20 18,28 30,48 C10,38 8,60 30,62 C15,78 30,90 48,70 C48,85 52,85 52,70 C70,90 85,78 70,62 C92,60 90,38 70,48 C82,28 62,20 50,45 Z" fill="#3b5a45" />
+        <path d="M50,68 C49,85 45,95 40,100" stroke="#3b5a45" stroke-width="4" fill="none" stroke-linecap="round" />
+      </svg>
+      Lucky Note
+    </h2>
     <button class="btn-hamburger" onclick="toggleSidebar()">☰</button>
   </div>
 
   <!-- 左側選單 -->
   <div class="sidebar" id="sidebar">
     <div class="mascot-box">
+      <!-- 向量畫質的四葉幸運草圖示 -->
       <svg class="mascot-svg" viewBox="0 0 100 100">
-        <ellipse cx="50" cy="60" rx="35" ry="30" fill="#c49a6c" />
-        <ellipse cx="50" cy="40" rx="25" ry="20" fill="#c49a6c" />
-        <circle cx="40" cy="35" r="3" fill="#2c2a29" />
-        <circle cx="60" cy="35" r="3" fill="#2c2a29" />
-        <ellipse cx="50" cy="42" rx="4" ry="3" fill="#8c6d46" />
-        <ellipse cx="50" cy="22" rx="28" ry="6" fill="#e6c875" />
-        <path d="M32,22 Q50,5 68,22 Z" fill="#d4b253" />
-        <circle cx="50" cy="72" r="10" fill="#4c51bf" />
-        <polygon points="50,65 47,68 53,68" fill="#312e81" />
+        <!-- 四片葉子組成的幸運草 -->
+        <g fill="#3b5a45">
+          <!-- 上葉 -->
+          <path d="M50,50 Q30,20 50,8 Q70,20 50,50 Z" />
+          <!-- 下葉 -->
+          <path d="M50,50 Q30,80 50,92 Q70,80 50,50 Z" />
+          <!-- 左葉 -->
+          <path d="M50,50 Q20,30 8,50 Q20,70 50,50 Z" />
+          <!-- 右葉 -->
+          <path d="M50,50 Q80,30 92,50 Q80,70 50,50 Z" />
+        </g>
+        <!-- 葉心細節 -->
+        <g fill="#5c8a68">
+          <circle cx="50" cy="32" r="5" opacity="0.6" />
+          <circle cx="50" cy="68" r="5" opacity="0.6" />
+          <circle cx="32" cy="50" r="5" opacity="0.6" />
+          <circle cx="68" cy="50" r="5" opacity="0.6" />
+        </g>
+        <!-- 幸運草莖 -->
+        <path d="M50,55 Q46,75 35,95" stroke="#2b4233" stroke-width="5" fill="none" stroke-linecap="round" />
       </svg>
       <div class="mascot-title">Lucky Note</div>
     </div>
@@ -288,7 +306,7 @@
 
   <script>
     let currentImages = [];
-    let currentEditingCard = null; // 追蹤目前正在修改哪張卡片
+    let currentEditingCard = null;
 
     const aiTemplate = `🤖 [AI 工具與用途] (例如：ChatGPT 萬用文案潤飾)
 
@@ -326,7 +344,6 @@
 * 相關連結/資料：
 * 預計完成時間：`;
 
-    /* 點擊側邊欄分類，開啟該類別的新增/編輯畫面 */
     function openCategoryEditor(type) {
       currentEditingCard = null;
       currentImages = [];
@@ -414,7 +431,6 @@
       });
     }
 
-    /* 🎙️ 語音轉文字 */
     let recognition = null;
     let isRecording = false;
     if ('webkitSpeechRecognition' in window || 'SpeechRecognition' in window) {
@@ -450,7 +466,6 @@
       }
     }
 
-    /* 💾 儲存筆記：支援修改舊卡片或新增新卡片 */
     function saveEditorNote() {
       const title = document.getElementById('noteTitle').value || '未命名筆記';
       const content = document.getElementById('noteContent').value;
@@ -462,12 +477,10 @@
       else if (targetCategory.includes('學習')) targetListId = 'list-learn';
 
       if (currentEditingCard) {
-        // 修改現有卡片
         currentEditingCard.querySelector('.item-card-title').innerText = title;
         currentEditingCard.onclick = () => openNoteInEditor(title, content, targetCategory, currentEditingCard);
         alert('筆記「' + title + '」已成功更新！');
       } else {
-        // 新增卡片
         const card = document.createElement('div');
         card.className = 'item-card';
         card.onclick = () => openNoteInEditor(title, content, targetCategory, card);
@@ -480,7 +493,6 @@
       switchView('dashboard');
     }
 
-    /* 🗑️ 刪除筆記 */
     function deleteCurrentNote() {
       if (confirm('確定要刪除這篇筆記嗎？')) {
         if (currentEditingCard) {
