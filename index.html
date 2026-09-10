@@ -64,16 +64,24 @@
     .tags-wrapper { display: flex; gap: 6px; flex-wrap: wrap; }
     .tag-badge { background: #f0ebd8; color: #6b5e43; font-size: 0.75rem; padding: 2px 8px; border-radius: 12px; font-weight: bold; }
 
-    /* 視窗 2：筆記編輯器 */
+    /* 視窗 2：筆記詳細編輯器 */
     .editor-view { display: none; flex: 1; flex-direction: column; background: var(--bg-panel); border-radius: 12px; padding: 20px; border: 1px solid var(--border-color); overflow-y: auto; }
-    .editor-tools { display: flex; gap: 8px; margin-bottom: 12px; flex-wrap: wrap; justify-content: flex-end; }
-    .btn-tool { background: #ffffff; border: 1px solid var(--border-color); padding: 6px 14px; border-radius: 6px; cursor: pointer; font-weight: bold; font-size: 0.85rem; }
+    .editor-tools { display: flex; gap: 6px; margin-bottom: 12px; flex-wrap: wrap; align-items: center; }
+    .btn-tool { background: #ffffff; border: 1px solid var(--border-color); padding: 6px 12px; border-radius: 6px; cursor: pointer; font-weight: bold; font-size: 0.85rem; }
+    .btn-tool:hover { background-color: #f3f0e6; }
+    
+    /* 樣式按鈕專用 */
+    .btn-fmt { font-weight: bold; padding: 5px 10px; }
+    .btn-highlight { background-color: #fef08a; border-color: #eab308; }
+
     .btn-voice { background-color: #fef3c7; border-color: #f59e0b; color: #92400e; }
     .btn-voice.recording { background-color: #fee2e2; border-color: #ef4444; color: #991b1b; animation: pulse 1.5s infinite; }
     @keyframes pulse { 0% { opacity: 1; } 50% { opacity: 0.5; } 100% { opacity: 1; } }
 
     .input-title { background: transparent; border: none; border-bottom: 2px solid var(--border-color); color: var(--accent-green); font-size: 1.5rem; font-weight: bold; margin-bottom: 15px; padding-bottom: 6px; outline: none; }
-    .input-content { flex: 1; min-height: 200px; background: transparent; border: none; font-size: 1.05rem; line-height: 1.8; resize: vertical; outline: none; }
+    
+    /* 支援格式化顯示的預設容器與文字輸入 */
+    .input-content { flex: 1; min-height: 220px; background: transparent; border: none; font-size: 1.05rem; line-height: 1.8; resize: vertical; outline: none; }
     
     .image-section { margin-top: 15px; padding-top: 10px; border-top: 1px dashed var(--border-color); }
     .image-preview-container { display: flex; gap: 10px; flex-wrap: wrap; margin-top: 8px; }
@@ -164,7 +172,6 @@
       </div>
 
       <div class="dashboard-grid">
-        <!-- 看板: AI 智庫與筆記 -->
         <div class="board-card" id="ai-board">
           <div class="board-header">
             <div class="board-title">🤖 AI 智庫與筆記 <span class="board-count">1</span></div>
@@ -180,7 +187,6 @@
           </div>
         </div>
 
-        <!-- 看板: 工作任務 -->
         <div class="board-card" id="work-board">
           <div class="board-header">
             <div class="board-title">💼 工作任務 <span class="board-count">2</span></div>
@@ -203,7 +209,6 @@
           </div>
         </div>
 
-        <!-- 看板: 待辦事項 -->
         <div class="board-card" id="todo-board">
           <div class="board-header">
             <div class="board-title">☑️ 待辦事項 <span class="board-count">1</span></div>
@@ -224,16 +229,26 @@
     <!-- 視窗 2：筆記詳細編輯器 -->
     <div class="editor-view" id="view-editor">
       <div class="editor-tools">
+        <!-- 文字樣式工具 -->
+        <button class="btn-tool btn-fmt" onclick="insertTag('<b>', '</b>')" title="粗體"><b>B</b></button>
+        <button class="btn-tool btn-fmt btn-highlight" onclick="insertTag('<mark>', '</mark>')" title="螢光筆">🖍️ 螢光筆</button>
+        <button class="btn-tool btn-fmt" style="color:#a84842;" onclick="insertTag('<span style=&quot;color:#a84842;font-weight:bold;&quot;>', '</span>')">🔴 紅字</button>
+        <button class="btn-tool btn-fmt" style="color:#2b5b84;" onclick="insertTag('<span style=&quot;color:#2b5b84;font-weight:bold;&quot;>', '</span>')">🔵 藍字</button>
+        <button class="btn-tool btn-fmt" style="color:#3b5a45;" onclick="insertTag('<span style=&quot;color:#3b5a45;font-weight:bold;&quot;>', '</span>')">🟢 綠字</button>
+
+        <span style="color:var(--border-color);">|</span>
+
+        <!-- 功能按鈕 -->
         <button class="btn-tool btn-voice" id="voiceBtn" onclick="toggleVoiceRecognition()">🎙️ 語音輸入</button>
         <button class="btn-tool" onclick="document.getElementById('imageInput').click()">🖼️ 上傳圖片</button>
         <input type="file" id="imageInput" accept="image/*" style="display: none;" onchange="handleImageUpload(event)">
-        <button class="btn-tool" onclick="applyAiTemplate()">🤖 帶入 AI 範本</button>
-        <button class="btn-tool" onclick="applyEnglishTemplate()">🔤 帶入英文範本</button>
-        <button class="btn-tool" onclick="applyWorkTemplate()">📋 帶入工作範本</button>
+        <button class="btn-tool" onclick="applyAiTemplate()">🤖 AI 範本</button>
+        <button class="btn-tool" onclick="applyEnglishTemplate()">🔤 英文範本</button>
+        <button class="btn-tool" onclick="applyWorkTemplate()">📋 工作範本</button>
         <button class="btn-tool" onclick="saveEditorNote()">💾 儲存筆記</button>
       </div>
       <input type="text" id="noteTitle" class="input-title" value="🤖 AI 提示詞 Prompt 庫" placeholder="請輸入筆記標題...">
-      <textarea id="noteContent" class="input-content" placeholder="在此處自由書寫或使用語音輸入..."></textarea>
+      <textarea id="noteContent" class="input-content" placeholder="在此處自由書寫、使用語音或套用文字樣式..."></textarea>
 
       <div class="image-section">
         <span style="font-size:0.85rem;color:var(--text-sub);">📷 圖片附件：</span>
@@ -302,8 +317,20 @@
 * 核心詞：Follow up (v.) 跟進
   * 例句：I will follow up on this issue.`;
 
-    // 預設寫入 AI 範本
     document.getElementById('noteContent').value = aiTemplate;
+
+    /* 文字樣式標籤包裹邏輯 */
+    function insertTag(openTag, closeTag) {
+      const textarea = document.getElementById('noteContent');
+      const start = textarea.selectionStart;
+      const end = textarea.selectionEnd;
+      const selectedText = textarea.value.substring(start, end);
+
+      const replacement = openTag + (selectedText || '請輸入強調文字') + closeTag;
+      textarea.value = textarea.value.substring(0, start) + replacement + textarea.value.substring(end);
+      textarea.focus();
+      textarea.setSelectionRange(start + openTag.length, start + replacement.length - closeTag.length);
+    }
 
     function switchView(viewName) {
       const dash = document.getElementById('view-dashboard');
