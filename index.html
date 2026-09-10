@@ -94,7 +94,7 @@
 
     .input-title { background: transparent; border: none; border-bottom: 2px solid var(--border-color); color: var(--accent-green); font-size: 1.25rem; font-weight: bold; margin-bottom: 8px; padding-bottom: 4px; outline: none; width: 100%; }
     
-    /* 📱 富文本可編輯區（支援直接內嵌圖片與全螢幕放大檢視） */
+    /* 📱 富文本可編輯區 (支援貼圖與全螢幕放大檢視) */
     .input-content-editable { 
       flex: 1; 
       background: white; 
@@ -317,15 +317,15 @@
 
         <span style="color:var(--border-color);">|</span>
 
-        <!-- ✍️ 新增字體樣態選單 -->
+        <!-- ✍️ 字體樣態選單 (已將刪除線替換為底線) -->
         <select class="btn-tool" onchange="formatDoc(this.value); this.value='';" style="padding:3px 6px;">
           <option value="">✍️ 字體樣態</option>
           <option value="bold">粗體 (Bold)</option>
           <option value="italic">斜體 (Italic)</option>
-          <option value="strikeThrough">刪除線 (Strike)</option>
+          <option value="underline">底線 (Underline)</option>
         </select>
 
-        <!-- 🔤 新增字體大小選單 -->
+        <!-- 🔤 字體大小選單 -->
         <select class="btn-tool" onchange="formatDoc('fontSize', this.value); this.value='';" style="padding:3px 6px;">
           <option value="">🔤 字體大小</option>
           <option value="2">小 (Small)</option>
@@ -334,7 +334,7 @@
           <option value="6">特大 (Extra Large)</option>
         </select>
 
-        <!-- 🎨 字體顏色 (加深高對比度) -->
+        <!-- 🎨 字體顏色 -->
         <select class="btn-tool" onchange="formatDoc('foreColor', this.value); this.value='';" style="padding:3px 6px;">
           <option value="">🎨 字體顏色</option>
           <option value="#ef4444">🔴 鮮紅字</option>
@@ -473,7 +473,6 @@
 
       const editorEl = document.getElementById('noteContent');
       if (editorEl) {
-        // 📸 剪貼簿直接貼圖監聽（貼上即自動解析圖片檔）
         editorEl.addEventListener('paste', (e) => {
           const items = (e.clipboardData || e.originalEvent.clipboardData).items;
           for (let item of items) {
@@ -482,7 +481,6 @@
               const file = item.getAsFile();
               const reader = new FileReader();
               reader.onload = (event) => {
-                // 將圖片內嵌插入文字區
                 document.execCommand('insertImage', false, event.target.result);
                 currentImages.push(event.target.result);
                 renderImages();
@@ -492,7 +490,6 @@
           }
         });
 
-        // 點擊編輯區內的圖片可放大預覽
         editorEl.addEventListener('click', (e) => {
           if (e.target.tagName === 'IMG') {
             openLightbox(e.target.src);
@@ -501,7 +498,6 @@
       }
     });
 
-    /* 放大圖片 Lightbox */
     function openLightbox(src) {
       document.getElementById('lightboxImg').src = src;
       document.getElementById('lightboxModal').style.display = 'flex';
