@@ -55,10 +55,10 @@
     .board-card { background: var(--bg-panel); border-radius: 12px; border: 1px solid var(--border-color); display: flex; flex-direction: column; max-height: 100%; }
     .board-header { padding: 12px 16px; border-bottom: 1px solid var(--border-color); display: flex; justify-content: space-between; align-items: center; }
     .board-title { display: flex; align-items: center; gap: 8px; font-size: 1rem; font-weight: bold; color: var(--accent-green); }
-    .board-count { background: #e2e8f0; color: #475569; font-size: 0.75rem; padding: 2px 8px; border-radius: 12px; }
 
     .card-list { padding: 12px; overflow-y: auto; flex: 1; display: flex; flex-direction: column; gap: 10px; }
-    .item-card { background: var(--bg-card); border-radius: 8px; border: 1px solid var(--border-color); padding: 12px; display: flex; flex-direction: column; gap: 8px; cursor: pointer; }
+    .item-card { background: var(--bg-card); border-radius: 8px; border: 1px solid var(--border-color); padding: 12px; display: flex; flex-direction: column; gap: 8px; cursor: pointer; transition: 0.2s; }
+    .item-card:hover { border-color: var(--accent-green); box-shadow: 0 2px 8px rgba(0,0,0,0.05); }
     .item-card-header { display: flex; align-items: center; gap: 8px; }
     .item-card-title { font-size: 0.95rem; font-weight: bold; flex: 1; }
     .tags-wrapper { display: flex; gap: 6px; flex-wrap: wrap; }
@@ -70,7 +70,6 @@
     .btn-tool { background: #ffffff; border: 1px solid var(--border-color); padding: 6px 12px; border-radius: 6px; cursor: pointer; font-weight: bold; font-size: 0.85rem; }
     .btn-tool:hover { background-color: #f3f0e6; }
     
-    /* 樣式按鈕專用 */
     .btn-fmt { font-weight: bold; padding: 5px 10px; }
     .btn-highlight { background-color: #fef08a; border-color: #eab308; }
 
@@ -79,8 +78,6 @@
     @keyframes pulse { 0% { opacity: 1; } 50% { opacity: 0.5; } 100% { opacity: 1; } }
 
     .input-title { background: transparent; border: none; border-bottom: 2px solid var(--border-color); color: var(--accent-green); font-size: 1.5rem; font-weight: bold; margin-bottom: 15px; padding-bottom: 6px; outline: none; }
-    
-    /* 支援格式化顯示的預設容器與文字輸入 */
     .input-content { flex: 1; min-height: 220px; background: transparent; border: none; font-size: 1.05rem; line-height: 1.8; resize: vertical; outline: none; }
     
     .image-section { margin-top: 15px; padding-top: 10px; border-top: 1px dashed var(--border-color); }
@@ -139,13 +136,13 @@
       <div class="menu-item" onclick="alert('研讀紀錄：呈現已研讀的卡片'); toggleSidebar();">🕒 研讀紀錄</div>
     </div>
 
-    <div class="sidebar-section-title" style="margin-top: 10px;">分類看板</div>
+    <div class="sidebar-section-title" style="margin-top: 10px;">分類看板與編輯</div>
     <div class="menu-group">
       <div class="menu-item active" onclick="switchView('dashboard'); toggleSidebar();">🌐 全部看板</div>
-      <div class="menu-item" onclick="switchView('dashboard'); scrollToBoard('ai-board'); toggleSidebar();">🤖 AI 智庫與筆記</div>
-      <div class="menu-item" onclick="switchView('dashboard'); scrollToBoard('work-board'); toggleSidebar();">💼 工作任務</div>
-      <div class="menu-item" onclick="switchView('dashboard'); scrollToBoard('todo-board'); toggleSidebar();">☑️ 待辦事項</div>
-      <div class="menu-item" onclick="switchView('editor'); toggleSidebar();">📖 學習筆記 (編輯器)</div>
+      <div class="menu-item" onclick="openCategoryEditor('AI'); toggleSidebar();">🤖 AI 智庫與筆記</div>
+      <div class="menu-item" onclick="openCategoryEditor('Work'); toggleSidebar();">💼 工作任務</div>
+      <div class="menu-item" onclick="openCategoryEditor('Todo'); toggleSidebar();">☑️ 待辦事項</div>
+      <div class="menu-item" onclick="openCategoryEditor('Learn'); toggleSidebar();">📖 學習筆記 (編輯器)</div>
     </div>
   </div>
 
@@ -174,12 +171,12 @@
       <div class="dashboard-grid">
         <div class="board-card" id="ai-board">
           <div class="board-header">
-            <div class="board-title">🤖 AI 智庫與筆記 <span class="board-count">1</span></div>
+            <div class="board-title">🤖 AI 智庫與筆記</div>
           </div>
           <div class="card-list" id="list-ai">
-            <div class="item-card" onclick="openNoteInEditor('ChatGPT 萬用文案潤飾 Prompt', aiTemplate)">
+            <div class="item-card" onclick="openNoteInEditor('ChatGPT 萬用文案潤飾 Prompt', aiTemplate, '🤖 AI 智庫與筆記', this)">
               <div class="item-card-header">
-                <input type="checkbox">
+                <input type="checkbox" onclick="event.stopPropagation()">
                 <span class="item-card-title">ChatGPT 萬用文案潤飾 Prompt</span>
               </div>
               <div class="tags-wrapper"><span class="tag-badge">AI工具</span><span class="tag-badge">Prompt</span></div>
@@ -189,37 +186,45 @@
 
         <div class="board-card" id="work-board">
           <div class="board-header">
-            <div class="board-title">💼 工作任務 <span class="board-count">2</span></div>
+            <div class="board-title">💼 工作任務</div>
           </div>
           <div class="card-list" id="list-work">
-            <div class="item-card" onclick="openNoteInEditor('跨部門會議紀錄與進度追蹤', '【一、 核心目標與結論】\n* 本次會議重點：系統上線時程確認\n\n【二、 Action Items】\n[ ] 確定環境變數設定檔 (負責人: Lucky)')">
+            <div class="item-card" onclick="openNoteInEditor('跨部門會議紀錄與進度追蹤', workTemplate, '💼 工作任務', this)">
               <div class="item-card-header">
-                <input type="checkbox">
+                <input type="checkbox" onclick="event.stopPropagation()">
                 <span class="item-card-title">跨部門會議紀錄與進度追蹤</span>
               </div>
               <div class="tags-wrapper"><span class="tag-badge">會議</span><span class="tag-badge">專案追蹤</span></div>
-            </div>
-            <div class="item-card" onclick="openNoteInEditor('月報撰寫標準 SOP', '1. 撈取後端數據資料\n2. 匯入 Excel 製作折線圖\n3. 填寫關鍵指標摘要')">
-              <div class="item-card-header">
-                <input type="checkbox">
-                <span class="item-card-title">月報撰寫標準 SOP</span>
-              </div>
-              <div class="tags-wrapper"><span class="tag-badge">SOP</span></div>
             </div>
           </div>
         </div>
 
         <div class="board-card" id="todo-board">
           <div class="board-header">
-            <div class="board-title">☑️ 待辦事項 <span class="board-count">1</span></div>
+            <div class="board-title">☑️ 待辦事項</div>
           </div>
           <div class="card-list" id="list-todo">
-            <div class="item-card" onclick="openNoteInEditor('拼圖遊戲開發與測試', '詳細測試步驟...')">
+            <div class="item-card" onclick="openNoteInEditor('拼圖遊戲開發與測試', '詳細測試步驟...', '☑️ 待辦事項', this)">
               <div class="item-card-header">
-                <input type="checkbox">
+                <input type="checkbox" onclick="event.stopPropagation()">
                 <span class="item-card-title">拼圖遊戲開發與測試</span>
               </div>
               <div class="tags-wrapper"><span class="tag-badge">前端開發</span></div>
+            </div>
+          </div>
+        </div>
+
+        <div class="board-card" id="learn-board">
+          <div class="board-header">
+            <div class="board-title">📖 學習筆記</div>
+          </div>
+          <div class="card-list" id="list-learn">
+            <div class="item-card" onclick="openNoteInEditor('英文句型與搭配詞指南', englishTemplate, '📖 學習筆記', this)">
+              <div class="item-card-header">
+                <input type="checkbox" onclick="event.stopPropagation()">
+                <span class="item-card-title">英文句型與搭配詞指南</span>
+              </div>
+              <div class="tags-wrapper"><span class="tag-badge">英文學習</span></div>
             </div>
           </div>
         </div>
@@ -229,7 +234,7 @@
     <!-- 視窗 2：筆記詳細編輯器 -->
     <div class="editor-view" id="view-editor">
       <div class="editor-tools">
-        <!-- 文字樣式工具 -->
+        <!-- 樣式按鈕 -->
         <button class="btn-tool btn-fmt" onclick="insertTag('<b>', '</b>')" title="粗體"><b>B</b></button>
         <button class="btn-tool btn-fmt btn-highlight" onclick="insertTag('<mark>', '</mark>')" title="螢光筆">🖍️ 螢光筆</button>
         <button class="btn-tool btn-fmt" style="color:#a84842;" onclick="insertTag('<span style=&quot;color:#a84842;font-weight:bold;&quot;>', '</span>')">🔴 紅字</button>
@@ -238,16 +243,21 @@
 
         <span style="color:var(--border-color);">|</span>
 
-        <!-- 功能按鈕 -->
+        <!-- 分類歸屬選擇 -->
+        <select id="editorTargetCategory" class="select-category" style="padding:4px 8px;font-size:0.8rem;">
+          <option value="🤖 AI 智庫與筆記">🤖 AI 智庫與筆記</option>
+          <option value="💼 工作任務">💼 工作任務</option>
+          <option value="☑️ 待辦事項">☑️ 待辦事項</option>
+          <option value="📖 學習筆記">📖 學習筆記</option>
+        </select>
+
         <button class="btn-tool btn-voice" id="voiceBtn" onclick="toggleVoiceRecognition()">🎙️ 語音輸入</button>
         <button class="btn-tool" onclick="document.getElementById('imageInput').click()">🖼️ 上傳圖片</button>
         <input type="file" id="imageInput" accept="image/*" style="display: none;" onchange="handleImageUpload(event)">
-        <button class="btn-tool" onclick="applyAiTemplate()">🤖 AI 範本</button>
-        <button class="btn-tool" onclick="applyEnglishTemplate()">🔤 英文範本</button>
-        <button class="btn-tool" onclick="applyWorkTemplate()">📋 工作範本</button>
         <button class="btn-tool" onclick="saveEditorNote()">💾 儲存筆記</button>
+        <button class="btn-tool" style="color:var(--accent-red);" onclick="deleteCurrentNote()">🗑️ 刪除筆記</button>
       </div>
-      <input type="text" id="noteTitle" class="input-title" value="🤖 AI 提示詞 Prompt 庫" placeholder="請輸入筆記標題...">
+      <input type="text" id="noteTitle" class="input-title" placeholder="請輸入筆記標題...">
       <textarea id="noteContent" class="input-content" placeholder="在此處自由書寫、使用語音或套用文字樣式..."></textarea>
 
       <div class="image-section">
@@ -278,6 +288,7 @@
 
   <script>
     let currentImages = [];
+    let currentEditingCard = null; // 追蹤目前正在修改哪張卡片
 
     const aiTemplate = `🤖 [AI 工具與用途] (例如：ChatGPT 萬用文案潤飾)
 
@@ -288,10 +299,7 @@
 
 【二、 適用模型與參數】
 * 最佳工具：Gemini / ChatGPT / Claude
-* 建議語氣：Professional & Polite
-
-【三、 優秀輸出範例紀錄】
-* AI 回覆摘要：[在此貼入 AI 的最佳答案]`;
+* 建議語氣：Professional & Polite`;
 
     const workTemplate = `📌 [會議/專案名稱] 紀錄
 
@@ -301,11 +309,7 @@
 
 【二、 Action Items (待辦追蹤)】
 [ ] 任務 A (負責人 / 預計完成日)
-[ ] 任務 B (負責人 / 預計完成日)
-
-【三、 詳細過程與背景資料】
-* 討論細節：
-* 參考連結與文件：`;
+[ ] 任務 B (負責人 / 預計完成日)`;
 
     const englishTemplate = `🔤 [學習主題/情境名稱]
 
@@ -314,12 +318,40 @@
   (中譯：我想確認一下 [事項] 的目前進度。)
 
 【二、 核心單字與搭配詞】
-* 核心詞：Follow up (v.) 跟進
-  * 例句：I will follow up on this issue.`;
+* 核心詞：Follow up (v.) 跟進`;
 
-    document.getElementById('noteContent').value = aiTemplate;
+    const todoTemplate = `☑️ [待辦事項標題]
 
-    /* 文字樣式標籤包裹邏輯 */
+【一、 任務細節說明】
+* 相關連結/資料：
+* 預計完成時間：`;
+
+    /* 點擊側邊欄分類，開啟該類別的新增/編輯畫面 */
+    function openCategoryEditor(type) {
+      currentEditingCard = null;
+      currentImages = [];
+      renderImages();
+
+      if (type === 'AI') {
+        document.getElementById('noteTitle').value = '🤖 [AI 工具與用途]';
+        document.getElementById('noteContent').value = aiTemplate;
+        document.getElementById('editorTargetCategory').value = '🤖 AI 智庫與筆記';
+      } else if (type === 'Work') {
+        document.getElementById('noteTitle').value = '📌 [專案/會議名稱] 紀錄';
+        document.getElementById('noteContent').value = workTemplate;
+        document.getElementById('editorTargetCategory').value = '💼 工作任務';
+      } else if (type === 'Todo') {
+        document.getElementById('noteTitle').value = '☑️ 新待辦任務';
+        document.getElementById('noteContent').value = todoTemplate;
+        document.getElementById('editorTargetCategory').value = '☑️ 待辦事項';
+      } else if (type === 'Learn') {
+        document.getElementById('noteTitle').value = '📖 [學習主題名稱]';
+        document.getElementById('noteContent').value = englishTemplate;
+        document.getElementById('editorTargetCategory').value = '📖 學習筆記';
+      }
+      switchView('editor');
+    }
+
     function insertTag(openTag, closeTag) {
       const textarea = document.getElementById('noteContent');
       const start = textarea.selectionStart;
@@ -351,37 +383,13 @@
       }
     }
 
-    function openNoteInEditor(title, content) {
+    function openNoteInEditor(title, content, category, cardElement) {
       document.getElementById('noteTitle').value = title;
       document.getElementById('noteContent').value = content;
+      if (category) document.getElementById('editorTargetCategory').value = category;
+      currentEditingCard = cardElement || null;
       switchView('editor');
     }
-
-    function applyAiTemplate() {
-      if (confirm('是否帶入 AI 提示詞範本？')) {
-        document.getElementById('noteTitle').value = '🤖 [AI 工具與用途]';
-        document.getElementById('noteContent').value = aiTemplate;
-      }
-    }
-
-    function applyWorkTemplate() {
-      if (confirm('是否帶入工作會議範本？')) {
-        document.getElementById('noteTitle').value = '📌 [專案/會議名稱] 紀錄';
-        document.getElementById('noteContent').value = workTemplate;
-      }
-    }
-
-    function applyEnglishTemplate() {
-      if (confirm('是否帶入英文學習範本？')) {
-        document.getElementById('noteTitle').value = '🔤 [學習主題/情境名稱]';
-        document.getElementById('noteContent').value = englishTemplate;
-      }
-    }
-
-    function toggleSidebar() { document.getElementById('sidebar').classList.toggle('open'); }
-    function openSearchModal() { const query = prompt('請輸入搜尋關鍵字：'); if (query) alert('搜尋：' + query); }
-    function openTagModal() { document.getElementById('tagModal').style.display = 'flex'; }
-    function closeTagModal() { document.getElementById('tagModal').style.display = 'none'; }
 
     function handleImageUpload(event) {
       const file = event.target.files[0];
@@ -406,6 +414,7 @@
       });
     }
 
+    /* 🎙️ 語音轉文字 */
     let recognition = null;
     let isRecording = false;
     if ('webkitSpeechRecognition' in window || 'SpeechRecognition' in window) {
@@ -441,6 +450,57 @@
       }
     }
 
+    /* 💾 儲存筆記：支援修改舊卡片或新增新卡片 */
+    function saveEditorNote() {
+      const title = document.getElementById('noteTitle').value || '未命名筆記';
+      const content = document.getElementById('noteContent').value;
+      const targetCategory = document.getElementById('editorTargetCategory').value;
+
+      let targetListId = 'list-ai';
+      if (targetCategory.includes('工作')) targetListId = 'list-work';
+      else if (targetCategory.includes('待辦')) targetListId = 'list-todo';
+      else if (targetCategory.includes('學習')) targetListId = 'list-learn';
+
+      if (currentEditingCard) {
+        // 修改現有卡片
+        currentEditingCard.querySelector('.item-card-title').innerText = title;
+        currentEditingCard.onclick = () => openNoteInEditor(title, content, targetCategory, currentEditingCard);
+        alert('筆記「' + title + '」已成功更新！');
+      } else {
+        // 新增卡片
+        const card = document.createElement('div');
+        card.className = 'item-card';
+        card.onclick = () => openNoteInEditor(title, content, targetCategory, card);
+        card.innerHTML = `<div class="item-card-header"><input type="checkbox" onclick="event.stopPropagation()"><span class="item-card-title">${title}</span></div>`;
+        document.getElementById(targetListId).prepend(card);
+        alert('筆記「' + title + '」已儲存至看板！');
+      }
+
+      currentEditingCard = null;
+      switchView('dashboard');
+    }
+
+    /* 🗑️ 刪除筆記 */
+    function deleteCurrentNote() {
+      if (confirm('確定要刪除這篇筆記嗎？')) {
+        if (currentEditingCard) {
+          currentEditingCard.remove();
+          currentEditingCard = null;
+        }
+        document.getElementById('noteTitle').value = '';
+        document.getElementById('noteContent').value = '';
+        currentImages = [];
+        renderImages();
+        alert('筆記已成功刪除！');
+        switchView('dashboard');
+      }
+    }
+
+    function toggleSidebar() { document.getElementById('sidebar').classList.toggle('open'); }
+    function openSearchModal() { const query = prompt('請輸入搜尋關鍵字：'); if (query) alert('搜尋：' + query); }
+    function openTagModal() { document.getElementById('tagModal').style.display = 'flex'; }
+    function closeTagModal() { document.getElementById('tagModal').style.display = 'none'; }
+
     function addCard() {
       const category = document.getElementById('cardCategory').value;
       const text = document.getElementById('quickInput').value.trim();
@@ -449,19 +509,14 @@
       let targetListId = 'list-ai';
       if (category.includes('工作')) targetListId = 'list-work';
       else if (category.includes('待辦')) targetListId = 'list-todo';
+      else if (category.includes('學習')) targetListId = 'list-learn';
 
       const card = document.createElement('div');
       card.className = 'item-card';
-      card.onclick = () => openNoteInEditor(text, '');
-      card.innerHTML = `<div class="item-card-header"><input type="checkbox"><span class="item-card-title">${text}</span></div>`;
+      card.onclick = () => openNoteInEditor(text, '', category, card);
+      card.innerHTML = `<div class="item-card-header"><input type="checkbox" onclick="event.stopPropagation()"><span class="item-card-title">${text}</span></div>`;
       document.getElementById(targetListId).prepend(card);
       document.getElementById('quickInput').value = '';
-    }
-
-    function saveEditorNote() {
-      const title = document.getElementById('noteTitle').value || '未命名筆記';
-      alert('筆記「' + title + '」已成功儲存！');
-      switchView('dashboard');
     }
 
     function mobileQuickAdd() {
@@ -471,8 +526,6 @@
         addCard();
       }
     }
-
-    function scrollToBoard(id) { document.getElementById(id)?.scrollIntoView({ behavior: 'smooth' }); }
   </script>
 </body>
 </html>
