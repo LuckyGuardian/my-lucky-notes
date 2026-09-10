@@ -35,6 +35,10 @@
     .menu-group { display: flex; flex-direction: column; gap: 4px; }
     .menu-item { padding: 8px 12px; border-radius: 8px; cursor: pointer; color: var(--text-main); font-size: 0.9rem; font-weight: 500; display: flex; align-items: center; gap: 8px; }
     .menu-item:hover, .menu-item.active { background: #eee9e0; color: var(--accent-green); font-weight: bold; }
+    
+    /* 匯出專用按鈕樣式 */
+    .menu-item.export-btn { color: var(--accent-blue); background: #e0e7ff; margin-top: 5px; }
+    .menu-item.export-btn:hover { background: #c7d2fe; }
 
     /* 主區域 */
     .main-container { flex: 1; display: flex; flex-direction: column; gap: 12px; overflow: hidden; position: relative; }
@@ -120,27 +124,19 @@
   <!-- 左側選單 -->
   <div class="sidebar" id="sidebar">
     <div class="mascot-box">
-      <!-- 向量畫質的四葉幸運草圖示 -->
       <svg class="mascot-svg" viewBox="0 0 100 100">
-        <!-- 四片葉子組成的幸運草 -->
         <g fill="#3b5a45">
-          <!-- 上葉 -->
           <path d="M50,50 Q30,20 50,8 Q70,20 50,50 Z" />
-          <!-- 下葉 -->
           <path d="M50,50 Q30,80 50,92 Q70,80 50,50 Z" />
-          <!-- 左葉 -->
           <path d="M50,50 Q20,30 8,50 Q20,70 50,50 Z" />
-          <!-- 右葉 -->
           <path d="M50,50 Q80,30 92,50 Q80,70 50,50 Z" />
         </g>
-        <!-- 葉心細節 -->
         <g fill="#5c8a68">
           <circle cx="50" cy="32" r="5" opacity="0.6" />
           <circle cx="50" cy="68" r="5" opacity="0.6" />
           <circle cx="32" cy="50" r="5" opacity="0.6" />
           <circle cx="68" cy="50" r="5" opacity="0.6" />
         </g>
-        <!-- 幸運草莖 -->
         <path d="M50,55 Q46,75 35,95" stroke="#2b4233" stroke-width="5" fill="none" stroke-linecap="round" />
       </svg>
       <div class="mascot-title">Lucky Note</div>
@@ -152,6 +148,7 @@
       <div class="menu-item" onclick="openTagModal(); toggleSidebar();">🏷️ Tag 瀏覽</div>
       <div class="menu-item" onclick="alert('收件匣：集中管理未歸類網址與筆記'); toggleSidebar();">📥 收件匣</div>
       <div class="menu-item" onclick="alert('研讀紀錄：呈現已研讀的卡片'); toggleSidebar();">🕒 研讀紀錄</div>
+      <div class="menu-item export-btn" onclick="exportDataWithWhitelist(); toggleSidebar();">📥 匯出全部資料 (白名單)</div>
     </div>
 
     <div class="sidebar-section-title" style="margin-top: 10px;">分類看板與編輯</div>
@@ -252,7 +249,6 @@
     <!-- 視窗 2：筆記詳細編輯器 -->
     <div class="editor-view" id="view-editor">
       <div class="editor-tools">
-        <!-- 樣式按鈕 -->
         <button class="btn-tool btn-fmt" onclick="insertTag('<b>', '</b>')" title="粗體"><b>B</b></button>
         <button class="btn-tool btn-fmt btn-highlight" onclick="insertTag('<mark>', '</mark>')" title="螢光筆">🖍️ 螢光筆</button>
         <button class="btn-tool btn-fmt" style="color:#a84842;" onclick="insertTag('<span style=&quot;color:#a84842;font-weight:bold;&quot;>', '</span>')">🔴 紅字</button>
@@ -261,7 +257,6 @@
 
         <span style="color:var(--border-color);">|</span>
 
-        <!-- 分類歸屬選擇 -->
         <select id="editorTargetCategory" class="select-category" style="padding:4px 8px;font-size:0.8rem;">
           <option value="🤖 AI 智庫與筆記">🤖 AI 智庫與筆記</option>
           <option value="💼 工作任務">💼 工作任務</option>
@@ -305,6 +300,12 @@
   </div>
 
   <script>
+    /* 🛡️ 白名單授權清單：已設定 2 個允許匯出的 Email */
+    const whitelistEmails = [
+      'n29560408@gmail.com',  // 請替換為第 1 個 Email
+      'n29560408@cdc.gov.tw'  // 請替換為第 2 個 Email
+    ];
+
     let currentImages = [];
     let currentEditingCard = null;
 
@@ -343,6 +344,54 @@
 【一、 任務細節說明】
 * 相關連結/資料：
 * 預計完成時間：`;
+
+    /* 🔒 白名單驗證與全站資料匯出功能 */
+    function exportDataWithWhitelist() {
+      const userEmail = prompt('🔐 安全驗證：請輸入允許匯出的授權 Email：');
+      
+      if (!userEmail) return;
+
+      if (!whitelistEmails.includes(userEmail.trim().toLowerCase())) {
+        alert('❌ 存取拒絕：您的 Email (' + userEmail + ') 不在允許匯出的白名單中！');
+        return;
+      }
+
+      const exportData = {
+        exportedAt: new Date().toLocaleString(),
+        exportedBy: userEmail,
+        notes: []
+      };
+
+      const cardLists = [
+        { id: 'list-ai', category: '🤖 AI 智庫與筆記' },
+        { id: 'list-work', category: '💼 工作任務' },
+        { id: 'list-todo', category: '☑️ 待辦事項' },
+        { id: 'list-learn', category: '📖 學習筆記' }
+      ];
+
+      cardLists.forEach(listObj => {
+        const cards = document.querySelectorAll('#' + listObj.id + ' .item-card');
+        cards.forEach(card => {
+          const title = card.querySelector('.item-card-title').innerText;
+          const tags = Array.from(card.querySelectorAll('.tag-badge')).map(t => t.innerText);
+          exportData.notes.push({
+            category: listObj.category,
+            title: title,
+            tags: tags
+          });
+        });
+      });
+
+      const dataStr = "data:text/json;charset=utf-8," + encodeURIComponent(JSON.stringify(exportData, null, 2));
+      const downloadAnchor = document.createElement('a');
+      downloadAnchor.setAttribute("href", dataStr);
+      downloadAnchor.setAttribute("download", `LuckyNote_Backup_${new Date().toISOString().slice(0,10)}.json`);
+      document.body.appendChild(downloadAnchor);
+      downloadAnchor.click();
+      downloadAnchor.remove();
+
+      alert('✅ 驗證成功！白名單權限確認，已將全站資料打包導出。');
+    }
 
     function openCategoryEditor(type) {
       currentEditingCard = null;
