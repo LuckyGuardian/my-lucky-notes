@@ -37,7 +37,7 @@
     .btn-toggle-collapse { position: absolute; top: 12px; right: 10px; background: transparent; border: none; font-size: 0.9rem; cursor: pointer; color: var(--text-sub); }
     
     .mascot-box { display: flex; align-items: center; gap: 10px; padding: 8px 6px; border-bottom: 1px solid var(--border-color); margin-bottom: 4px; }
-    .mascot-svg { width: 38px; height: 38px; flex-shrink: 0; }
+    .mascot-svg { width: 42px; height: 42px; flex-shrink: 0; }
     .mascot-title { font-size: 1.1rem; font-weight: bold; color: var(--accent-green); white-space: nowrap; }
 
     .sidebar-section-title { font-size: 0.8rem; color: var(--text-sub); font-weight: bold; margin-top: 6px; margin-bottom: 2px; padding-left: 8px; white-space: nowrap; }
@@ -53,7 +53,10 @@
 
     .main-container { flex: 1; display: flex; flex-direction: column; gap: 10px; overflow: hidden; position: relative; }
     
-    .current-status-bar { display: flex; justify-content: space-between; align-items: center; padding: 2px 4px; }
+    /* 頂部狀態列與返回按鈕 */
+    .current-status-bar { display: flex; align-items: center; gap: 12px; padding: 2px 4px; }
+    .btn-back-page { background: #ffffff; border: 1px solid var(--border-color); border-radius: 6px; padding: 4px 10px; font-size: 0.85rem; font-weight: bold; cursor: pointer; color: var(--accent-green); display: flex; align-items: center; gap: 4px; }
+    .btn-back-page:hover { background: #eee9e0; }
     .status-title { font-size: 0.9rem; font-weight: bold; color: var(--text-sub); }
 
     .dashboard-view { flex: 1; display: flex; flex-direction: column; gap: 12px; overflow: hidden; }
@@ -89,16 +92,19 @@
     .btn-voice.recording { background-color: #fee2e2; border-color: #ef4444; color: #991b1b; animation: pulse 1.5s infinite; }
     @keyframes pulse { 0% { opacity: 1; } 50% { opacity: 0.5; } 100% { opacity: 1; } }
 
-    .input-title { background: transparent; border: none; border-bottom: 2px solid var(--border-color); color: var(--accent-green); font-size: 1.5rem; font-weight: bold; margin-bottom: 15px; padding-bottom: 6px; outline: none; }
-    .input-content { flex: 1; min-height: 220px; background: transparent; border: none; font-size: 1.05rem; line-height: 1.8; resize: vertical; outline: none; }
+    .input-title { background: transparent; border: none; border-bottom: 2px solid var(--border-color); color: var(--accent-green); font-size: 1.5rem; font-weight: bold; margin-bottom: 15px; padding-bottom: 6px; outline: none; width: 100%; }
     
+    /* 🖊️ 富文本可編輯編輯器 (ContentEditable) */
+    .input-content-editable { flex: 1; min-height: 250px; background: white; border: 1px solid var(--border-color); border-radius: 8px; padding: 15px; font-size: 1.05rem; line-height: 1.8; outline: none; overflow-y: auto; white-space: pre-wrap; word-break: break-word; }
+    .input-content-editable:focus { border-color: var(--accent-green); }
+
     .image-section { margin-top: 15px; padding-top: 10px; border-top: 1px dashed var(--border-color); }
     .image-preview-container { display: flex; gap: 10px; flex-wrap: wrap; margin-top: 8px; }
     .image-preview-box { position: relative; width: 100px; height: 100px; border-radius: 6px; border: 1px solid var(--border-color); overflow: hidden; }
     .image-preview-box img { width: 100%; height: 100%; object-fit: cover; }
     .btn-delete-img { position: absolute; top: 2px; right: 2px; background: rgba(168,72,66,0.85); color: white; border: none; border-radius: 50%; width: 20px; height: 20px; cursor: pointer; }
 
-    /* 📅 行事曆 View 樣式 (電腦與手機版雙重優化) */
+    /* 📅 行事曆 View 樣式 */
     .calendar-view { display: none; flex: 1; flex-direction: column; background: var(--bg-panel); border-radius: 12px; padding: 20px; border: 1px solid var(--border-color); overflow-y: auto; gap: 15px; }
     .calendar-header { display: flex; justify-content: space-between; align-items: center; border-bottom: 1px solid var(--border-color); padding-bottom: 10px; }
     .calendar-grid { display: grid; grid-template-columns: repeat(7, 1fr); gap: 8px; text-align: center; }
@@ -119,7 +125,6 @@
     .export-option-item { display: flex; align-items: center; gap: 10px; font-size: 0.95rem; cursor: pointer; }
     .export-option-item input { width: 18px; height: 18px; cursor: pointer; }
 
-    /* 📱 手機版專屬美化調整 */
     @media (max-width: 768px) {
       body { flex-direction: column; padding: 8px; gap: 8px; }
       .mobile-header { display: flex; }
@@ -135,7 +140,6 @@
       .dashboard-grid { grid-template-columns: 1fr; }
       .fab-btn { display: flex; justify-content: center; align-items: center; }
 
-      /* 手機版行事曆精緻微調 */
       .calendar-view { padding: 12px; gap: 10px; }
       .calendar-grid { gap: 4px; }
       .cal-day-header { padding: 4px; font-size: 0.75rem; }
@@ -150,34 +154,51 @@
   <!-- 手機版 Header -->
   <div class="mobile-header">
     <h2>
-      <svg class="mascot-svg" style="width:24px;height:24px;" viewBox="0 0 100 100">
-        <path d="M50,45 C38,20 18,28 30,48 C10,38 8,60 30,62 C15,78 30,90 48,70 C48,85 52,85 52,70 C70,90 85,78 70,62 Q92,60 90,38 70,48 C82,28 62,20 50,45 Z" fill="#3b5a45" />
-        <path d="M50,68 C49,85 45,95 40,100" stroke="#3b5a45" stroke-width="4" fill="none" stroke-linecap="round" />
+      <svg class="mascot-svg" style="width:28px;height:28px;" viewBox="0 0 100 100">
+        <circle cx="50" cy="55" r="38" fill="#f4bb44" />
+        <polygon points="20,15 38,30 12,42" fill="#e59b2b" />
+        <polygon points="80,15 62,30 88,42" fill="#e59b2b" />
+        <polygon points="24,22 34,30 18,38" fill="#ffcdd2" />
+        <polygon points="76,22 66,30 82,38" fill="#ffcdd2" />
+        <ellipse cx="50" cy="65" rx="18" ry="14" fill="#ffffff" />
+        <ellipse cx="36" cy="48" rx="4" ry="5" fill="#2c2a29" />
+        <ellipse cx="64" cy="48" rx="4" ry="5" fill="#2c2a29" />
+        <circle cx="38" cy="46" r="1.5" fill="#ffffff" />
+        <circle cx="66" cy="46" r="1.5" fill="#ffffff" />
+        <polygon points="50,56 46,60 54,66" fill="#e59b2b" />
+        <path d="M44,63 Q50,67 56,63" stroke="#2c2a29" stroke-width="2" fill="none" stroke-linecap="round" />
+        <circle cx="26" cy="58" r="5" fill="#ff8a80" opacity="0.6" />
+        <circle cx="74" cy="58" r="5" fill="#ff8a80" opacity="0.6" />
       </svg>
       Lucky Note
     </h2>
     <button class="btn-hamburger" onclick="toggleSidebar()">☰</button>
   </div>
 
-  <!-- 左側選單 (支援開合收折) -->
+  <!-- 左側選單 -->
   <div class="sidebar" id="sidebar">
     <button class="btn-toggle-collapse" id="collapseBtn" onclick="toggleSidebarCollapse()" title="收起/展開側邊欄">◀</button>
 
     <div class="mascot-box">
       <svg class="mascot-svg" viewBox="0 0 100 100">
-        <g fill="#3b5a45">
-          <path d="M50,50 Q30,20 50,8 Q70,20 50,50 Z" />
-          <path d="M50,50 Q30,80 50,92 Q70,80 50,50 Z" />
-          <path d="M50,50 Q20,30 8,50 Q20,70 50,50 Z" />
-          <path d="M50,50 Q80,30 92,50 Q80,70 50,50 Z" />
-        </g>
-        <g fill="#5c8a68">
-          <circle cx="50" cy="32" r="5" opacity="0.6" />
-          <circle cx="50" cy="68" r="5" opacity="0.6" />
-          <circle cx="32" cy="50" r="5" opacity="0.6" />
-          <circle cx="68" cy="50" r="5" opacity="0.6" />
-        </g>
-        <path d="M50,55 Q46,75 35,95" stroke="#2b4233" stroke-width="5" fill="none" stroke-linecap="round" />
+        <circle cx="50" cy="55" r="38" fill="#f4bb44" />
+        <polygon points="20,15 38,30 12,42" fill="#e59b2b" />
+        <polygon points="80,15 62,30 88,42" fill="#e59b2b" />
+        <polygon points="24,22 34,30 18,38" fill="#ffcdd2" />
+        <polygon points="76,22 66,30 82,38" fill="#ffcdd2" />
+        <ellipse cx="50" cy="65" rx="18" ry="14" fill="#ffffff" />
+        <ellipse cx="36" cy="48" rx="4" ry="5" fill="#2c2a29" />
+        <ellipse cx="64" cy="48" rx="4" ry="5" fill="#2c2a29" />
+        <circle cx="38" cy="46" r="1.5" fill="#ffffff" />
+        <circle cx="66" cy="46" r="1.5" fill="#ffffff" />
+        <polygon points="50,56 46,60 54,60" fill="#e59b2b" />
+        <path d="M44,63 Q50,67 56,63" stroke="#2c2a29" stroke-width="2" fill="none" stroke-linecap="round" />
+        <circle cx="26" cy="58" r="5" fill="#ff8a80" opacity="0.6" />
+        <circle cx="74" cy="58" r="5" fill="#ff8a80" opacity="0.6" />
+        <line x1="10" y1="52" x2="24" y2="54" stroke="#e59b2b" stroke-width="2" stroke-linecap="round" />
+        <line x1="12" y1="60" x2="25" y2="60" stroke="#e59b2b" stroke-width="2" stroke-linecap="round" />
+        <line x1="90" y1="52" x2="76" y2="54" stroke="#e59b2b" stroke-width="2" stroke-linecap="round" />
+        <line x1="88" y1="60" x2="75" y2="60" stroke="#e59b2b" stroke-width="2" stroke-linecap="round" />
       </svg>
       <div class="mascot-title">Lucky Note</div>
     </div>
@@ -208,6 +229,8 @@
   <div class="main-container">
 
     <div class="current-status-bar">
+      <!-- ⬅️ 返回上一頁按鈕 -->
+      <button class="btn-back-page" onclick="history.back()">⬅️ 返回上一頁</button>
       <span class="status-title" id="currentStatusText">🌐 全部看板模式</span>
     </div>
 
@@ -306,20 +329,20 @@
 
         <span style="color:var(--border-color);">|</span>
 
-        <button class="btn-tool btn-fmt" onclick="insertTag('<b>', '</b>')" title="粗體"><b>B</b></button>
+        <button class="btn-tool btn-fmt" onclick="formatDoc('bold')" title="粗體"><b>B</b></button>
 
-        <select class="btn-tool" onchange="applyTextColor(this)" style="padding:4px 8px;">
+        <select class="btn-tool" onchange="formatDoc('foreColor', this.value); this.value='';" style="padding:4px 8px;">
           <option value="">🎨 字體顏色</option>
-          <option value="red">🔴 紅字</option>
-          <option value="blue">🔵 藍字</option>
-          <option value="green">🟢 綠字</option>
+          <option value="#a84842">🔴 紅字</option>
+          <option value="#2b5b84">🔵 藍字</option>
+          <option value="#3b5a45">🟢 綠字</option>
         </select>
 
-        <select class="btn-tool" onchange="applyHighlightColor(this)" style="padding:4px 8px;">
+        <select class="btn-tool" onchange="formatDoc('hiliteColor', this.value); this.value='';" style="padding:4px 8px;">
           <option value="">🖍️ 螢光筆</option>
-          <option value="yellow">💛 黃色</option>
-          <option value="orange">🧡 橘色</option>
-          <option value="green">💚 綠色</option>
+          <option value="#fef08a">💛 黃色</option>
+          <option value="#fed7aa">🧡 橘色</option>
+          <option value="#bbf7d0">💚 綠色</option>
         </select>
 
         <span style="color:var(--border-color);">|</span>
@@ -334,7 +357,9 @@
       </div>
 
       <input type="text" id="noteTitle" class="input-title" placeholder="請輸入筆記標題...">
-      <textarea id="noteContent" class="input-content" placeholder="在此處自由書寫、使用語音或套用文字樣式..."></textarea>
+      
+      <!-- 富文本內容編輯區 -->
+      <div id="noteContent" class="input-content-editable" contenteditable="true" placeholder="在此處自由書寫、使用語音或套用文字樣式..."></div>
 
       <div class="image-section">
         <span style="font-size:0.85rem;color:var(--text-sub);">📷 圖片附件：</span>
@@ -482,33 +507,35 @@
 【一、 任務細節說明】
 * 相關連結/資料：`;
 
-    /* ◀ 收折/展開側邊欄 */
+    /* 歷史紀錄監聽 (處理手機/瀏覽器上一頁按鈕) */
+    window.addEventListener('popstate', (e) => {
+      if (e.state && e.state.view) {
+        switchView(e.state.view, e.state.statusText, false);
+      } else {
+        switchView('dashboard', '🌐 全部看板模式', false);
+      }
+    });
+
     function toggleSidebarCollapse() {
       const sidebar = document.getElementById('sidebar');
       const collapseBtn = document.getElementById('collapseBtn');
       sidebar.classList.toggle('collapsed');
-      if (sidebar.classList.contains('collapsed')) {
-        collapseBtn.innerText = '▶';
-      } else {
-        collapseBtn.innerText = '◀';
-      }
+      collapseBtn.innerText = sidebar.classList.contains('collapsed') ? '▶' : '◀';
     }
 
     document.addEventListener('DOMContentLoaded', () => {
       initDragAndDrop();
     });
 
+    /* 富文本格式化命令 */
+    function formatDoc(cmd, value = null) {
+      document.execCommand(cmd, false, value);
+    }
+
     function clickCalendarDay(dayNum) {
       const dayStr = dayNum < 10 ? '0' + dayNum : '' + dayNum;
       document.getElementById('noteTitle').value = `⏰ [9/${dayStr} 活動/會議提醒]`;
-      document.getElementById('noteContent').value = `⏰ 2026/09/${dayStr} 活動與會議行程
-
-【一、 基本資訊與地點】
-* 時間：2026 / 09 / ${dayStr} (三) 10:00 - 11:00
-* 地點：會議室 A
-
-【二、 內容摘要與待辦】
-[ ] 準備討論資料`;
+      document.getElementById('noteContent').innerHTML = `⏰ 2026/09/${dayStr} 活動與會議行程<br><br><b>【一、 基本資訊與地點】</b><br>* 時間：2026 / 09 / ${dayStr} (三) 10:00 - 11:00<br>* 地點：會議室 A<br><br><b>【二、 內容摘要與待辦】</b><br>[ ] 準備討論資料`;
       document.getElementById('editorTargetCategory').value = '☑️ 待辦事項';
       switchView('editor', `📝 新增 9/${dayStr} 行程提醒`);
     }
@@ -572,7 +599,7 @@
 
     function applyMeetingTemplate(month = '09', day = '16') {
       document.getElementById('noteTitle').value = `⏰ [${month}/${day} 會議/活動名稱]`;
-      document.getElementById('noteContent').value = meetingTemplate;
+      document.getElementById('noteContent').innerHTML = meetingTemplate.replace(/\n/g, '<br>');
       document.getElementById('editorTargetCategory').value = '💼 工作任務';
     }
 
@@ -580,24 +607,6 @@
       document.querySelectorAll('.menu-item').forEach(el => el.classList.remove('active'));
       const activeEl = document.getElementById(menuId);
       if (activeEl) activeEl.classList.add('active');
-    }
-
-    function applyTextColor(selectEl) {
-      const val = selectEl.value;
-      if (!val) return;
-      if (val === 'red') insertTag('<span style="color:#a84842;font-weight:bold;">', '</span>');
-      else if (val === 'blue') insertTag('<span style="color:#2b5b84;font-weight:bold;">', '</span>');
-      else if (val === 'green') insertTag('<span style="color:#3b5a45;font-weight:bold;">', '</span>');
-      selectEl.value = '';
-    }
-
-    function applyHighlightColor(selectEl) {
-      const val = selectEl.value;
-      if (!val) return;
-      if (val === 'yellow') insertTag('<mark style="background-color:#fef08a;">', '</mark>');
-      else if (val === 'orange') insertTag('<mark style="background-color:#fed7aa;">', '</mark>');
-      else if (val === 'green') insertTag('<mark style="background-color:#bbf7d0;">', '</mark>');
-      selectEl.value = '';
     }
 
     function openExportModal() { document.getElementById('exportModal').style.display = 'flex'; }
@@ -673,7 +682,7 @@
       }
 
       const title = document.getElementById('noteTitle').value || 'LuckyNote_Export';
-      const content = document.getElementById('noteContent').value;
+      const content = document.getElementById('noteContent').innerHTML;
       const category = document.getElementById('editorTargetCategory').value;
 
       const htmlContent = `<!DOCTYPE html>
@@ -687,8 +696,7 @@
     .card { background: white; padding: 20px; border-radius: 12px; border: 1px solid #e5e0d8; box-shadow: 0 2px 8px rgba(0,0,0,0.05); }
     h1 { color: #3b5a45; border-bottom: 2px solid #e5e0d8; padding-bottom: 8px; font-size: 1.4rem; }
     .tag { display: inline-block; background: #f0ebd8; color: #6b5e43; padding: 2px 8px; border-radius: 12px; font-size: 0.8rem; font-weight: bold; margin-bottom: 15px; }
-    .content { white-space: pre-wrap; font-size: 1.05rem; }
-    mark { padding: 2px 4px; border-radius: 4px; }
+    .content { font-size: 1.05rem; }
   </style>
 </head>
 <body>
@@ -720,40 +728,29 @@
       if (type === 'AI') {
         categoryName = '🤖 AI 智庫與筆記';
         document.getElementById('noteTitle').value = '🤖 [AI 工具與用途]';
-        document.getElementById('noteContent').value = aiTemplate;
+        document.getElementById('noteContent').innerHTML = aiTemplate.replace(/\n/g, '<br>');
         document.getElementById('editorTargetCategory').value = categoryName;
       } else if (type === 'Work') {
         categoryName = '💼 工作任務';
         document.getElementById('noteTitle').value = '📌 [專案/會議名稱] 紀錄';
-        document.getElementById('noteContent').value = workTemplate;
+        document.getElementById('noteContent').innerHTML = workTemplate.replace(/\n/g, '<br>');
         document.getElementById('editorTargetCategory').value = categoryName;
       } else if (type === 'Todo') {
         categoryName = '☑️ 待辦事項';
         document.getElementById('noteTitle').value = '☑️ 新待辦任務';
-        document.getElementById('noteContent').value = todoTemplate;
+        document.getElementById('noteContent').innerHTML = todoTemplate.replace(/\n/g, '<br>');
         document.getElementById('editorTargetCategory').value = categoryName;
       } else if (type === 'Learn') {
         categoryName = '📖 學習筆記';
         document.getElementById('noteTitle').value = '📖 [學習主題名稱]';
-        document.getElementById('noteContent').value = englishTemplate;
+        document.getElementById('noteContent').innerHTML = englishTemplate.replace(/\n/g, '<br>');
         document.getElementById('editorTargetCategory').value = categoryName;
       }
       switchView('editor', '📝 編輯中：' + categoryName);
     }
 
-    function insertTag(openTag, closeTag) {
-      const textarea = document.getElementById('noteContent');
-      const start = textarea.selectionStart;
-      const end = textarea.selectionEnd;
-      const selectedText = textarea.value.substring(start, end);
-
-      const replacement = openTag + (selectedText || '請輸入強調文字') + closeTag;
-      textarea.value = textarea.value.substring(0, start) + replacement + textarea.value.substring(end);
-      textarea.focus();
-      textarea.setSelectionRange(start + openTag.length, start + replacement.length - closeTag.length);
-    }
-
-    function switchView(viewName, statusText) {
+    /* 切換視窗 (支援 PushState 歷程記錄) */
+    function switchView(viewName, statusText, pushState = true) {
       const dash = document.getElementById('view-dashboard');
       const edit = document.getElementById('view-editor');
       const cal = document.getElementById('view-calendar');
@@ -773,11 +770,15 @@
         cal.style.display = 'flex';
         statusEl.innerText = statusText || '📅 2026年 9月 行事曆';
       }
+
+      if (pushState) {
+        history.pushState({ view: viewName, statusText: statusText }, '', '#' + viewName);
+      }
     }
 
     function openNoteInEditor(title, content, category, cardElement) {
       document.getElementById('noteTitle').value = title;
-      document.getElementById('noteContent').value = content;
+      document.getElementById('noteContent').innerHTML = content.replace(/\n/g, '<br>');
       if (category) document.getElementById('editorTargetCategory').value = category;
       currentEditingCard = cardElement || null;
       switchView('editor', '📝 修改筆記：' + title);
@@ -819,8 +820,8 @@
           if (event.results[i].isFinal) transcript += event.results[i][0].transcript;
         }
         if (transcript) {
-          const textarea = document.getElementById('noteContent');
-          textarea.value += (textarea.value ? '\n' : '') + transcript;
+          const editor = document.getElementById('noteContent');
+          editor.innerHTML += (editor.innerHTML ? '<br>' : '') + transcript;
         }
       };
     }
@@ -843,7 +844,7 @@
 
     function saveEditorNote() {
       const title = document.getElementById('noteTitle').value || '未命名筆記';
-      const content = document.getElementById('noteContent').value;
+      const content = document.getElementById('noteContent').innerHTML;
       const targetCategory = document.getElementById('editorTargetCategory').value;
 
       let targetListId = 'list-ai';
@@ -877,7 +878,7 @@
           currentEditingCard = null;
         }
         document.getElementById('noteTitle').value = '';
-        document.getElementById('noteContent').value = '';
+        document.getElementById('noteContent').innerHTML = '';
         currentImages = [];
         renderImages();
         alert('筆記已成功刪除！');
