@@ -449,14 +449,14 @@
   </div>
 
   <script>
-    /* 🔥 串接您貼上的 Firebase 雲端金鑰 */
+    /* 🔥 Firebase 雲端金鑰設定處 (將底下的憑證修改為您在 Firebase 複製的真實金鑰) */
     const firebaseConfig = {
-      apiKey: "AIzaSyDalYJe74S_WBP65ch1YdoenQGy7wkyIJ8",
-      authDomain: "my-lucky-notes.firebaseapp.com",
-      projectId: "my-lucky-notes",
-      storageBucket: "my-lucky-notes.firebasestorage.app",
-      messagingSenderId: "382255473709",
-      appId: "1:382255473709:web:d547eab40ab109c85b04a4"
+      apiKey: "YOUR_API_KEY",
+      authDomain: "YOUR_AUTH_DOMAIN",
+      projectId: "YOUR_PROJECT_ID",
+      storageBucket: "YOUR_STORAGE_BUCKET",
+      messagingSenderId: "YOUR_MESSAGING_SENDER_ID",
+      appId: "YOUR_APP_ID"
     };
 
     let db = null;
@@ -467,10 +467,10 @@
         firebase.initializeApp(firebaseConfig);
         db = firebase.firestore();
         isFirebaseEnabled = true;
-        console.log("🔥 Firebase 雲端同步已成功開啟！");
+        console.log("🔥 Firebase 雲端同步已開啟！");
       }
     } catch(e) {
-      console.warn("⚠️ Firebase 初始化失敗，切換為本機 LocalStorage 儲存：", e);
+      console.warn("⚠️ Firebase 未設定，降級為 LocalStorage 本機儲存。");
     }
 
     const whitelistEmails = ['n29560408@gmail.com', 'n29560408@cdc.gov.tw'];
@@ -547,6 +547,7 @@
       document.getElementById('lightboxModal').style.display = 'none';
     }
 
+    /* 雲端資料庫與本機資料搬家邏輯 */
     function loadNotesData() {
       if (isFirebaseEnabled && db) {
         db.collection("luckynotes").onSnapshot((snapshot) => {
@@ -554,10 +555,28 @@
           snapshot.forEach((doc) => {
             notesData.push({ id: doc.id, ...doc.data() });
           });
+
+          // 💡 救援機制：如果 Firebase 雲端是空的，自動搬運本機備份上雲端
+          if (notesData.length === 0) {
+            const localSaved = localStorage.getItem('luckynote_data');
+            if (localSaved) {
+              try {
+                const localNotes = JSON.parse(localSaved);
+                if (localNotes.length > 0) {
+                  console.log("🚚 正在自動將本機筆記搬運上傳至 Firebase 雲端...");
+                  localNotes.forEach(n => {
+                    const { id, ...dataWithoutId } = n;
+                    db.collection("luckynotes").add(dataWithoutId);
+                  });
+                }
+              } catch(e) {}
+            }
+          }
+
           renderDashboardCards();
           renderCalendar(calYear, calMonth);
         }, (error) => {
-          console.error("Firebase 讀取失敗：", error);
+          console.error("Firebase 讀取失敗，改用 LocalStorage：", error);
           loadNotesFromLocalStorage();
         });
       } else {
@@ -795,10 +814,10 @@
       if (isFirebaseEnabled && db) {
         if (currentEditingNoteId) {
           db.collection("luckynotes").doc(currentEditingNoteId).update(notePayload)
-            .then(() => alert('☁️ 雲端筆記「' + title + '」已同步更新！'));
+            .then(() => alert('雲端筆記「' + title + '」已成功更新！'));
         } else {
           db.collection("luckynotes").add(notePayload)
-            .then(() => alert('☁️ 雲端筆記「' + title + '」已上傳同步！'));
+            .then(() => alert('雲端筆記「' + title + '」已成功同步上傳！'));
         }
       } else {
         if (currentEditingNoteId) {
@@ -828,7 +847,7 @@
         if (currentEditingNoteId) {
           if (isFirebaseEnabled && db) {
             db.collection("luckynotes").doc(currentEditingNoteId).delete()
-              .then(() => alert('☁️ 雲端筆記已成功刪除！'));
+              .then(() => alert('雲端筆記已成功刪除！'));
           } else {
             notesData = notesData.filter(n => n.id !== currentEditingNoteId);
             saveNotesToLocalStorage();
