@@ -5,7 +5,7 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
   <title>Lucky Note</title>
 
-  <!-- Firebase 8.x 雲端資料庫 SDK -->
+  <!-- Firebase SDK -->
   <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-app.js"></script>
   <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-firestore.js"></script>
 
@@ -88,16 +88,20 @@
     .item-card-header { display: flex; align-items: center; gap: 6px; }
     .item-card-title { font-size: 0.9rem; font-weight: bold; flex: 1; }
 
+    /* 🖊️ 編輯器與工具列升級 */
     .editor-view { display: none; flex: 1; flex-direction: column; background: var(--bg-panel); border-radius: 10px; padding: 10px 14px; border: 1px solid var(--border-color); overflow: hidden; }
     .editor-tools { display: flex; gap: 4px; margin-bottom: 8px; flex-wrap: wrap; align-items: center; }
-    .btn-tool { background: #ffffff; border: 1px solid var(--border-color); padding: 4px 8px; border-radius: 5px; cursor: pointer; font-weight: bold; font-size: 0.8rem; outline: none; }
+    .btn-tool { background: #ffffff; border: 1px solid var(--border-color); padding: 5px 8px; border-radius: 5px; cursor: pointer; font-weight: bold; font-size: 0.8rem; outline: none; }
     .btn-tool:hover { background-color: #f3f0e6; }
+    .btn-save-main { background: var(--accent-green); color: white; border-color: var(--accent-green); }
     
+    .more-tools-box { display: flex; gap: 4px; flex-wrap: wrap; align-items: center; }
+
     .btn-voice { background-color: #fef3c7; border-color: #f59e0b; color: #92400e; }
     .btn-voice.recording { background-color: #fee2e2; border-color: #ef4444; color: #991b1b; animation: pulse 1.2s infinite; }
     @keyframes pulse { 0% { opacity: 1; } 50% { opacity: 0.4; } 100% { opacity: 1; } }
 
-    .input-title { background: transparent; border: none; border-bottom: 2px solid var(--border-color); color: var(--accent-green); font-size: 1.25rem; font-weight: bold; margin-bottom: 8px; padding-bottom: 4px; outline: none; width: 100%; }
+    .input-title { background: transparent; border: none; border-bottom: 2px solid var(--border-color); color: var(--accent-green); font-size: 1.2rem; font-weight: bold; margin-bottom: 8px; padding-bottom: 4px; outline: none; width: 100%; }
     
     .input-content-editable { 
       flex: 1; 
@@ -158,6 +162,7 @@
     .img-lightbox-box { position: relative; max-width: 90vw; max-height: 90vh; display: flex; justify-content: center; align-items: center; }
     .img-lightbox-box img { max-width: 100%; max-height: 85vh; border-radius: 8px; box-shadow: 0 8px 30px rgba(0,0,0,0.3); }
 
+    /* 📱 手機版 RWD 極致清理擁擠工具列 */
     @media (max-width: 768px) {
       body { flex-direction: column; padding: 4px; gap: 4px; }
       .mobile-header { display: flex; }
@@ -166,8 +171,12 @@
       
       .dashboard-grid { grid-template-columns: 1fr; }
       .fab-btn { display: flex; justify-content: center; align-items: center; }
-      .editor-view { padding: 8px 10px; }
+      .editor-view { padding: 8px; }
       .input-content-editable { padding: 8px; font-size: 0.95rem; }
+
+      /* 📱 手機版隱藏非核心工具，收納進「⚙️ 更多」 */
+      .more-tools-box { display: none; width: 100%; margin-top: 4px; padding-top: 4px; border-top: 1px dashed var(--border-color); }
+      .more-tools-box.open { display: flex; }
 
       .calendar-view { padding: 6px; gap: 6px; }
       .calendar-grid { gap: 2px; }
@@ -325,53 +334,43 @@
           <option value="🌐 網路知識收集站">🌐 網路知識收集站</option>
         </select>
 
-        <span style="color:var(--border-color);">|</span>
+        <button class="btn-tool btn-save-main" onclick="saveEditorNote()">💾 儲存筆記</button>
+        <button class="btn-tool" onclick="toggleMoreTools()">⚙️ 更多工具</button>
 
-        <select class="btn-tool" onchange="formatDoc(this.value); this.value='';" style="padding:3px 6px;">
-          <option value="">✍️ 字體樣態</option>
-          <option value="bold">粗體 (Bold)</option>
-          <option value="italic">斜體 (Italic)</option>
-          <option value="underline">底線 (Underline)</option>
-        </select>
+        <!-- 手機版預設收納的進階工具區 -->
+        <div class="more-tools-box" id="moreToolsBox">
+          <select class="btn-tool" onchange="formatDoc(this.value); this.value='';" style="padding:3px 6px;">
+            <option value="">✍️ 樣態</option>
+            <option value="bold">粗體</option>
+            <option value="italic">斜體</option>
+            <option value="underline">底線</option>
+          </select>
 
-        <select class="btn-tool" onchange="formatDoc('fontSize', this.value); this.value='';" style="padding:3px 6px;">
-          <option value="">🔤 字體大小</option>
-          <option value="2">小 (Small)</option>
-          <option value="3">中 (Normal)</option>
-          <option value="5">大 (Large)</option>
-          <option value="6">特大 (Extra Large)</option>
-        </select>
+          <select class="btn-tool" onchange="formatDoc('fontSize', this.value); this.value='';" style="padding:3px 6px;">
+            <option value="">🔤 大小</option>
+            <option value="2">小</option>
+            <option value="3">中</option>
+            <option value="5">大</option>
+          </select>
 
-        <select class="btn-tool" onchange="formatDoc('foreColor', this.value); this.value='';" style="padding:3px 6px;">
-          <option value="">🎨 字體顏色</option>
-          <option value="#ef4444">🔴 鮮紅字</option>
-          <option value="#3b82f6">🔵 鮮藍字</option>
-          <option value="#10b981">🟢 鮮綠字</option>
-        </select>
+          <select class="btn-tool" onchange="formatDoc('foreColor', this.value); this.value='';" style="padding:3px 6px;">
+            <option value="">🎨 顏色</option>
+            <option value="#ef4444">🔴 紅</option>
+            <option value="#3b82f6">🔵 藍</option>
+            <option value="#10b981">🟢 綠</option>
+          </select>
 
-        <select class="btn-tool" onchange="formatDoc('hiliteColor', this.value); this.value='';" style="padding:3px 6px;">
-          <option value="">🖍️ 螢光筆</option>
-          <option value="#fef08a">💛 黃色</option>
-          <option value="#fed7aa">🧡 橘色</option>
-          <option value="#bbf7d0">🟢 綠色</option>
-        </select>
-
-        <span style="color:var(--border-color);">|</span>
-
-        <button class="btn-tool" onclick="applyWebKnowledgeTemplate()">🌐 網路收集範本</button>
-        <button class="btn-tool btn-voice" id="voiceBtn" onclick="toggleVoiceRecognition()">🎙️ 語音輸入</button>
-        <button class="btn-tool" onclick="document.getElementById('imageInput').click()">🖼️ 上傳圖片</button>
-        <input type="file" id="imageInput" accept="image/*" style="display: none;" onchange="handleImageUpload(event)">
-        <button class="btn-tool" onclick="saveEditorNote()">💾 儲存筆記</button>
-        <button class="btn-tool" style="color:var(--accent-blue);" onclick="exportSingleNote()">📤 匯出單篇 HTML</button>
-        <button class="btn-tool" style="color:var(--accent-red);" onclick="deleteCurrentNote()">🗑️ 刪除筆記</button>
+          <button class="btn-tool btn-voice" id="voiceBtn" onclick="toggleVoiceRecognition()">🎙️ 語音</button>
+          <button class="btn-tool" onclick="document.getElementById('imageInput').click()">🖼️ 圖片</button>
+          <input type="file" id="imageInput" accept="image/*" style="display: none;" onchange="handleImageUpload(event)">
+          <button class="btn-tool" style="color:var(--accent-red);" onclick="deleteCurrentNote()">🗑️ 刪除</button>
+        </div>
       </div>
 
       <input type="hidden" id="noteCalendarDate" value="">
-
       <input type="text" id="noteTitle" class="input-title" placeholder="請輸入筆記標題...">
       
-      <div id="noteContent" class="input-content-editable" contenteditable="true" placeholder="在此處自由書寫或直接 Ctrl+V / 長按貼上圖片與網址..."></div>
+      <div id="noteContent" class="input-content-editable" contenteditable="true" placeholder="在此處自由書寫或貼上內容..."></div>
 
       <div class="image-section">
         <span style="font-size:0.8rem;color:var(--text-sub);">📷 圖片附件區：</span>
@@ -393,7 +392,6 @@
         <div class="cal-day-header">日</div><div class="cal-day-header">一</div><div class="cal-day-header">二</div><div class="cal-day-header">三</div><div class="cal-day-header">四</div><div class="cal-day-header">五</div><div class="cal-day-header">六</div>
       </div>
 
-      <!-- 📱 手機版專屬：點選日期後下方展開行程明細清單區 -->
       <div class="mobile-day-agenda" id="mobileDayAgenda">
         <div class="mobile-agenda-title">
           <span id="agendaDateTitle">📌 選擇日期檢視行程</span>
@@ -465,6 +463,8 @@
     try {
       if (firebaseConfig.apiKey && firebaseConfig.apiKey !== "YOUR_API_KEY") {
         firebase.initializeApp(firebaseConfig);
+        // 強置開啟多通道網路備援，穿透 LINE 內建瀏覽器阻擋
+        firebase.firestore().settings({ experimentalForceLongPolling: true });
         db = firebase.firestore();
         isFirebaseEnabled = true;
         console.log("🔥 Firebase 雲端同步已成功開啟！");
@@ -538,6 +538,11 @@
         });
       }
     });
+
+    function toggleMoreTools() {
+      const box = document.getElementById('moreToolsBox');
+      box.classList.toggle('open');
+    }
 
     function openLightbox(src) {
       document.getElementById('lightboxImg').src = src;
