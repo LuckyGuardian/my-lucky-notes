@@ -21,7 +21,7 @@
     body { display: flex; height: 100vh; background-color: var(--bg-main); color: var(--text-main); overflow: hidden; padding: 12px; gap: 12px; }
 
     .mobile-header { display: none; background: var(--bg-panel); border: 1px solid var(--border-color); border-radius: 10px; padding: 10px 14px; justify-content: space-between; align-items: center; width: 100%; }
-    .mobile-header h2 { font-size: 1.1rem; color: var(--accent-green); display: flex; align-items: center; gap: 8px; }
+    .mobile-header h2 { font-size: 1.1rem; color: var(--accent-green); display: flex; align-items: center; gap: 8px; cursor: pointer; }
     .btn-hamburger { background: transparent; border: none; font-size: 1.4rem; cursor: pointer; }
 
     /* 側邊欄與可收折（Collapse）樣式 */
@@ -36,7 +36,9 @@
 
     .btn-toggle-collapse { position: absolute; top: 12px; right: 10px; background: transparent; border: none; font-size: 0.9rem; cursor: pointer; color: var(--text-sub); }
     
-    .mascot-box { display: flex; align-items: center; gap: 10px; padding: 8px 6px; border-bottom: 1px solid var(--border-color); margin-bottom: 4px; }
+    /* 點擊金小貓可回到首頁全部看板 */
+    .mascot-box { display: flex; align-items: center; gap: 10px; padding: 8px 6px; border-bottom: 1px solid var(--border-color); margin-bottom: 4px; cursor: pointer; transition: opacity 0.2s; }
+    .mascot-box:hover { opacity: 0.8; }
     .mascot-svg { width: 42px; height: 42px; flex-shrink: 0; }
     .mascot-title { font-size: 1.1rem; font-weight: bold; color: var(--accent-green); white-space: nowrap; }
 
@@ -53,7 +55,6 @@
 
     .main-container { flex: 1; display: flex; flex-direction: column; gap: 10px; overflow: hidden; position: relative; }
     
-    /* 頂部狀態列與返回按鈕 */
     .current-status-bar { display: flex; align-items: center; gap: 12px; padding: 2px 4px; }
     .btn-back-page { background: #ffffff; border: 1px solid var(--border-color); border-radius: 6px; padding: 4px 10px; font-size: 0.85rem; font-weight: bold; cursor: pointer; color: var(--accent-green); display: flex; align-items: center; gap: 4px; }
     .btn-back-page:hover { background: #eee9e0; }
@@ -94,7 +95,6 @@
 
     .input-title { background: transparent; border: none; border-bottom: 2px solid var(--border-color); color: var(--accent-green); font-size: 1.5rem; font-weight: bold; margin-bottom: 15px; padding-bottom: 6px; outline: none; width: 100%; }
     
-    /* 🖊️ 富文本可編輯編輯器 (ContentEditable) */
     .input-content-editable { flex: 1; min-height: 250px; background: white; border: 1px solid var(--border-color); border-radius: 8px; padding: 15px; font-size: 1.05rem; line-height: 1.8; outline: none; overflow-y: auto; white-space: pre-wrap; word-break: break-word; }
     .input-content-editable:focus { border-color: var(--accent-green); }
 
@@ -153,7 +153,8 @@
 
   <!-- 手機版 Header -->
   <div class="mobile-header">
-    <h2>
+    <h2 onclick="goHome()">
+      <!-- 🐱 可愛金小貓 SVG -->
       <svg class="mascot-svg" style="width:28px;height:28px;" viewBox="0 0 100 100">
         <circle cx="50" cy="55" r="38" fill="#f4bb44" />
         <polygon points="20,15 38,30 12,42" fill="#e59b2b" />
@@ -179,7 +180,8 @@
   <div class="sidebar" id="sidebar">
     <button class="btn-toggle-collapse" id="collapseBtn" onclick="toggleSidebarCollapse()" title="收起/展開側邊欄">◀</button>
 
-    <div class="mascot-box">
+    <!-- 點擊吉祥物圖騰/標題即可回「全部看板」 -->
+    <div class="mascot-box" onclick="goHome()" title="點擊回到全部看板">
       <svg class="mascot-svg" viewBox="0 0 100 100">
         <circle cx="50" cy="55" r="38" fill="#f4bb44" />
         <polygon points="20,15 38,30 12,42" fill="#e59b2b" />
@@ -217,7 +219,6 @@
 
     <div class="sidebar-section-title">分類看板與編輯</div>
     <div class="menu-group">
-      <div class="menu-item active" id="menu-all" onclick="switchView('dashboard', '🌐 全部看板'); updateMenuActive('menu-all'); toggleSidebar();">🌐 <span class="menu-text">全部看板</span></div>
       <div class="menu-item" id="menu-ai" onclick="openCategoryEditor('AI'); updateMenuActive('menu-ai'); toggleSidebar();">🤖 <span class="menu-text">AI 智庫與筆記</span></div>
       <div class="menu-item" id="menu-work" onclick="openCategoryEditor('Work'); updateMenuActive('menu-work'); toggleSidebar();">💼 <span class="menu-text">工作任務</span></div>
       <div class="menu-item" id="menu-todo" onclick="openCategoryEditor('Todo'); updateMenuActive('menu-todo'); toggleSidebar();">☑️ <span class="menu-text">待辦事項</span></div>
@@ -229,7 +230,6 @@
   <div class="main-container">
 
     <div class="current-status-bar">
-      <!-- ⬅️ 返回上一頁按鈕 -->
       <button class="btn-back-page" onclick="history.back()">⬅️ 返回上一頁</button>
       <span class="status-title" id="currentStatusText">🌐 全部看板模式</span>
     </div>
@@ -342,7 +342,7 @@
           <option value="">🖍️ 螢光筆</option>
           <option value="#fef08a">💛 黃色</option>
           <option value="#fed7aa">🧡 橘色</option>
-          <option value="#bbf7d0">💚 綠色</option>
+          <option value="#bbf7d0">綠色</option>
         </select>
 
         <span style="color:var(--border-color);">|</span>
@@ -357,9 +357,7 @@
       </div>
 
       <input type="text" id="noteTitle" class="input-title" placeholder="請輸入筆記標題...">
-      
-      <!-- 富文本內容編輯區 -->
-      <div id="noteContent" class="input-content-editable" contenteditable="true" placeholder="在此處自由書寫、使用語音或套用文字樣式..."></div>
+      <div id="noteContent" class="input-content-editable" contenteditable="true" placeholder="在此處自由書寫..."></div>
 
       <div class="image-section">
         <span style="font-size:0.85rem;color:var(--text-sub);">📷 圖片附件：</span>
@@ -507,7 +505,12 @@
 【一、 任務細節說明】
 * 相關連結/資料：`;
 
-    /* 歷史紀錄監聽 (處理手機/瀏覽器上一頁按鈕) */
+    /* 回到全部看板首頁 */
+    function goHome() {
+      updateMenuActive('');
+      switchView('dashboard', '🌐 全部看板模式');
+    }
+
     window.addEventListener('popstate', (e) => {
       if (e.state && e.state.view) {
         switchView(e.state.view, e.state.statusText, false);
@@ -527,7 +530,6 @@
       initDragAndDrop();
     });
 
-    /* 富文本格式化命令 */
     function formatDoc(cmd, value = null) {
       document.execCommand(cmd, false, value);
     }
@@ -749,7 +751,6 @@
       switchView('editor', '📝 編輯中：' + categoryName);
     }
 
-    /* 切換視窗 (支援 PushState 歷程記錄) */
     function switchView(viewName, statusText, pushState = true) {
       const dash = document.getElementById('view-dashboard');
       const edit = document.getElementById('view-editor');
