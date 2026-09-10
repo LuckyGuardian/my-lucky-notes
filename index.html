@@ -4,6 +4,11 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
   <title>Lucky Note</title>
+
+  <!-- Firebase 8.x 雲端資料庫 SDK (用於跨裝置同步) -->
+  <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-app.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-firestore.js"></script>
+
   <style>
     :root {
       --bg-main: #f7f5f0;
@@ -94,7 +99,6 @@
 
     .input-title { background: transparent; border: none; border-bottom: 2px solid var(--border-color); color: var(--accent-green); font-size: 1.25rem; font-weight: bold; margin-bottom: 8px; padding-bottom: 4px; outline: none; width: 100%; }
     
-    /* 📱 富文本可編輯區 (支援貼圖與全螢幕放大檢視) */
     .input-content-editable { 
       flex: 1; 
       background: white; 
@@ -111,10 +115,6 @@
       overflow-wrap: anywhere; 
     }
     .input-content-editable:focus { border-color: var(--accent-green); }
-    .input-content-editable ul, .input-content-editable ol { padding-left: 20px; margin: 4px 0; }
-    .input-content-editable p { margin-bottom: 6px; }
-    .input-content-editable img { max-width: 100%; height: auto; border-radius: 6px; cursor: pointer; border: 1px solid var(--border-color); margin: 6px 0; transition: transform 0.2s; }
-    .input-content-editable img:hover { transform: scale(1.01); border-color: var(--accent-green); }
 
     .image-section { margin-top: 8px; padding-top: 6px; border-top: 1px dashed var(--border-color); }
     .image-preview-container { display: flex; gap: 8px; flex-wrap: wrap; margin-top: 4px; }
@@ -134,14 +134,24 @@
     .cal-day-cell.empty { background: transparent; border: none; cursor: default; }
     .cal-day-cell:not(.empty):hover { border-color: var(--accent-green); background-color: #faf8f5; }
     .cal-day-cell.today { border: 2px solid var(--accent-green); background-color: #f4f8f5; }
+    .cal-day-cell.selected { border: 2px solid var(--accent-blue); background-color: #e0e7ff; }
     
     .cal-day-num { font-weight: bold; font-size: 0.8rem; color: var(--text-sub); }
     .cal-holiday { background: #fee2e2; color: #991b1b; font-size: 0.65rem; padding: 1px 3px; border-radius: 3px; font-weight: bold; }
     .cal-event-tag { background: #e0e7ff; color: #2b5b84; font-size: 0.68rem; padding: 1px 3px; border-radius: 3px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; font-weight: bold; cursor: pointer; display: block; }
+    
+    .cal-dots-box { display: none; gap: 3px; justify-content: center; margin-top: 2px; }
+    .cal-dot { width: 5px; height: 5px; border-radius: 50%; display: inline-block; }
+    .cal-dot.event { background-color: var(--accent-blue); }
+    .cal-dot.holiday { background-color: var(--accent-red); }
+
+    /* 📱 手機版專用：每日行程下方展開清單區 */
+    .mobile-day-agenda { display: none; background: white; border: 1px solid var(--border-color); border-radius: 8px; padding: 10px; margin-top: 6px; flex-direction: column; gap: 6px; }
+    .mobile-agenda-title { font-size: 0.9rem; font-weight: bold; color: var(--accent-green); border-bottom: 1px solid var(--border-color); padding-bottom: 4px; display: flex; justify-content: space-between; align-items: center; }
+    .mobile-agenda-item { background: #f7f5f0; padding: 8px 10px; border-radius: 6px; font-size: 0.85rem; font-weight: bold; color: var(--accent-blue); cursor: pointer; border: 1px solid var(--border-color); display: flex; justify-content: space-between; }
 
     .fab-btn { display: none; position: fixed; bottom: 16px; right: 16px; width: 50px; height: 50px; background: var(--accent-green); color: white; border-radius: 50%; border: none; font-size: 1.6rem; box-shadow: 0 4px 10px rgba(0,0,0,0.2); cursor: pointer; z-index: 99; }
 
-    /* Modal 視窗與圖片放大燈箱 (LightBox) */
     .modal-overlay { display: none; position: fixed; top: 0; left: 0; width: 100vw; height: 100vh; background: rgba(0,0,0,0.5); backdrop-filter: blur(3px); z-index: 9999; justify-content: center; align-items: center; }
     .modal-box { background: #ffffff; width: 90%; max-width: 450px; border-radius: 12px; padding: 18px; display: flex; flex-direction: column; gap: 12px; box-shadow: 0 10px 25px rgba(0,0,0,0.2); }
     .modal-header { display: flex; justify-content: space-between; align-items: center; border-bottom: 1px solid #e2e8f0; padding-bottom: 6px; }
@@ -160,13 +170,15 @@
       .editor-view { padding: 8px 10px; }
       .input-content-editable { padding: 8px; font-size: 0.95rem; }
 
+      /* 📱 手機版行事曆切換為「極簡點陣月曆 + 下方每日行程清單」 */
       .calendar-view { padding: 6px; gap: 6px; }
       .calendar-grid { gap: 2px; }
       .cal-day-header { padding: 3px 0; font-size: 0.7rem; border-radius: 3px; }
-      .cal-day-cell { min-height: 48px; padding: 2px; gap: 1px; border-radius: 4px; }
-      .cal-day-num { font-size: 0.7rem; }
-      .cal-holiday { font-size: 0.55rem; padding: 0 1px; line-height: 1.1; }
-      .cal-event-tag { font-size: 0.58rem; padding: 0 2px; line-height: 1.2; }
+      .cal-day-cell { min-height: 40px; padding: 2px; gap: 1px; border-radius: 4px; align-items: center; justify-content: flex-start; }
+      .cal-day-num { font-size: 0.75rem; }
+      .cal-holiday, .cal-event-tag { display: none !important; } /* 手機上隱藏卡片標籤 */
+      .cal-dots-box { display: flex; } /* 顯示精緻小點 */
+      .mobile-day-agenda { display: flex; } /* 顯示下方行程列表區域 */
     }
   </style>
 </head>
@@ -317,7 +329,6 @@
 
         <span style="color:var(--border-color);">|</span>
 
-        <!-- ✍️ 字體樣態選單 (已將刪除線替換為底線) -->
         <select class="btn-tool" onchange="formatDoc(this.value); this.value='';" style="padding:3px 6px;">
           <option value="">✍️ 字體樣態</option>
           <option value="bold">粗體 (Bold)</option>
@@ -325,7 +336,6 @@
           <option value="underline">底線 (Underline)</option>
         </select>
 
-        <!-- 🔤 字體大小選單 -->
         <select class="btn-tool" onchange="formatDoc('fontSize', this.value); this.value='';" style="padding:3px 6px;">
           <option value="">🔤 字體大小</option>
           <option value="2">小 (Small)</option>
@@ -334,7 +344,6 @@
           <option value="6">特大 (Extra Large)</option>
         </select>
 
-        <!-- 🎨 字體顏色 -->
         <select class="btn-tool" onchange="formatDoc('foreColor', this.value); this.value='';" style="padding:3px 6px;">
           <option value="">🎨 字體顏色</option>
           <option value="#ef4444">🔴 鮮紅字</option>
@@ -364,11 +373,10 @@
 
       <input type="text" id="noteTitle" class="input-title" placeholder="請輸入筆記標題...">
       
-      <!-- 精緻滿版富文本編輯區 (支援貼圖與點擊放大) -->
       <div id="noteContent" class="input-content-editable" contenteditable="true" placeholder="在此處自由書寫或直接 Ctrl+V / 長按貼上圖片與網址..."></div>
 
       <div class="image-section">
-        <span style="font-size:0.8rem;color:var(--text-sub);">📷 圖片附件區 (點擊圖片可全螢幕放大查看)：</span>
+        <span style="font-size:0.8rem;color:var(--text-sub);">📷 圖片附件區：</span>
         <div class="image-preview-container" id="imageContainer"></div>
       </div>
     </div>
@@ -386,13 +394,23 @@
       <div class="calendar-grid" id="calendarGrid">
         <div class="cal-day-header">日</div><div class="cal-day-header">一</div><div class="cal-day-header">二</div><div class="cal-day-header">三</div><div class="cal-day-header">四</div><div class="cal-day-header">五</div><div class="cal-day-header">六</div>
       </div>
+
+      <!-- 📱 手機版專屬：點選日期後下方展開行程明細清單區 -->
+      <div class="mobile-day-agenda" id="mobileDayAgenda">
+        <div class="mobile-agenda-title">
+          <span id="agendaDateTitle">📌 選擇日期檢視行程</span>
+          <button class="btn-board-add" id="btnAgendaAdd" onclick="addNoteOnSelectedDate()">+ 新增今日行程</button>
+        </div>
+        <div id="agendaItemsList" style="display:flex;flex-direction:column;gap:6px;">
+          <span style="font-size:0.8rem;color:var(--text-sub);">請點擊上方日期格子查看詳細行程...</span>
+        </div>
+      </div>
     </div>
 
   </div>
 
   <button class="fab-btn" onclick="mobileQuickAdd()">+</button>
 
-  <!-- 全螢幕圖片放大檢視視窗 (Lightbox) -->
   <div class="modal-overlay" id="lightboxModal" onclick="closeLightbox()">
     <div class="img-lightbox-box">
       <img id="lightboxImg" src="" onclick="event.stopPropagation()">
@@ -433,11 +451,37 @@
   </div>
 
   <script>
+    /* 🔥 Firebase 雲端資料庫初始化 (填入您的 Config 即可開啟跨裝置同步) */
+    const firebaseConfig = {
+      apiKey: "YOUR_API_KEY",
+      authDomain: "YOUR_AUTH_DOMAIN",
+      projectId: "YOUR_PROJECT_ID",
+      storageBucket: "YOUR_STORAGE_BUCKET",
+      messagingSenderId: "YOUR_MESSAGING_SENDER_ID",
+      appId: "YOUR_APP_ID"
+    };
+
+    let db = null;
+    let isFirebaseEnabled = false;
+
+    // 嘗試初始化 Firebase，若尚未設定則自動降級為 LocalStorage 本地儲存
+    try {
+      if (firebaseConfig.apiKey !== "YOUR_API_KEY") {
+        firebase.initializeApp(firebaseConfig);
+        db = firebase.firestore();
+        isFirebaseEnabled = true;
+        console.log("🔥 Firebase 雲端同步已成功開啟！");
+      }
+    } catch(e) {
+      console.warn("⚠️ Firebase 未設定，將使用本機 LocalStorage 儲存。");
+    }
+
     const whitelistEmails = ['n29560408@gmail.com', 'n29560408@cdc.gov.tw'];
 
     let currentImages = [];
     let currentEditingNoteId = null;
     let notesData = [];
+    let selectedDateStr = '';
 
     let calYear = 2026;
     let calMonth = 8; // 0-based
@@ -461,7 +505,7 @@
     };
 
     document.addEventListener('DOMContentLoaded', () => {
-      loadNotesFromStorage();
+      loadNotesData();
       initDragAndDrop();
       initCategoryMenuDragAndDrop();
 
@@ -506,7 +550,26 @@
       document.getElementById('lightboxModal').style.display = 'none';
     }
 
-    function loadNotesFromStorage() {
+    /* 雲端 / 本地資料雙軌讀取機制 */
+    function loadNotesData() {
+      if (isFirebaseEnabled && db) {
+        db.collection("luckynotes").onSnapshot((snapshot) => {
+          notesData = [];
+          snapshot.forEach((doc) => {
+            notesData.push({ id: doc.id, ...doc.data() });
+          });
+          renderDashboardCards();
+          renderCalendar(calYear, calMonth);
+        }, (error) => {
+          console.error("Firebase 讀取失敗：", error);
+          loadNotesFromLocalStorage();
+        });
+      } else {
+        loadNotesFromLocalStorage();
+      }
+    }
+
+    function loadNotesFromLocalStorage() {
       const saved = localStorage.getItem('luckynote_data');
       if (saved) {
         try {
@@ -516,12 +579,12 @@
         }
       } else {
         notesData = getInitialDemoData();
-        saveNotesToStorage();
+        saveNotesToLocalStorage();
       }
       renderDashboardCards();
     }
 
-    function saveNotesToStorage() {
+    function saveNotesToLocalStorage() {
       localStorage.setItem('luckynote_data', JSON.stringify(notesData));
     }
 
@@ -569,6 +632,7 @@
       });
     }
 
+    /* 📅 動態萬年曆渲染 (電腦版標籤 / 手機版點陣雙優化) */
     function renderCalendar(year, month) {
       const grid = document.getElementById('calendarGrid');
       const titleEl = document.getElementById('calTitleDisplay');
@@ -594,40 +658,98 @@
       for (let day = 1; day <= totalDays; day++) {
         const dayCell = document.createElement('div');
         dayCell.className = 'cal-day-cell';
-        if (isCurrentMonth && day === today.getDate()) {
-          dayCell.classList.add('today');
-        }
-
+        
         const mStr = (month + 1 < 10 ? '0' : '') + (month + 1);
         const dStr = (day < 10 ? '0' : '') + day;
         const dateKey = `${mStr}-${dStr}`;
         const fullDateStr = `${year}-${mStr}-${dStr}`;
 
-        dayCell.onclick = () => clickCalendarDayByDate(year, month + 1, day);
+        if (isCurrentMonth && day === today.getDate()) {
+          dayCell.classList.add('today');
+        }
+        if (selectedDateStr === fullDateStr) {
+          dayCell.classList.add('selected');
+        }
+
+        dayCell.onclick = () => selectCalendarDay(year, month + 1, day, fullDateStr, dayCell);
 
         let cellHTML = `<span class="cal-day-num">${day}</span>`;
+        let hasEvent = false;
+        let hasHoliday = false;
 
         if (taiwanHolidays[dateKey]) {
+          hasHoliday = true;
           cellHTML += `<span class="cal-holiday">${taiwanHolidays[dateKey]}</span>`;
         }
 
-        dayCell.innerHTML = cellHTML;
-
+        // 電腦版文字標籤
+        let dayEvents = [];
         notesData.forEach(note => {
           if (note.dateStr === fullDateStr) {
-            const eventTag = document.createElement('span');
-            eventTag.className = 'cal-event-tag';
-            eventTag.innerText = note.title.replace(/^⏰\s*\[\d+\/\d+\s*/, '').replace(/\]$/, '');
-            eventTag.onclick = (e) => {
-              e.stopPropagation();
-              openNoteInEditorById(note.id);
-            };
-            dayCell.appendChild(eventTag);
+            hasEvent = true;
+            dayEvents.push(note);
           }
+        });
+
+        // 手機版小圓點
+        let dotsHTML = '<div class="cal-dots-box">';
+        if (hasEvent) dotsHTML += '<span class="cal-dot event"></span>';
+        if (hasHoliday) dotsHTML += '<span class="cal-dot holiday"></span>';
+        dotsHTML += '</div>';
+
+        dayCell.innerHTML = cellHTML + dotsHTML;
+
+        // 貼上電腦版文字標籤
+        dayEvents.forEach(note => {
+          const eventTag = document.createElement('span');
+          eventTag.className = 'cal-event-tag';
+          eventTag.innerText = note.title.replace(/^⏰\s*\[\d+\/\d+\s*/, '').replace(/\]$/, '');
+          eventTag.onclick = (e) => {
+            e.stopPropagation();
+            openNoteInEditorById(note.id);
+          };
+          dayCell.appendChild(eventTag);
         });
 
         grid.appendChild(dayCell);
       }
+    }
+
+    /* 📱 手機版點擊日期：選取日期並在下方展開每日行程清單 */
+    function selectCalendarDay(year, month, day, fullDateStr, cellEl) {
+      document.querySelectorAll('.cal-day-cell').forEach(el => el.classList.remove('selected'));
+      cellEl.classList.add('selected');
+      selectedDateStr = fullDateStr;
+
+      const titleEl = document.getElementById('agendaDateTitle');
+      const listEl = document.getElementById('agendaItemsList');
+      
+      const holidayName = taiwanHolidays[`${month < 10 ? '0' : ''}${month}-${day < 10 ? '0' : ''}${day}`];
+      titleEl.innerText = `📌 ${year}/${month}/${day} 行程明細 ${holidayName ? '(' + holidayName + ')' : ''}`;
+
+      const matchedNotes = notesData.filter(n => n.dateStr === fullDateStr);
+
+      if (matchedNotes.length === 0) {
+        listEl.innerHTML = `<span style="font-size:0.85rem;color:var(--text-sub);padding:4px 0;">當日尚無任何行程，點擊上方按鈕即可新增行程提醒。</span>`;
+      } else {
+        listEl.innerHTML = matchedNotes.map(n => `
+          <div class="mobile-agenda-item" onclick="openNoteInEditorById('${n.id}')">
+            <span>${n.title}</span>
+            <span style="font-size:0.75rem;opacity:0.8;">編輯 ➔</span>
+          </div>
+        `).join('');
+      }
+    }
+
+    function addNoteOnSelectedDate() {
+      if (!selectedDateStr) {
+        const today = new Date();
+        const mStr = today.getMonth() + 1 < 10 ? '0' + (today.getMonth() + 1) : today.getMonth() + 1;
+        const dStr = today.getDate() < 10 ? '0' + today.getDate() : today.getDate();
+        selectedDateStr = `${today.getFullYear()}-${mStr}-${dStr}`;
+      }
+      const parts = selectedDateStr.split('-');
+      clickCalendarDayByDate(parseInt(parts[0]), parseInt(parts[1]), parseInt(parts[2]));
     }
 
     function changeMonth(delta) {
@@ -664,38 +786,46 @@
       switchView('editor', `📝 新增 ${month}/${dStr} 行程提醒`);
     }
 
+    /* 💾 儲存筆記 (支援 Firebase 雲端同步與 LocalStorage) */
     function saveEditorNote() {
       const title = document.getElementById('noteTitle').value || '未命名筆記';
       const content = document.getElementById('noteContent').innerHTML;
       const category = document.getElementById('editorTargetCategory').value;
       const dateStr = document.getElementById('noteCalendarDate').value;
 
-      if (currentEditingNoteId) {
-        const index = notesData.findIndex(n => n.id === currentEditingNoteId);
-        if (index !== -1) {
-          notesData[index].title = title;
-          notesData[index].content = content;
-          notesData[index].category = category;
-          notesData[index].images = [...currentImages];
-          if (dateStr) notesData[index].dateStr = dateStr;
-        }
-        alert('筆記「' + title + '」已成功修改並永久存檔！');
-      } else {
-        const newNote = {
-          id: 'note-' + Date.now(),
-          title: title,
-          content: content,
-          category: category,
-          dateStr: dateStr || '',
-          images: [...currentImages]
-        };
-        notesData.push(newNote);
-        alert('筆記「' + title + '」已成功寫入資料庫！');
-      }
+      const notePayload = {
+        title: title,
+        content: content,
+        category: category,
+        dateStr: dateStr || '',
+        images: [...currentImages],
+        updatedAt: new Date().toISOString()
+      };
 
-      saveNotesToStorage();
-      renderDashboardCards();
-      renderCalendar(calYear, calMonth);
+      if (isFirebaseEnabled && db) {
+        if (currentEditingNoteId) {
+          db.collection("luckynotes").doc(currentEditingNoteId).update(notePayload)
+            .then(() => alert('雲端筆記「' + title + '」已成功更新！'));
+        } else {
+          db.collection("luckynotes").add(notePayload)
+            .then(() => alert('雲端筆記「' + title + '」已成功同步上傳！'));
+        }
+      } else {
+        if (currentEditingNoteId) {
+          const index = notesData.findIndex(n => n.id === currentEditingNoteId);
+          if (index !== -1) {
+            notesData[index] = { id: currentEditingNoteId, ...notePayload };
+          }
+          alert('本機筆記「' + title + '」已成功更新存檔！');
+        } else {
+          const newNote = { id: 'note-' + Date.now(), ...notePayload };
+          notesData.push(newNote);
+          alert('本機筆記「' + title + '」已成功新增！');
+        }
+        saveNotesToLocalStorage();
+        renderDashboardCards();
+        renderCalendar(calYear, calMonth);
+      }
 
       currentEditingNoteId = null;
       document.getElementById('noteCalendarDate').value = '';
@@ -706,17 +836,22 @@
     function deleteCurrentNote() {
       if (confirm('⚠️ 警告：確定要刪除這篇筆記嗎？刪除後將無法恢復！')) {
         if (currentEditingNoteId) {
-          notesData = notesData.filter(n => n.id !== currentEditingNoteId);
-          saveNotesToStorage();
-          renderDashboardCards();
-          renderCalendar(calYear, calMonth);
+          if (isFirebaseEnabled && db) {
+            db.collection("luckynotes").doc(currentEditingNoteId).delete()
+              .then(() => alert('雲端筆記已成功刪除！'));
+          } else {
+            notesData = notesData.filter(n => n.id !== currentEditingNoteId);
+            saveNotesToLocalStorage();
+            renderDashboardCards();
+            renderCalendar(calYear, calMonth);
+            alert('本機筆記已成功刪除！');
+          }
           currentEditingNoteId = null;
         }
         document.getElementById('noteTitle').value = '';
         document.getElementById('noteContent').innerHTML = '';
         currentImages = [];
         renderImages();
-        alert('筆記已成功刪除！');
         showAllBoards();
         switchView('dashboard', '🌐 全部看板模式');
       }
@@ -946,10 +1081,15 @@
         images: []
       };
 
-      notesData.push(newNote);
-      saveNotesToStorage();
-      renderDashboardCards();
-      alert('卡片「' + title + '」已成功新增並寫入存檔！');
+      if (isFirebaseEnabled && db) {
+        db.collection("luckynotes").add(newNote);
+      } else {
+        notesData.push(newNote);
+        saveNotesToLocalStorage();
+        renderDashboardCards();
+      }
+
+      alert('卡片「' + title + '」已成功新增！');
     }
 
     function applyMeetingTemplate(month = '09', day = '16') {
