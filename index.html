@@ -58,7 +58,6 @@
     .menu-item.dragging { opacity: 0.4; background: #eee9e0; border: 1px dashed var(--accent-green); }
     .menu-item:hover, .menu-item.active { background: #eee9e0; color: var(--accent-green); font-weight: bold; }
     
-    /* 階層式子選單樣式 */
     .submenu-group { display: flex; flex-direction: column; gap: 2px; padding-left: 18px; border-left: 2px solid var(--border-color); margin-left: 12px; margin-top: 2px; margin-bottom: 2px; }
     .submenu-item { padding: 4px 8px; border-radius: 5px; cursor: pointer; color: var(--text-main); font-size: 0.82rem; font-weight: 500; display: flex; align-items: center; gap: 6px; white-space: nowrap; transition: 0.2s; }
     .submenu-item:hover, .submenu-item.active { background: #eee9e0; color: var(--accent-green); font-weight: bold; }
@@ -297,8 +296,8 @@
           <span class="arrow-icon open" id="arrowLearn">▶</span>
         </div>
         <div class="submenu-group" id="learnSubmenu">
-          <div class="submenu-item" id="menu-law" onclick="event.stopPropagation(); openNewCategoryNote('⚖️ 法律條文'); updateMenuActive('menu-law'); toggleSidebar();">⚖️ 法律條文</div>
           <div class="submenu-item" id="menu-english" onclick="event.stopPropagation(); openNewCategoryNote('🔤 英文學習'); updateMenuActive('menu-english'); toggleSidebar();">🔤 英文學習</div>
+          <div class="submenu-item" id="menu-law" onclick="event.stopPropagation(); openNewCategoryNote('⚖️ 法律條文'); updateMenuActive('menu-law'); toggleSidebar();">⚖️ 法律條文</div>
           <div class="submenu-item" id="menu-tech" onclick="event.stopPropagation(); openNewCategoryNote('💻 程式與技術'); updateMenuActive('menu-tech'); toggleSidebar();">💻 程式與技術</div>
         </div>
       </div>
@@ -350,20 +349,20 @@
           <div class="card-list" id="list-learn"></div>
         </div>
 
+        <div class="board-card" id="english-board">
+          <div class="board-header">
+            <div class="board-title">🔤 英文學習 (多益990衝刺)</div>
+            <button class="btn-board-add" onclick="openNewCategoryNote('🔤 英文學習')">+ 新增</button>
+          </div>
+          <div class="card-list" id="list-english"></div>
+        </div>
+
         <div class="board-card" id="law-board">
           <div class="board-header">
             <div class="board-title">⚖️ 法律條文</div>
             <button class="btn-board-add" onclick="openNewCategoryNote('⚖️ 法律條文')">+ 新增</button>
           </div>
           <div class="card-list" id="list-law"></div>
-        </div>
-
-        <div class="board-card" id="english-board">
-          <div class="board-header">
-            <div class="board-title">🔤 英文學習</div>
-            <button class="btn-board-add" onclick="openNewCategoryNote('🔤 英文學習')">+ 新增</button>
-          </div>
-          <div class="card-list" id="list-english"></div>
         </div>
 
         <div class="board-card" id="tech-board">
@@ -392,8 +391,8 @@
           <option value="💼 工作任務">💼 工作任務</option>
           <option value="🤖 AI 智庫與筆記">🤖 AI 智庫與筆記</option>
           <option value="📖 學習筆記">📖 學習筆記 (通用)</option>
-          <option value="⚖️ 法律條文">⚖️ 法律條文</option>
           <option value="🔤 英文學習">🔤 英文學習</option>
+          <option value="⚖️ 法律條文">⚖️ 法律條文</option>
           <option value="💻 程式與技術">💻 程式與技術</option>
           <option value="🌐 網路知識收集站">🌐 網路知識收集站</option>
         </select>
@@ -431,7 +430,7 @@
       </div>
 
       <input type="hidden" id="noteCalendarDate" value="">
-      <input type="text" id="noteTitle" class="input-title" placeholder="請輸入筆記標題 (可加上 #英文 #法律 標籤)...">
+      <input type="text" id="noteTitle" class="input-title" placeholder="請輸入筆記標題 (可加上 #多益 #英文 標籤)...">
       
       <div id="noteContent" class="input-content-editable" contenteditable="true" placeholder="在此處自由書寫或貼上內容..."></div>
 
@@ -476,13 +475,14 @@
     </div>
   </div>
 
+  <!-- 🏷️ 方案 B：Tag 標籤動態跨看板過濾視窗 -->
   <div class="modal-overlay" id="tagModal">
     <div class="modal-box">
       <div class="modal-header">
         <h3 style="color:var(--accent-green)">🏷️ Tag 跨看板過濾檢視</h3>
         <button onclick="closeTagModal()" style="border:none;background:none;font-size:1.2rem;cursor:pointer;">✕</button>
       </div>
-      <p style="font-size:0.85rem;color:var(--text-sub);">點擊標籤可跨資料夾穿透過濾（例如：#法律、#英文）：</p>
+      <p style="font-size:0.85rem;color:var(--text-sub);">點擊標籤可跨資料夾穿透過濾（例如：#多益、#文法、#法律）：</p>
       <div class="tag-badge-container" id="tagBadgesList">
         <span class="tag-badge active" onclick="filterByTag('')">全部顯示</span>
       </div>
@@ -506,8 +506,8 @@
           <label class="export-option-item"><input type="checkbox" class="export-chk" value="list-work" checked> 💼 工作任務</label>
           <label class="export-option-item"><input type="checkbox" class="export-chk" value="list-ai" checked> 🤖 AI 智庫與筆記</label>
           <label class="export-option-item"><input type="checkbox" class="export-chk" value="list-learn" checked> 📖 學習筆記 (通用)</label>
+          <label class="export-option-item"><input type="checkbox" class="export-chk" value="list-english" checked> 🔤 英文學習 (多益990)</label>
           <label class="export-option-item"><input type="checkbox" class="export-chk" value="list-law" checked> ⚖️ 法律條文</label>
-          <label class="export-option-item"><input type="checkbox" class="export-chk" value="list-english" checked> 🔤 英文學習</label>
           <label class="export-option-item"><input type="checkbox" class="export-chk" value="list-tech" checked> 💻 程式與技術</label>
           <label class="export-option-item"><input type="checkbox" class="export-chk" value="list-web" checked> 🌐 網路知識收集站</label>
         </div>
@@ -637,7 +637,6 @@
       }
     }
 
-    /* ➕ 新增學習子分類邏輯 */
     function addNewSubCategory(parentCategoryName) {
       const subName = prompt(`請輸入「${parentCategoryName}」底下的全新子分類名稱 (例：🇫🇷 法語學習、📊 財務金融)：`);
       if (!subName) return;
@@ -658,7 +657,6 @@
       subDiv.innerText = subName;
       submenu.appendChild(subDiv);
 
-      // 動態新增看板卡片
       const grid = document.getElementById('dashboardGrid');
       const boardCard = document.createElement('div');
       boardCard.className = 'board-card';
@@ -672,14 +670,12 @@
       `;
       grid.appendChild(boardCard);
 
-      // 動態更新編輯器選單
       const sel = document.getElementById('editorTargetCategory');
       const opt = document.createElement('option');
       opt.value = subName;
       opt.innerText = subName;
       sel.appendChild(opt);
 
-      // 儲存自訂子分類至 LocalStorage
       saveCustomSubCategories(subName, safeId);
       initDragAndDrop();
       alert('子分類「' + subName + '」已成功新增！');
@@ -756,18 +752,12 @@
             notesData.push({ id: doc.id, ...doc.data() });
           });
 
+          // 自動預載多益 990 策略範本 (若無舊資料)
           if (notesData.length === 0) {
             const savedLocal = localStorage.getItem('luckynote_data');
-            if (savedLocal) {
-              try {
-                const localNotes = JSON.parse(savedLocal);
-                if (localNotes.length > 0) {
-                  localNotes.forEach(n => {
-                    delete n.id;
-                    db.collection("luckynotes").add(n);
-                  });
-                }
-              } catch(e) {}
+            if (!savedLocal) {
+              const defaultNotes = getInitialToeicNotes();
+              defaultNotes.forEach(n => db.collection("luckynotes").add(n));
             }
           }
 
@@ -789,10 +779,10 @@
         try {
           notesData = JSON.parse(saved);
         } catch(e) {
-          notesData = getInitialDemoData();
+          notesData = getInitialToeicNotes();
         }
       } else {
-        notesData = getInitialDemoData();
+        notesData = getInitialToeicNotes();
         saveNotesToLocalStorage();
       }
       renderDashboardCards();
@@ -803,22 +793,35 @@
       localStorage.setItem('luckynote_data', JSON.stringify(notesData));
     }
 
-    function getInitialDemoData() {
+    /* 🎯 策略一與策略二：預設寫入多益 990 衝刺計畫範本 */
+    function getInitialToeicNotes() {
       return [
         {
-          id: 'note-1',
-          title: '☑️ 9/14設定署內Claude',
-          content: '任務進度：權限申請中...\n* 時間：2026/09/14 10:00\n* 地點：署內會議室',
-          category: '☑️ 待辦事項',
-          dateStr: '2026-09-14',
+          title: '🎯 87天多益 990 衝刺排課策略指南 #多益 #進度',
+          content: '<b>【策略一：課程優先順序】</b><br>* <b>P0（最高優先）</b>：高級字彙 (A/B) + 文法 (直攻 Part 5/6 秒殺與 B2~C1 高階詞彙)<br>* <b>P1（次高優先）</b>：商英 / 聽讀 (培養職場情境感與 Part 7 長文閱讀速度)<br>* <b>P2（暫時放棄）</b>：中級字彙 (太簡單) / 寫作課 (多益聽讀不考)<br><br><b>【每週時間規劃】</b><br>週一~週五：2堂高級字彙/文法課<br>週六~週日：1聽讀課 + 1極速刷題檢討',
+          category: '🔤 英文學習',
+          dateStr: '',
           images: []
         },
         {
-          id: 'note-2',
-          title: '☑️ 9/16與Headquarter.ai討論會',
-          content: meetingTemplate,
-          category: '☑️ 待辦事項',
-          dateStr: '2026-09-16',
+          title: '🔤 多益高頻搭配詞與易混字 #多益 #單字',
+          content: '<b>【一、 高頻固定搭配詞】</b><br>* <b>address the issue</b> (處理問題) [address 動詞為處理/致詞]<br>* <b>comply with = abide by = adhere to</b> (遵守規章)<br><br><b>【二、 易混淆詞彙對決】</b><br>* <b>complement</b> (補充/相配) vs. <b>compliment</b> (稱讚)',
+          category: '🔤 英文學習',
+          dateStr: '',
+          images: []
+        },
+        {
+          title: '⚡ Part 5 文法速解邏輯 #多益 #文法',
+          content: '<b>【一、 詞性速解規則】</b><br>* <b>副詞 (adv) + 形容詞 (adj) + 名詞 (n)</b><br>例如：an <i>exceptionally</i> successful project<br><br><b>【二、 必考特異句型】</b><br>* 建議/要求動詞：demand that + S + (should) + V原形',
+          category: '🔤 英文學習',
+          dateStr: '',
+          images: []
+        },
+        {
+          title: '🚨 多益模考錯題與聽力盲點 #多益 #錯題本',
+          content: '<b>【一、 閱讀錯題】</b><br>* 題目：The contract was _____ signed yesterday.<br>* 盲點：誤選 final，正確為 <b>officially</b> signed (副詞修飾動詞)。<br><br><b>【二、 聽力連音盲點】</b><br>* 聽錯：Could you pass it on? (聽成 pass a ton)',
+          category: '🔤 英文學習',
+          dateStr: '',
           images: []
         }
       ];
@@ -874,11 +877,10 @@
         else if (note.category.includes('工作')) listId = 'list-work';
         else if (note.category.includes('AI')) listId = 'list-ai';
         else if (note.category.includes('學習')) listId = 'list-learn';
-        else if (note.category.includes('法律')) listId = 'list-law';
         else if (note.category.includes('英文')) listId = 'list-english';
+        else if (note.category.includes('法律')) listId = 'list-law';
         else if (note.category.includes('程式')) listId = 'list-tech';
 
-        // 比對動態新增的子類別看板 ID
         const customSubcats = JSON.parse(localStorage.getItem('luckynote_subcats') || '[]');
         const matchedCustom = customSubcats.find(s => note.category.includes(s.name));
         if (matchedCustom) {
@@ -1276,7 +1278,7 @@
         defaultTitle = '📌 跨部門會議紀錄與進度追蹤';
         tpl = workTemplate;
       } else if (categoryName.includes('英文')) {
-        defaultTitle = '🔤 商務 Email 萬用句型 #英文 #信件';
+        defaultTitle = '🔤 商務 Email 萬用句型 #多益 #英文';
         tpl = englishTemplate;
       } else if (categoryName.includes('法律')) {
         defaultTitle = '⚖️ 法規/契約重點解析 #法律 #法條';
@@ -1348,16 +1350,16 @@
     }
 
     function openQuickAddModal() {
-      const cat = prompt('請選擇分類數字 (1:待辦事項, 2:工作任務, 3:AI智庫, 4:學習筆記, 5:法律條文, 6:英文學習, 7:程式技術)：', '1');
-      const title = prompt('請輸入卡片標題 (可加上 #Tag 例如：#英文 #法律)：');
+      const cat = prompt('請選擇分類數字 (1:待辦事項, 2:工作任務, 3:AI智庫, 4:學習筆記, 5:英文學習, 6:法律條文, 7:程式技術)：', '5');
+      const title = prompt('請輸入卡片標題 (可加上 #多益 #英文 #法律)：');
       if (!title) return;
 
       let catName = '☑️ 待辦事項';
       if (cat === '2') catName = '💼 工作任務';
       else if (cat === '3') catName = '🤖 AI 智庫與筆記';
       else if (cat === '4') catName = '📖 學習筆記';
-      else if (cat === '5') catName = '⚖️ 法律條文';
-      else if (cat === '6') catName = '🔤 英文學習';
+      else if (cat === '5') catName = '🔤 英文學習';
+      else if (cat === '6') catName = '⚖️ 法律條文';
       else if (cat === '7') catName = '💻 程式與技術';
 
       const newNote = {
