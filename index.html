@@ -143,7 +143,7 @@
     .cal-holiday { background: #fee2e2; color: #991b1b; font-size: 0.65rem; padding: 1px 3px; border-radius: 3px; font-weight: bold; }
     .cal-event-tag { background: #e0e7ff; color: #2b5b84; font-size: 0.68rem; padding: 1px 3px; border-radius: 3px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; font-weight: bold; cursor: pointer; display: block; }
     
-    /* 🔵 🔴 手機版專屬超高清圓點提示 */
+    /* 🔵 🔴 手機版超高清圓點提示 */
     .cal-dots-box { display: none; gap: 3px; justify-content: center; margin-top: 4px; }
     .cal-dot { width: 7px; height: 7px; border-radius: 50%; display: inline-block; box-shadow: 0 1px 2px rgba(0,0,0,0.15); }
     .cal-dot.event { background-color: #2b5b84; }
@@ -547,6 +547,7 @@
       document.getElementById('lightboxModal').style.display = 'none';
     }
 
+    /* 🔄 智能救援 + 雲端同步機制 */
     function loadNotesData() {
       if (isFirebaseEnabled && db) {
         db.collection("luckynotes").onSnapshot((snapshot) => {
@@ -554,6 +555,24 @@
           snapshot.forEach((doc) => {
             notesData.push({ id: doc.id, ...doc.data() });
           });
+
+          // 救援機制：若雲端是空的，自動檢測本機 LocalStorage 舊筆記並一鍵救援上傳
+          if (notesData.length === 0) {
+            const savedLocal = localStorage.getItem('luckynote_data');
+            if (savedLocal) {
+              try {
+                const localNotes = JSON.parse(savedLocal);
+                if (localNotes.length > 0) {
+                  console.log("🚀 自動轉移救援本機資料至 Firebase 雲端...");
+                  localNotes.forEach(n => {
+                    delete n.id; // 由 Firebase 自動生成全新雲端 ID
+                    db.collection("luckynotes").add(n);
+                  });
+                }
+              } catch(e) {}
+            }
+          }
+
           renderDashboardCards();
           renderCalendar(calYear, calMonth);
         }, (error) => {
@@ -685,7 +704,7 @@
           }
         });
 
-        // 🔵 🔴 高清圓點提示 (手機版清楚辨識)
+        // 🔵 🔴 顯眼高對比圓點
         let dotsHTML = '<div class="cal-dots-box">';
         if (hasEvent) dotsHTML += '<span class="cal-dot event"></span>';
         if (hasHoliday) dotsHTML += '<span class="cal-dot holiday"></span>';
