@@ -114,7 +114,7 @@
 
     .input-title { background: transparent; border: none; border-bottom: 2px solid var(--border-color); color: var(--accent-green); font-size: 1.2rem; font-weight: bold; margin-bottom: 8px; padding-bottom: 4px; outline: none; width: 100%; }
     
-    /* 🛠️ 防禦網頁貼上格式超出邊框的 CSS 機制 */
+    /* 🛠️ 防禦網頁複製文字與表格溢出框外的全方位 CSS 防護 */
     .input-content-editable { 
       flex: 1; 
       background: white; 
@@ -137,6 +137,8 @@
       box-sizing: border-box !important;
       word-break: break-word !important;
       overflow-wrap: anywhere !important;
+      margin-left: 0 !important;
+      margin-right: 0 !important;
     }
 
     .input-content-editable img { 
@@ -145,7 +147,7 @@
       border-radius: 6px; 
       cursor: pointer; 
       border: 1px solid var(--border-color); 
-      margin: 6px 0; 
+      margin: 6px 0 !important; 
       display: block;
     }
 
@@ -589,17 +591,6 @@
     const lawTemplate = `⚖️ [法規/契約重點解析] #法律 #法條\n\n【一、 核心條文與條號】\n* 適用法條：民法第 XXX 條\n* 關鍵要件：\n\n【二、 實務判例與應用】\n* 結論：`;
     const todoTemplate = `☑️ [待辦事項標題]\n\n【一、 任務細節說明】\n* 相關連結/資料：\n* 預計完成時間：`;
 
-    const taiwanHolidays = {
-      "01-01": "元旦",
-      "02-28": "和平紀念日",
-      "04-04": "兒童節",
-      "04-05": "清明節",
-      "05-01": "勞動節",
-      "09-25": "🥮 中秋節",
-      "09-28": "🎓 教師節",
-      "10-10": "國慶日"
-    };
-
     function getSmartEmoji(text) {
       if (!text) return '📌 ';
       const cleanText = text.trim();
@@ -636,12 +627,19 @@
 
       const editorEl = document.getElementById('noteContent');
       if (editorEl) {
+        // 🛠️ 貼上自動純文字／樣式淨化防禦機制
         editorEl.addEventListener('paste', (e) => {
-          const items = (e.clipboardData || e.originalEvent.clipboardData).items;
-          for (let item of items) {
-            if (item.type.indexOf('image') === 0) {
+          const clipboardData = e.clipboardData || window.clipboardData;
+          if (!clipboardData) return;
+
+          const items = clipboardData.items;
+          let hasImage = false;
+
+          for (let i = 0; i < items.length; i++) {
+            if (items[i].type.indexOf('image') === 0) {
+              hasImage = true;
               e.preventDefault();
-              const file = item.getAsFile();
+              const file = items[i].getAsFile();
               const reader = new FileReader();
               reader.onload = (event) => {
                 document.execCommand('insertImage', false, event.target.result);
@@ -649,7 +647,14 @@
                 renderImages();
               };
               reader.readAsDataURL(file);
+              break;
             }
+          }
+
+          if (!hasImage) {
+            e.preventDefault();
+            const text = clipboardData.getData('text/plain');
+            document.execCommand('insertText', false, text);
           }
         });
 
@@ -822,7 +827,6 @@
       const grid = document.getElementById('dashboardGrid');
       const sel = document.getElementById('editorTargetCategory');
 
-      // 🔄 自動校正舊資料「醫學」缺乏 Emoji 的問題
       saved.forEach((item, index) => {
         if (item && item.name && !/^[^\w\s\d\u4e00-\u9fa5]/.test(item.name.trim())) {
           item.name = getSmartEmoji(item.name) + item.name.trim();
@@ -1090,7 +1094,7 @@
       });
     }
 
-    /* 📅 行事曆渲染邏輯（完全修復穩健版） */
+    /* 📅 行事曆穩健渲染引擎 */
     function renderCalendar(year, month) {
       try {
         const grid = document.getElementById('calendarGrid');
@@ -1137,13 +1141,11 @@
           let hasEvent = false;
           let hasHoliday = false;
 
-          // 國定假日判定
           if (typeof taiwanHolidays !== 'undefined' && taiwanHolidays && taiwanHolidays[dateKey]) {
             hasHoliday = true;
             cellHTML += `<span class="cal-holiday">${taiwanHolidays[dateKey]}</span>`;
           }
 
-          // 行程判定
           let dayEvents = [];
           if (Array.isArray(notesData)) {
             notesData.forEach(note => {
@@ -1775,7 +1777,7 @@
       } else if (viewName === 'calendar') {
         cal.style.display = 'flex';
         if (statusEl) statusEl.innerText = statusText || '📅 行事曆';
-        renderCalendar(calYear, calMonth); // 切換至行事曆時自動重繪機制
+        renderCalendar(calYear, calMonth);
       }
 
       if (pushState) {
