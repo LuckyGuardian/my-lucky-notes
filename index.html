@@ -52,6 +52,7 @@
 
     .menu-group { display: flex; flex-direction: column; gap: 2px; }
     .menu-item { padding: 6px 10px; border-radius: 6px; cursor: grab; color: var(--text-main); font-size: 0.88rem; font-weight: 500; display: flex; align-items: center; gap: 6px; white-space: nowrap; transition: 0.2s; user-select: none; }
+    .menu-item.sub-item { padding-left: 22px; font-size: 0.82rem; opacity: 0.9; }
     .menu-item:active { cursor: grabbing; }
     .menu-item.dragging { opacity: 0.4; background: #eee9e0; border: 1px dashed var(--accent-green); }
     .menu-item:hover, .menu-item.active { background: #eee9e0; color: var(--accent-green); font-weight: bold; }
@@ -71,7 +72,7 @@
 
     .dashboard-view { flex: 1; display: flex; flex-direction: column; gap: 8px; overflow: hidden; }
 
-    .dashboard-grid { flex: 1; display: grid; grid-template-columns: 1fr 1fr; gap: 10px; overflow-y: auto; }
+    .dashboard-grid { flex: 1; display: grid; grid-template-columns: repeat(auto-fill, minmax(280px, 1fr)); gap: 10px; overflow-y: auto; }
     .board-card { background: var(--bg-panel); border-radius: 10px; border: 1px solid var(--border-color); display: flex; flex-direction: column; max-height: 100%; }
     
     .board-header { padding: 8px 12px; border-bottom: 1px solid var(--border-color); display: flex; justify-content: space-between; align-items: center; }
@@ -88,14 +89,12 @@
     .item-card-header { display: flex; align-items: center; gap: 6px; }
     .item-card-title { font-size: 0.9rem; font-weight: bold; flex: 1; }
 
-    /* 🖊️ 工具列電腦/手機響應式調整 */
     .editor-view { display: none; flex: 1; flex-direction: column; background: var(--bg-panel); border-radius: 10px; padding: 10px 14px; border: 1px solid var(--border-color); overflow: hidden; }
     .editor-tools { display: flex; gap: 4px; margin-bottom: 8px; flex-wrap: wrap; align-items: center; }
     .btn-tool { background: #ffffff; border: 1px solid var(--border-color); padding: 5px 8px; border-radius: 5px; cursor: pointer; font-weight: bold; font-size: 0.8rem; outline: none; }
     .btn-tool:hover { background-color: #f3f0e6; }
     .btn-save-main { background: var(--accent-green); color: white; border-color: var(--accent-green); }
     
-    /* 電腦版直接全展開工具列，隱藏收納按鈕 */
     .more-tools-box { display: flex; gap: 4px; flex-wrap: wrap; align-items: center; }
     .btn-more-toggle { display: none; }
 
@@ -175,7 +174,7 @@
     .img-lightbox-box img { max-width: 100%; max-height: 90vh; border-radius: 8px; box-shadow: 0 8px 30px rgba(0,0,0,0.5); object-fit: contain; }
 
     .tag-badge-container { display: flex; gap: 6px; flex-wrap: wrap; margin-bottom: 8px; }
-    .tag-badge { background: #f0ebd8; color: #6b5e43; padding: 3px 10px; border-radius: 12px; font-size: 0.8rem; font-weight: bold; cursor: pointer; border: 1px solid var(--border-color); }
+    .tag-badge { background: #f0ebd8; color: #6b5e43; padding: 4px 12px; border-radius: 14px; font-size: 0.85rem; font-weight: bold; cursor: pointer; border: 1px solid var(--border-color); }
     .tag-badge:hover, .tag-badge.active { background: var(--accent-green); color: white; border-color: var(--accent-green); }
 
     @media (max-width: 768px) {
@@ -189,7 +188,6 @@
       .editor-view { padding: 8px; }
       .input-content-editable { padding: 8px; font-size: 0.95rem; }
 
-      /* 手機版開啟收納切換按鈕 */
       .btn-more-toggle { display: inline-block; }
       .more-tools-box { display: none; width: 100%; margin-top: 4px; padding-top: 4px; border-top: 1px dashed var(--border-color); }
       .more-tools-box.open { display: flex; }
@@ -274,14 +272,19 @@
     </div>
 
     <div class="sidebar-section-title-box">
-      <span class="sidebar-section-title">新增筆記 (可拖曳排序)</span>
-      <button class="btn-add-folder" onclick="addNewFolder()" title="新增資料夾/主題分類看板">➕</button>
+      <span class="sidebar-section-title">主題分類看板 (可拖曳排序)</span>
+      <button class="btn-add-folder" onclick="addNewFolder()" title="新增主題分類看板">➕</button>
     </div>
     <div class="menu-group" id="categoryMenuGroup">
-      <div class="menu-item" draggable="true" data-target-board="ai-board" id="menu-ai" onclick="openNewCategoryNote('🤖 AI 智庫與筆記'); updateMenuActive('menu-ai'); toggleSidebar();">🤖 <span class="menu-text">AI 智庫與筆記</span></div>
-      <div class="menu-item" draggable="true" data-target-board="work-board" id="menu-work" onclick="openNewCategoryNote('💼 工作任務'); updateMenuActive('menu-work'); toggleSidebar();">💼 <span class="menu-text">工作任務</span></div>
       <div class="menu-item" draggable="true" data-target-board="todo-board" id="menu-todo" onclick="openNewCategoryNote('☑️ 待辦事項'); updateMenuActive('menu-todo'); toggleSidebar();">☑️ <span class="menu-text">待辦事項</span></div>
-      <div class="menu-item" draggable="true" data-target-board="learn-board" id="menu-learn" onclick="openNewCategoryNote('📖 學習筆記'); updateMenuActive('menu-learn'); toggleSidebar();">📖 <span class="menu-text">學習筆記</span></div>
+      <div class="menu-item" draggable="true" data-target-board="work-board" id="menu-work" onclick="openNewCategoryNote('💼 工作任務'); updateMenuActive('menu-work'); toggleSidebar();">💼 <span class="menu-text">工作任務</span></div>
+      <div class="menu-item" draggable="true" data-target-board="ai-board" id="menu-ai" onclick="openNewCategoryNote('🤖 AI 智庫與筆記'); updateMenuActive('menu-ai'); toggleSidebar();">🤖 <span class="menu-text">AI 智庫與筆記</span></div>
+      
+      <!-- 方案 A：細分專業學習主題 -->
+      <div class="menu-item" draggable="true" data-target-board="law-board" id="menu-law" onclick="openNewCategoryNote('⚖️ 法律條文'); updateMenuActive('menu-law'); toggleSidebar();">⚖️ <span class="menu-text">法律條文</span></div>
+      <div class="menu-item" draggable="true" data-target-board="english-board" id="menu-english" onclick="openNewCategoryNote('🔤 英文學習'); updateMenuActive('menu-english'); toggleSidebar();">🔤 <span class="menu-text">英文學習</span></div>
+      <div class="menu-item" draggable="true" data-target-board="tech-board" id="menu-tech" onclick="openNewCategoryNote('💻 程式與技術'); updateMenuActive('menu-tech'); toggleSidebar();">💻 <span class="menu-text">程式與技術</span></div>
+
       <div class="menu-item" draggable="true" data-target-board="web-board" id="menu-web" onclick="openNewCategoryNote('🌐 網路知識收集站'); updateMenuActive('menu-web'); toggleSidebar();">🌐 <span class="menu-text">網路知識收集站</span></div>
     </div>
   </div>
@@ -297,12 +300,12 @@
     <!-- 視窗 1：看板模式 -->
     <div class="dashboard-view" id="view-dashboard">
       <div class="dashboard-grid" id="dashboardGrid">
-        <div class="board-card" id="ai-board">
+        <div class="board-card" id="todo-board">
           <div class="board-header">
-            <div class="board-title">🤖 AI 智庫與筆記</div>
-            <button class="btn-board-add" onclick="openNewCategoryNote('🤖 AI 智庫與筆記')">+ 新增</button>
+            <div class="board-title">☑️ 待辦事項</div>
+            <button class="btn-board-add" onclick="openNewCategoryNote('☑️ 待辦事項')">+ 新增</button>
           </div>
-          <div class="card-list" id="list-ai"></div>
+          <div class="card-list" id="list-todo"></div>
         </div>
 
         <div class="board-card" id="work-board">
@@ -313,20 +316,37 @@
           <div class="card-list" id="list-work"></div>
         </div>
 
-        <div class="board-card" id="todo-board">
+        <div class="board-card" id="ai-board">
           <div class="board-header">
-            <div class="board-title">☑️ 待辦事項</div>
-            <button class="btn-board-add" onclick="openNewCategoryNote('☑️ 待辦事項')">+ 新增</button>
+            <div class="board-title">🤖 AI 智庫與筆記</div>
+            <button class="btn-board-add" onclick="openNewCategoryNote('🤖 AI 智庫與筆記')">+ 新增</button>
           </div>
-          <div class="card-list" id="list-todo"></div>
+          <div class="card-list" id="list-ai"></div>
         </div>
 
-        <div class="board-card" id="learn-board">
+        <!-- 方案 A 電腦版專屬看板卡片 -->
+        <div class="board-card" id="law-board">
           <div class="board-header">
-            <div class="board-title">📖 學習筆記</div>
-            <button class="btn-board-add" onclick="openNewCategoryNote('📖 學習筆記')">+ 新增</button>
+            <div class="board-title">⚖️ 法律條文</div>
+            <button class="btn-board-add" onclick="openNewCategoryNote('⚖️ 法律條文')">+ 新增</button>
           </div>
-          <div class="card-list" id="list-learn"></div>
+          <div class="card-list" id="list-law"></div>
+        </div>
+
+        <div class="board-card" id="english-board">
+          <div class="board-header">
+            <div class="board-title">🔤 英文學習</div>
+            <button class="btn-board-add" onclick="openNewCategoryNote('🔤 英文學習')">+ 新增</button>
+          </div>
+          <div class="card-list" id="list-english"></div>
+        </div>
+
+        <div class="board-card" id="tech-board">
+          <div class="board-header">
+            <div class="board-title">💻 程式與技術</div>
+            <button class="btn-board-add" onclick="openNewCategoryNote('💻 程式與技術')">+ 新增</button>
+          </div>
+          <div class="card-list" id="list-tech"></div>
         </div>
 
         <div class="board-card" id="web-board">
@@ -343,10 +363,12 @@
     <div class="editor-view" id="view-editor">
       <div class="editor-tools">
         <select id="editorTargetCategory" class="select-category" style="padding:3px 6px;font-size:0.8rem;">
-          <option value="🤖 AI 智庫與筆記">🤖 AI 智庫與筆記</option>
-          <option value="💼 工作任務">💼 工作任務</option>
           <option value="☑️ 待辦事項">☑️ 待辦事項</option>
-          <option value="📖 學習筆記">📖 學習筆記</option>
+          <option value="💼 工作任務">💼 工作任務</option>
+          <option value="🤖 AI 智庫與筆記">🤖 AI 智庫與筆記</option>
+          <option value="⚖️ 法律條文">⚖️ 法律條文</option>
+          <option value="🔤 英文學習">🔤 英文學習</option>
+          <option value="💻 程式與技術">💻 程式與技術</option>
           <option value="🌐 網路知識收集站">🌐 網路知識收集站</option>
         </select>
 
@@ -428,14 +450,14 @@
     </div>
   </div>
 
-  <!-- 🏷️ Tag 標籤動態過濾視窗 -->
+  <!-- 🏷️ 方案 B：Tag 標籤動態跨看板過濾視窗 -->
   <div class="modal-overlay" id="tagModal">
     <div class="modal-box">
       <div class="modal-header">
-        <h3 style="color:var(--accent-green)">🏷️ Tag 標籤過濾瀏覽</h3>
+        <h3 style="color:var(--accent-green)">🏷️ Tag 跨看板過濾檢視</h3>
         <button onclick="closeTagModal()" style="border:none;background:none;font-size:1.2rem;cursor:pointer;">✕</button>
       </div>
-      <p style="font-size:0.85rem;color:var(--text-sub);">點擊下方標籤快速篩選主題筆記（例如：#英文、#法律）：</p>
+      <p style="font-size:0.85rem;color:var(--text-sub);">點擊標籤可跨資料夾穿透過濾（例如：#法律、#英文）：</p>
       <div class="tag-badge-container" id="tagBadgesList">
         <span class="tag-badge active" onclick="filterByTag('')">全部顯示</span>
       </div>
@@ -455,10 +477,12 @@
       <div>
         <p style="font-size:0.85rem;color:var(--text-sub);margin-bottom:6px;">請勾選您想要匯出的分類看板：</p>
         <div class="export-option-group">
-          <label class="export-option-item"><input type="checkbox" class="export-chk" value="list-ai" checked> 🤖 AI 智庫與筆記</label>
-          <label class="export-option-item"><input type="checkbox" class="export-chk" value="list-work" checked> 💼 工作任務</label>
           <label class="export-option-item"><input type="checkbox" class="export-chk" value="list-todo" checked> ☑️ 待辦事項</label>
-          <label class="export-option-item"><input type="checkbox" class="export-chk" value="list-learn" checked> 📖 學習筆記</label>
+          <label class="export-option-item"><input type="checkbox" class="export-chk" value="list-work" checked> 💼 工作任務</label>
+          <label class="export-option-item"><input type="checkbox" class="export-chk" value="list-ai" checked> 🤖 AI 智庫與筆記</label>
+          <label class="export-option-item"><input type="checkbox" class="export-chk" value="list-law" checked> ⚖️ 法律條文</label>
+          <label class="export-option-item"><input type="checkbox" class="export-chk" value="list-english" checked> 🔤 英文學習</label>
+          <label class="export-option-item"><input type="checkbox" class="export-chk" value="list-tech" checked> 💻 程式與技術</label>
           <label class="export-option-item"><input type="checkbox" class="export-chk" value="list-web" checked> 🌐 網路知識收集站</label>
         </div>
       </div>
@@ -518,7 +542,8 @@
     const meetingTemplate = `⏰ [會議/活動名稱]\n\n【一、 基本資訊與地點】\n* 時間：14:00 - 15:00\n* 地點：實體 302 會議室 / 線上 Teams\n* 主持人：Headquarter.ai 團隊\n\n【二、 會前準備與攜帶物品】\n[ ] 準備專案簡報檔 (PPT)\n[ ] 帶筆電與簡報筆`;
     const aiTemplate = `🤖 [ChatGPT 萬用文案潤飾 Prompt]\n\n【一、 核心提示詞 (Prompt Template)】\n* 角色設定：你是一位專業的職場溝通專家。\n* 任務目標：幫我潤飾以下內文，使其兼具專業度與道地表達。\n* 輸入內容：[在此貼入原始文字]`;
     const workTemplate = `📌 [會議/專案名稱] 紀錄\n\n【一、 核心目標與結論】\n* 本次要解決的核心問題：\n* 最終決議與共識：\n\n【二、 Action Items (待辦追蹤)】\n[ ] 任務 A (負責人 / 預計完成日)`;
-    const englishTemplate = `🔤 [英文句型與搭配詞指南] #英文\n\n【一、 萬用句型 / 情境短語】\n* 句型 1：I wanted to check in on the status of [事項].`;
+    const englishTemplate = `🔤 [商務 Email 萬用句型] #英文 #信件\n\n【一、 常用情境句型】\n* 開頭語：I am writing to follow up on [事項].\n* 結尾語：Please let me know if you have any questions.`;
+    const lawTemplate = `⚖️ [法規/契約重點解析] #法律 #法條\n\n【一、 核心條文與條號】\n* 適用法條：民法第 XXX 條\n* 關鍵要件：\n\n【二、 實務判例與應用】\n* 結論：`;
     const todoTemplate = `☑️ [待辦事項標題]\n\n【一、 任務細節說明】\n* 相關連結/資料：\n* 預計完成時間：`;
 
     const taiwanHolidays = {
@@ -660,7 +685,7 @@
       ];
     }
 
-    /* 🏷️ 動態分析所有筆記標題與內容中的 #Tag */
+    /* 🏷️ 方案 B 全站通用：跨看板解析 #Tag */
     function renderTagBadges() {
       const tagSet = new Set();
       notesData.forEach(n => {
@@ -690,7 +715,7 @@
       renderDashboardCards();
       closeTagModal();
       if (tag) {
-        document.getElementById('currentStatusText').innerText = '🏷️ 標題過濾模式：' + tag;
+        document.getElementById('currentStatusText').innerText = '🏷️ 標籤過濾檢視：' + tag;
       } else {
         document.getElementById('currentStatusText').innerText = '🌐 全部看板模式';
       }
@@ -701,17 +726,18 @@
       document.querySelectorAll('.card-list').forEach(el => el.innerHTML = '');
 
       notesData.forEach(note => {
-        // Tag 過濾過濾機制
         if (currentActiveTag) {
           const fullText = note.title + " " + note.content;
           if (!fullText.includes(currentActiveTag)) return;
         }
 
         let listId = 'list-web';
-        if (note.category.includes('AI')) listId = 'list-ai';
+        if (note.category.includes('待辦')) listId = 'list-todo';
         else if (note.category.includes('工作')) listId = 'list-work';
-        else if (note.category.includes('待辦')) listId = 'list-todo';
-        else if (note.category.includes('學習')) listId = 'list-learn';
+        else if (note.category.includes('AI')) listId = 'list-ai';
+        else if (note.category.includes('法律')) listId = 'list-law';
+        else if (note.category.includes('英文')) listId = 'list-english';
+        else if (note.category.includes('程式')) listId = 'list-tech';
 
         const listEl = document.getElementById(listId);
         if (listEl) {
@@ -1044,7 +1070,7 @@
     }
 
     function addNewFolder() {
-      const folderName = prompt('請輸入新資料夾/主題分類看板名稱 (例如：⚖️ 法律條文)：');
+      const folderName = prompt('請輸入新主題分類看板名稱 (例如：⚖️ 法律條文)：');
       if (!folderName) return;
 
       const safeId = 'custom-' + Date.now();
@@ -1103,9 +1129,12 @@
       } else if (categoryName.includes('工作')) {
         defaultTitle = '📌 跨部門會議紀錄與進度追蹤';
         tpl = workTemplate;
-      } else if (categoryName.includes('學習')) {
-        defaultTitle = '📖 英文句型與搭配詞指南 #英文';
+      } else if (categoryName.includes('英文')) {
+        defaultTitle = '🔤 商務 Email 萬用句型 #英文 #信件';
         tpl = englishTemplate;
+      } else if (categoryName.includes('法律')) {
+        defaultTitle = '⚖️ 法規/契約重點解析 #法律 #法條';
+        tpl = lawTemplate;
       } else if (categoryName.includes('網路')) {
         defaultTitle = '🌐 網路知識收集文章';
         tpl = webTemplate;
@@ -1173,15 +1202,16 @@
     }
 
     function openQuickAddModal() {
-      const cat = prompt('請選擇分類數字 (1:AI智庫, 2:工作任務, 3:待辦事項, 4:學習筆記, 5:網路知識)：', '3');
+      const cat = prompt('請選擇分類數字 (1:待辦事項, 2:工作任務, 3:AI智庫, 4:法律條文, 5:英文學習, 6:程式技術)：', '1');
       const title = prompt('請輸入卡片標題 (可加上 #Tag 例如：#英文 #法律)：');
       if (!title) return;
 
       let catName = '☑️ 待辦事項';
-      if (cat === '1') catName = '🤖 AI 智庫與筆記';
-      else if (cat === '2') catName = '💼 工作任務';
-      else if (cat === '4') catName = '📖 學習筆記';
-      else if (cat === '5') catName = '🌐 網路知識收集站';
+      if (cat === '2') catName = '💼 工作任務';
+      else if (cat === '3') catName = '🤖 AI 智庫與筆記';
+      else if (cat === '4') catName = '⚖️ 法律條文';
+      else if (cat === '5') catName = '🔤 英文學習';
+      else if (cat === '6') catName = '💻 程式與技術';
 
       const newNote = {
         title: title,
