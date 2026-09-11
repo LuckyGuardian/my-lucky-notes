@@ -58,6 +58,7 @@
     .menu-item.dragging { opacity: 0.4; background: #eee9e0; border: 1px dashed var(--accent-green); }
     .menu-item:hover, .menu-item.active { background: #eee9e0; color: var(--accent-green); font-weight: bold; }
     
+    /* 階層式子選單對齊與美化修復 */
     .submenu-group { display: flex; flex-direction: column; gap: 2px; padding-left: 14px; border-left: 2px solid var(--border-color); margin-left: 12px; margin-top: 2px; margin-bottom: 2px; }
     .submenu-item { padding: 5px 8px; border-radius: 5px; cursor: pointer; color: var(--text-main); font-size: 0.83rem; font-weight: 500; display: flex; align-items: center; gap: 6px; white-space: nowrap; transition: 0.2s; position: relative; user-select: none; }
     .submenu-item:hover, .submenu-item.active { background: #eee9e0; color: var(--accent-green); font-weight: bold; }
@@ -84,6 +85,7 @@
     .board-card { background: var(--bg-panel); border-radius: 10px; border: 1px solid var(--border-color); display: flex; flex-direction: column; max-height: 100%; }
     
     .board-header { padding: 8px 12px; border-bottom: 1px solid var(--border-color); display: flex; justify-content: space-between; align-items: center; }
+    
     .board-title { display: flex; align-items: center; gap: 6px; font-size: 0.95rem; font-weight: bold; color: var(--accent-green); cursor: pointer; padding: 2px 4px; border-radius: 4px; transition: background 0.2s; }
     .board-title:hover { background: #eee9e0; }
     
@@ -114,7 +116,6 @@
 
     .input-title { background: transparent; border: none; border-bottom: 2px solid var(--border-color); color: var(--accent-green); font-size: 1.2rem; font-weight: bold; margin-bottom: 8px; padding-bottom: 4px; outline: none; width: 100%; }
     
-    /* 🛠️ 防範網頁貼上格式超出邊框的超強 CSS 防護機制 */
     .input-content-editable { 
       flex: 1; 
       background: white; 
@@ -132,7 +133,6 @@
     }
     .input-content-editable:focus { border-color: var(--accent-green); }
     
-    /* 強制限制貼進來的所有 HTML 元素不得超出編輯器寬度 */
     .input-content-editable * {
       max-width: 100% !important;
       box-sizing: border-box !important;
@@ -315,7 +315,7 @@
       
       <!-- 📖 父分類：學習筆記 + 支援一鍵「➕ 新增子分類」 -->
       <div>
-        <div class="menu-item" draggable="true" data-target-board="learn-board" id="menu-learn" onclick="toggleSubmenu('learnSubmenu', 'arrowLearn'); openNewCategoryNote('📖 學習筆記'); updateMenuActive('menu-learn');">
+        <div class="menu-item" draggable="true" id="menu-learn" onclick="toggleSubmenu('learnSubmenu', 'arrowLearn'); filterByCategoryGroup('學習'); updateMenuActive('menu-learn');">
           📖 <span class="menu-text" id="side-text-learn">學習筆記</span>
           <button class="btn-add-subfolder" onclick="event.stopPropagation(); addNewSubCategory('📖 學習筆記');" title="新增學習子分類">➕</button>
           <span class="arrow-icon open" id="arrowLearn">▶</span>
@@ -339,7 +339,7 @@
       <span class="status-title" id="currentStatusText">🌐 全部看板模式</span>
     </div>
 
-    <!-- 視窗 1：看板模式 -->
+    <!-- 視窗 1：看板模式 (主看板網格中移除重複的學習筆記通用卡片) -->
     <div class="dashboard-view" id="view-dashboard">
       <div class="dashboard-grid" id="dashboardGrid">
         <div class="board-card" id="todo-board">
@@ -364,14 +364,6 @@
             <button class="btn-board-add" onclick="openNewCategoryNote('🤖 AI 智庫與筆記')">+ 新增</button>
           </div>
           <div class="card-list" id="list-ai"></div>
-        </div>
-
-        <div class="board-card" id="learn-board">
-          <div class="board-header">
-            <div class="board-title" onclick="renameBoard('learn-board', 'side-text-learn', '📖 學習筆記')" title="點擊重命名看板">📖 <span id="title-text-learn">學習筆記 (通用)</span> ✏️</div>
-            <button class="btn-board-add" onclick="openNewCategoryNote('📖 學習筆記')">+ 新增</button>
-          </div>
-          <div class="card-list" id="list-learn"></div>
         </div>
 
         <div class="board-card" id="english-board">
@@ -415,7 +407,6 @@
           <option value="☑️ 待辦事項">☑️ 待辦事項</option>
           <option value="💼 工作任務">💼 工作任務</option>
           <option value="🤖 AI 智庫與筆記">🤖 AI 智庫與筆記</option>
-          <option value="📖 學習筆記">📖 學習筆記 (通用)</option>
           <option value="🔤 英文學習">🔤 英文學習</option>
           <option value="⚖️ 法律條文">⚖️ 法律條文</option>
           <option value="💻 程式與技術">💻 程式與技術</option>
@@ -535,7 +526,6 @@
           <label class="export-option-item"><input type="checkbox" class="export-chk" value="list-todo" checked> ☑️ 待辦事項</label>
           <label class="export-option-item"><input type="checkbox" class="export-chk" value="list-work" checked> 💼 工作任務</label>
           <label class="export-option-item"><input type="checkbox" class="export-chk" value="list-ai" checked> 🤖 AI 智庫與筆記</label>
-          <label class="export-option-item"><input type="checkbox" class="export-chk" value="list-learn" checked> 📖 學習筆記 (通用)</label>
           <label class="export-option-item"><input type="checkbox" class="export-chk" value="list-english" checked> 🔤 英文學習</label>
           <label class="export-option-item"><input type="checkbox" class="export-chk" value="list-law" checked> ⚖️ 法律條文</label>
           <label class="export-option-item"><input type="checkbox" class="export-chk" value="list-tech" checked> 💻 程式與技術</label>
@@ -601,6 +591,7 @@
     const lawTemplate = `⚖️ [法規/契約重點解析] #法律 #法條\n\n【一、 核心條文與條號】\n* 適用法條：民法第 XXX 條\n* 關鍵要件：\n\n【二、 實務判例與應用】\n* 結論：`;
     const todoTemplate = `☑️ [待辦事項標題]\n\n【一、 任務細節說明】\n* 相關連結/資料：\n* 預計完成時間：`;
 
+    /* 💡 方案 B：智慧 Emoji 關鍵字自動配對系統 */
     function getSmartEmoji(text) {
       if (/^[^\w\s\d\u4e00-\u9fa5]/.test(text.trim())) return '';
       if (/醫|藥|病|診|健|衛/.test(text)) return '🩺 ';
@@ -635,13 +626,10 @@
 
       const editorEl = document.getElementById('noteContent');
       if (editorEl) {
-        // 🛠️ 防範剪貼簿帶入過度複雜無用樣式
         editorEl.addEventListener('paste', (e) => {
           const items = (e.clipboardData || e.originalEvent.clipboardData).items;
-          let hasImage = false;
           for (let item of items) {
             if (item.type.indexOf('image') === 0) {
-              hasImage = true;
               e.preventDefault();
               const file = item.getAsFile();
               const reader = new FileReader();
@@ -710,6 +698,21 @@
         submenu.style.display = 'none';
         if (arrow) arrow.classList.remove('open');
       }
+    }
+
+    /* 點擊父選單（如學習筆記）切換至全領域過濾檢視 */
+    function filterByCategoryGroup(groupKeyword) {
+      const boards = document.querySelectorAll('.board-card');
+      boards.forEach(board => {
+        const title = board.querySelector('.board-title').innerText;
+        if (title.includes(groupKeyword) || board.id.includes('english') || board.id.includes('law') || board.id.includes('tech') || board.id.includes('sub')) {
+          board.style.display = 'flex';
+        } else {
+          board.style.display = 'none';
+        }
+      });
+      document.getElementById('currentStatusText').innerText = `📖 跨領域學習筆記彙整視圖`;
+      switchView('dashboard', `📖 跨領域學習筆記彙整視圖`, false);
     }
 
     function bindContextMenuEvents(element, type, catName, safeId, sideTextId) {
@@ -1040,7 +1043,7 @@
         } else if (note.category === '🤖 AI 智庫與筆記' || note.category.includes('AI')) {
           listId = 'list-ai';
         } else if (note.category === '📖 學習筆記') {
-          listId = 'list-learn';
+          listId = 'list-english'; // 通用學習筆記預設歸入主要英文卡片
         }
 
         const customSubcats = JSON.parse(localStorage.getItem('luckynote_subcats') || '[]');
