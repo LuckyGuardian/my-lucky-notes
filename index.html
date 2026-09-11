@@ -37,8 +37,7 @@
     .sidebar.collapsed .btn-side-add-text,
     .sidebar.collapsed .btn-add-folder,
     .sidebar.collapsed .btn-add-subfolder,
-    .sidebar.collapsed .submenu-group,
-    .sidebar.collapsed .btn-delete-cat { display: none !important; }
+    .sidebar.collapsed .submenu-group { display: none !important; }
     .sidebar.collapsed .menu-item { justify-content: center; padding: 8px 0; }
     .sidebar.collapsed .btn-side-add { padding: 8px 0; }
 
@@ -59,16 +58,12 @@
     .menu-item.dragging { opacity: 0.4; background: #eee9e0; border: 1px dashed var(--accent-green); }
     .menu-item:hover, .menu-item.active { background: #eee9e0; color: var(--accent-green); font-weight: bold; }
     
-    /* 階層式子選單樣式與刪除按鈕 */
-    .submenu-group { display: flex; flex-direction: column; gap: 2px; padding-left: 18px; border-left: 2px solid var(--border-color); margin-left: 12px; margin-top: 2px; margin-bottom: 2px; }
-    .submenu-item { padding: 4px 8px; border-radius: 5px; cursor: pointer; color: var(--text-main); font-size: 0.82rem; font-weight: 500; display: flex; align-items: center; justify-content: space-between; gap: 6px; white-space: nowrap; transition: 0.2s; position: relative; }
+    /* 階層式子選單對齊修復 */
+    .submenu-group { display: flex; flex-direction: column; gap: 2px; padding-left: 14px; border-left: 2px solid var(--border-color); margin-left: 12px; margin-top: 2px; margin-bottom: 2px; }
+    .submenu-item { padding: 5px 8px; border-radius: 5px; cursor: pointer; color: var(--text-main); font-size: 0.83rem; font-weight: 500; display: flex; align-items: center; gap: 6px; white-space: nowrap; transition: 0.2s; position: relative; user-select: none; }
     .submenu-item:hover, .submenu-item.active { background: #eee9e0; color: var(--accent-green); font-weight: bold; }
 
-    .btn-delete-cat { display: none; background: transparent; border: none; font-size: 0.75rem; color: var(--accent-red); cursor: pointer; opacity: 0.7; padding: 0 2px; }
-    .submenu-item:hover .btn-delete-cat, .menu-item:hover .btn-delete-cat { display: inline-block; }
-    .btn-delete-cat:hover { opacity: 1; transform: scale(1.1); }
-
-    .arrow-icon { margin-left: 2px; font-size: 0.7rem; color: var(--text-sub); transition: transform 0.2s; cursor: pointer; }
+    .arrow-icon { margin-left: auto; font-size: 0.7rem; color: var(--text-sub); transition: transform 0.2s; cursor: pointer; }
     .arrow-icon.open { transform: rotate(90deg); }
 
     .btn-side-add { background: var(--accent-green); color: white; border: none; padding: 8px; border-radius: 6px; font-weight: bold; font-size: 0.85rem; cursor: pointer; display: flex; align-items: center; justify-content: center; gap: 6px; box-shadow: 0 2px 4px rgba(59,90,69,0.15); margin: 2px 0; white-space: nowrap; }
@@ -183,6 +178,13 @@
 
     .fab-btn { display: none; position: fixed; bottom: 16px; right: 16px; width: 50px; height: 50px; background: var(--accent-green); color: white; border-radius: 50%; border: none; font-size: 1.6rem; box-shadow: 0 4px 10px rgba(0,0,0,0.2); cursor: pointer; z-index: 99; }
 
+    /* 🖱️ 精美客製化右鍵 / 長按選單 */
+    .context-menu { display: none; position: fixed; background: #ffffff; border: 1px solid var(--border-color); border-radius: 8px; box-shadow: 0 4px 15px rgba(0,0,0,0.15); z-index: 10000; padding: 4px 0; min-width: 140px; }
+    .context-menu-item { padding: 8px 14px; font-size: 0.85rem; font-weight: 500; cursor: pointer; display: flex; align-items: center; gap: 8px; color: var(--text-main); }
+    .context-menu-item:hover { background: #f0ebd8; color: var(--accent-green); }
+    .context-menu-item.danger { color: var(--accent-red); }
+    .context-menu-item.danger:hover { background: #fee2e2; }
+
     .modal-overlay { display: none; position: fixed; top: 0; left: 0; width: 100vw; height: 100vh; background: rgba(0,0,0,0.6); backdrop-filter: blur(4px); z-index: 9999; justify-content: center; align-items: center; }
     .modal-box { background: #ffffff; width: 90%; max-width: 450px; border-radius: 12px; padding: 18px; display: flex; flex-direction: column; gap: 12px; box-shadow: 0 10px 25px rgba(0,0,0,0.2); }
     .modal-header { display: flex; justify-content: space-between; align-items: center; border-bottom: 1px solid #e2e8f0; padding-bottom: 6px; }
@@ -217,7 +219,6 @@
       .cal-holiday, .cal-event-tag { display: none !important; }
       .cal-dots-box { display: flex; }
       .mobile-day-agenda { display: flex; }
-      .btn-delete-cat { display: inline-block !important; }
     }
   </style>
 </head>
@@ -290,7 +291,7 @@
     </div>
 
     <div class="sidebar-section-title-box">
-      <span class="sidebar-section-title">主題分類看板 (可拖曳排序)</span>
+      <span class="sidebar-section-title">主題分類看板 (右鍵/長按管理)</span>
       <button class="btn-add-folder" onclick="addNewFolder()" title="新增主分類看板">➕</button>
     </div>
     <div class="menu-group" id="categoryMenuGroup">
@@ -479,6 +480,12 @@
 
   <button class="fab-btn" onclick="mobileQuickAdd()">+</button>
 
+  <!-- 🖱️ 客製化右鍵/長按快顯選單 -->
+  <div class="context-menu" id="customContextMenu">
+    <div class="context-menu-item" id="ctxRenameBtn">✏️ 重命名分類</div>
+    <div class="context-menu-item danger" id="ctxDeleteBtn">🗑️ 刪除此分類</div>
+  </div>
+
   <div class="modal-overlay" id="lightboxModal" onclick="closeLightbox()">
     <div class="img-lightbox-box">
       <img id="lightboxImg" src="" onclick="event.stopPropagation()">
@@ -606,6 +613,12 @@
 
       renderCalendar(calYear, calMonth);
 
+      // 隱藏右鍵選單
+      document.addEventListener('click', () => {
+        const ctx = document.getElementById('customContextMenu');
+        if (ctx) ctx.style.display = 'none';
+      });
+
       const editorEl = document.getElementById('noteContent');
       if (editorEl) {
         editorEl.addEventListener('paste', (e) => {
@@ -682,6 +695,48 @@
       }
     }
 
+    /* 🖱️ 綁定電腦右鍵與手機長按選單事件 */
+    function bindContextMenuEvents(element, type, catName, safeId, sideTextId) {
+      let pressTimer = null;
+
+      // 1. 電腦右鍵 (contextmenu)
+      element.addEventListener('contextmenu', (e) => {
+        e.preventDefault();
+        showContextMenu(e.clientX, e.clientY, type, catName, safeId, sideTextId);
+      });
+
+      // 2. 手機觸控長按 (touchstart / touchend)
+      element.addEventListener('touchstart', (e) => {
+        pressTimer = setTimeout(() => {
+          const touch = e.touches[0];
+          showContextMenu(touch.clientX, touch.clientY, type, catName, safeId, sideTextId);
+        }, 500); // 長按 0.5 秒觸發
+      }, { passive: true });
+
+      element.addEventListener('touchend', () => clearTimeout(pressTimer));
+      element.addEventListener('touchmove', () => clearTimeout(pressTimer));
+    }
+
+    function showContextMenu(x, y, type, catName, safeId, sideTextId) {
+      const ctx = document.getElementById('customContextMenu');
+      if (!ctx) return;
+
+      ctx.style.left = `${x}px`;
+      ctx.style.top = `${y}px`;
+      ctx.style.display = 'block';
+
+      // 綁定選單按鈕功能
+      document.getElementById('ctxRenameBtn').onclick = () => {
+        ctx.style.display = 'none';
+        renameBoard(safeId, sideTextId, catName);
+      };
+
+      document.getElementById('ctxDeleteBtn').onclick = () => {
+        ctx.style.display = 'none';
+        deleteCategory(type, catName, safeId);
+      };
+    }
+
     function addNewSubCategory(parentCategoryName) {
       const subName = prompt(`請輸入「${parentCategoryName}」底下的全新子分類名稱 (例：🇫🇷 法語學習、📊 財務金融)：`);
       if (!subName) return;
@@ -699,7 +754,11 @@
         updateMenuActive('menu-' + safeId);
         toggleSidebar();
       };
-      subDiv.innerHTML = `<span id="side-text-${safeId}">${subName}</span><button class="btn-delete-cat" onclick="event.stopPropagation(); deleteCategory('sub', '${subName}', '${safeId}')" title="刪除此子分類">🗑️</button>`;
+      subDiv.innerHTML = `📁 <span id="side-text-${safeId}">${subName}</span>`;
+      
+      // 綁定右鍵/長按事件
+      bindContextMenuEvents(subDiv, 'sub', subName, safeId, 'side-text-' + safeId);
+
       submenu.appendChild(subDiv);
 
       const grid = document.getElementById('dashboardGrid');
@@ -723,7 +782,7 @@
 
       saveCustomSubCategories(subName, safeId);
       initDragAndDrop();
-      alert('子分類「' + subName + '」已成功新增！');
+      alert('子分類「' + subName + '」已成功新增！\n(提示：對著左側選單按右鍵或長按即可刪除)');
     }
 
     function saveCustomSubCategories(name, safeId) {
@@ -749,7 +808,9 @@
             updateMenuActive('menu-' + item.safeId);
             toggleSidebar();
           };
-          subDiv.innerHTML = `<span id="side-text-${item.safeId}">${item.name}</span><button class="btn-delete-cat" onclick="event.stopPropagation(); deleteCategory('sub', '${item.name}', '${item.safeId}')" title="刪除此子分類">🗑️</button>`;
+          subDiv.innerHTML = `📁 <span id="side-text-${item.safeId}">${item.name}</span>`;
+          
+          bindContextMenuEvents(subDiv, 'sub', item.name, item.safeId, 'side-text-' + item.safeId);
           submenu.appendChild(subDiv);
 
           if (grid) {
@@ -776,9 +837,7 @@
       });
     }
 
-    /* 🗑️ 刪除自訂分類看板與子分類邏輯 */
     function deleteCategory(type, catName, safeId) {
-      // 檢查該分類下是否有筆記
       const hasNotes = notesData.some(n => n.category === catName || n.category.includes(catName));
       if (hasNotes) {
         return alert(`⚠️ 無法刪除：「${catName}」底下尚有筆記！\n請先將分類下的筆記刪除或轉移至其他看板，再進行刪除。`);
@@ -786,15 +845,12 @@
 
       if (!confirm(`確定要刪除「${catName}」分類看板嗎？刪除後無法恢復！`)) return;
 
-      // 1. 移除選單元素
       const menuEl = document.getElementById('menu-' + safeId);
       if (menuEl) menuEl.remove();
 
-      // 2. 移除看板 DOM
       const boardEl = document.getElementById(safeId);
       if (boardEl) boardEl.remove();
 
-      // 3. 移除編輯器 Select 選項
       const sel = document.getElementById('editorTargetCategory');
       if (sel) {
         for (let i = 0; i < sel.options.length; i++) {
@@ -805,7 +861,6 @@
         }
       }
 
-      // 4. 清理 LocalStorage
       if (type === 'sub') {
         let saved = JSON.parse(localStorage.getItem('luckynote_subcats') || '[]');
         saved = saved.filter(s => s.safeId !== safeId);
@@ -1337,7 +1392,9 @@
         updateMenuActive('menu-' + safeId);
         toggleSidebar();
       };
-      menuItem.innerHTML = `📁 <span class="menu-text" id="side-text-${safeId}">${folderName}</span><button class="btn-delete-cat" onclick="event.stopPropagation(); deleteCategory('custom', '${folderName}', '${safeId}')" title="刪除此看板">🗑️</button>`;
+      menuItem.innerHTML = `📁 <span class="menu-text" id="side-text-${safeId}">${folderName}</span>`;
+      
+      bindContextMenuEvents(menuItem, 'custom', folderName, safeId, 'side-text-' + safeId);
       menuGroup.appendChild(menuItem);
 
       const grid = document.getElementById('dashboardGrid');
@@ -1362,7 +1419,7 @@
       saveCustomFolder(folderName, safeId);
       initDragAndDrop();
       saveMenuOrder();
-      alert('主題分類看板「' + folderName + '」已成功建立！');
+      alert('主題分類看板「' + folderName + '」已成功建立！\n(提示：對著左側選單按右鍵或長按即可刪除)');
     }
 
     function saveCustomFolder(name, safeId) {
@@ -1391,7 +1448,9 @@
             updateMenuActive('menu-' + item.safeId);
             toggleSidebar();
           };
-          menuItem.innerHTML = `📁 <span class="menu-text" id="side-text-${item.safeId}">${item.name}</span><button class="btn-delete-cat" onclick="event.stopPropagation(); deleteCategory('custom', '${item.name}', '${item.safeId}')" title="刪除此看板">🗑️</button>`;
+          menuItem.innerHTML = `📁 <span class="menu-text" id="side-text-${item.safeId}">${item.name}</span>`;
+          
+          bindContextMenuEvents(menuItem, 'custom', item.name, item.safeId, 'side-text-' + item.safeId);
           menuGroup.appendChild(menuItem);
 
           if (grid) {
