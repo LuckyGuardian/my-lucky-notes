@@ -58,7 +58,6 @@
     .menu-item.dragging { opacity: 0.4; background: #eee9e0; border: 1px dashed var(--accent-green); }
     .menu-item:hover, .menu-item.active { background: #eee9e0; color: var(--accent-green); font-weight: bold; }
     
-    /* 階層式子選單對齊與美化修復 */
     .submenu-group { display: flex; flex-direction: column; gap: 2px; padding-left: 14px; border-left: 2px solid var(--border-color); margin-left: 12px; margin-top: 2px; margin-bottom: 2px; }
     .submenu-item { padding: 5px 8px; border-radius: 5px; cursor: pointer; color: var(--text-main); font-size: 0.83rem; font-weight: 500; display: flex; align-items: center; gap: 6px; white-space: nowrap; transition: 0.2s; position: relative; user-select: none; }
     .submenu-item:hover, .submenu-item.active { background: #eee9e0; color: var(--accent-green); font-weight: bold; }
@@ -85,7 +84,6 @@
     .board-card { background: var(--bg-panel); border-radius: 10px; border: 1px solid var(--border-color); display: flex; flex-direction: column; max-height: 100%; }
     
     .board-header { padding: 8px 12px; border-bottom: 1px solid var(--border-color); display: flex; justify-content: space-between; align-items: center; }
-    
     .board-title { display: flex; align-items: center; gap: 6px; font-size: 0.95rem; font-weight: bold; color: var(--accent-green); cursor: pointer; padding: 2px 4px; border-radius: 4px; transition: background 0.2s; }
     .board-title:hover { background: #eee9e0; }
     
@@ -116,6 +114,7 @@
 
     .input-title { background: transparent; border: none; border-bottom: 2px solid var(--border-color); color: var(--accent-green); font-size: 1.2rem; font-weight: bold; margin-bottom: 8px; padding-bottom: 4px; outline: none; width: 100%; }
     
+    /* 🛠️ 防禦網頁複製文字與表格溢出框外的 CSS 機制 */
     .input-content-editable { 
       flex: 1; 
       background: white; 
@@ -339,7 +338,7 @@
       <span class="status-title" id="currentStatusText">🌐 全部看板模式</span>
     </div>
 
-    <!-- 視窗 1：看板模式 (主看板網格中移除重複的學習筆記通用卡片) -->
+    <!-- 視窗 1：看板模式 -->
     <div class="dashboard-view" id="view-dashboard">
       <div class="dashboard-grid" id="dashboardGrid">
         <div class="board-card" id="todo-board">
@@ -591,7 +590,6 @@
     const lawTemplate = `⚖️ [法規/契約重點解析] #法律 #法條\n\n【一、 核心條文與條號】\n* 適用法條：民法第 XXX 條\n* 關鍵要件：\n\n【二、 實務判例與應用】\n* 結論：`;
     const todoTemplate = `☑️ [待辦事項標題]\n\n【一、 任務細節說明】\n* 相關連結/資料：\n* 預計完成時間：`;
 
-    /* 💡 方案 B：智慧 Emoji 關鍵字自動配對系統 */
     function getSmartEmoji(text) {
       if (/^[^\w\s\d\u4e00-\u9fa5]/.test(text.trim())) return '';
       if (/醫|藥|病|診|健|衛/.test(text)) return '🩺 ';
@@ -700,7 +698,6 @@
       }
     }
 
-    /* 點擊父選單（如學習筆記）切換至全領域過濾檢視 */
     function filterByCategoryGroup(groupKeyword) {
       const boards = document.querySelectorAll('.board-card');
       boards.forEach(board => {
@@ -1043,7 +1040,7 @@
         } else if (note.category === '🤖 AI 智庫與筆記' || note.category.includes('AI')) {
           listId = 'list-ai';
         } else if (note.category === '📖 學習筆記') {
-          listId = 'list-english'; // 通用學習筆記預設歸入主要英文卡片
+          listId = 'list-english';
         }
 
         const customSubcats = JSON.parse(localStorage.getItem('luckynote_subcats') || '[]');
