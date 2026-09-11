@@ -169,7 +169,7 @@
 
     .calendar-grid { display: grid; grid-template-columns: repeat(7, 1fr); gap: 6px; text-align: center; }
     .cal-day-header { font-weight: bold; color: var(--accent-green); padding: 6px; background: #eee9e0; border-radius: 5px; font-size: 0.85rem; }
-    .cal-day-cell { background: white; border: 1px solid var(--border-color); border-radius: 6px; min-height: 75px; padding: 4px; display: flex; flex-direction: column; gap: 2px; cursor: pointer; text-align: left; transition: 0.2s; position: relative; }
+    .cal-day-cell { background: white; border: 1px solid var(--border-color); border-radius: 6px; min-height: 80px; padding: 4px; display: flex; flex-direction: column; gap: 2px; cursor: pointer; text-align: left; transition: 0.2s; position: relative; }
     .cal-day-cell.empty { background: transparent; border: none; cursor: default; }
     .cal-day-cell:not(.empty):hover { border-color: var(--accent-green); background-color: #faf8f5; }
     .cal-day-cell.today { border: 2px solid var(--accent-green); background-color: #f4f8f5; }
@@ -179,12 +179,12 @@
     .cal-holiday { background: #fee2e2; color: #991b1b; font-size: 0.65rem; padding: 1px 3px; border-radius: 3px; font-weight: bold; }
     .cal-event-tag { background: #e0e7ff; color: #2b5b84; font-size: 0.68rem; padding: 1px 3px; border-radius: 3px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; font-weight: bold; cursor: pointer; display: block; }
     
-    .cal-dots-box { display: none; gap: 3px; justify-content: center; margin-top: 4px; }
-    .cal-dot { width: 7px; height: 7px; border-radius: 50%; display: inline-block; box-shadow: 0 1px 2px rgba(0,0,0,0.15); }
+    .cal-dots-box { display: flex; gap: 3px; justify-content: flex-start; margin-top: 2px; }
+    .cal-dot { width: 6px; height: 6px; border-radius: 50%; display: inline-block; }
     .cal-dot.event { background-color: #2b5b84; }
     .cal-dot.holiday { background-color: #ef4444; }
 
-    .mobile-day-agenda { display: none; background: white; border: 1px solid var(--border-color); border-radius: 8px; padding: 10px; margin-top: 6px; flex-direction: column; gap: 6px; }
+    .mobile-day-agenda { display: flex; background: white; border: 1px solid var(--border-color); border-radius: 8px; padding: 10px; margin-top: 6px; flex-direction: column; gap: 6px; }
     .mobile-agenda-title { font-size: 0.9rem; font-weight: bold; color: var(--accent-green); border-bottom: 1px solid var(--border-color); padding-bottom: 4px; display: flex; justify-content: space-between; align-items: center; }
     .mobile-agenda-item { background: #f7f5f0; padding: 8px 10px; border-radius: 6px; font-size: 0.85rem; font-weight: bold; color: var(--accent-blue); cursor: pointer; border: 1px solid var(--border-color); display: flex; justify-content: space-between; }
 
@@ -230,7 +230,6 @@
       .cal-day-num { font-size: 0.75rem; }
       .cal-holiday, .cal-event-tag { display: none !important; }
       .cal-dots-box { display: flex; }
-      .mobile-day-agenda { display: flex; }
     }
   </style>
 </head>
@@ -337,7 +336,7 @@
       <span class="status-title" id="currentStatusText">🌐 全部看板模式</span>
     </div>
 
-    <!-- 視窗 1：看板模式 (只顯示獨立子看板，移除重複的學習筆記通用卡片) -->
+    <!-- 視窗 1：看板模式 -->
     <div class="dashboard-view" id="view-dashboard">
       <div class="dashboard-grid" id="dashboardGrid">
         <div class="board-card" id="todo-board">
@@ -591,14 +590,16 @@
 
     /* 💡 方案 B：智慧 Emoji 關鍵字自動配對系統 */
     function getSmartEmoji(text) {
-      if (/^[^\w\s\d\u4e00-\u9fa5]/.test(text.trim())) return '';
-      if (/醫|藥|病|診|健|衛/.test(text)) return '🩺 ';
-      if (/日|韓|法|德|英|語|言/.test(text)) return '🎌 ';
-      if (/錢|財|股|帳|金|幣|理財/.test(text)) return '💰 ';
-      if (/食|菜|廚|味|烹|飪/.test(text)) return '🍳 ';
-      if (/旅|遊|飛|國|宿/.test(text)) return '✈️ ';
-      if (/房|地|宅|屋/.test(text)) return '🏠 ';
-      if (/書|讀|閱|誌/.test(text)) return '📚 ';
+      if (!text) return '📌 ';
+      const cleanText = text.trim();
+      if (/^[^\w\s\d\u4e00-\u9fa5]/.test(cleanText)) return ''; 
+      if (/醫|藥|病|診|健|衛/.test(cleanText)) return '🩺 ';
+      if (/日|韓|法|德|英|語|言/.test(cleanText)) return '🎌 ';
+      if (/錢|財|股|帳|金|幣|理財/.test(cleanText)) return '💰 ';
+      if (/食|菜|廚|味|烹|飪/.test(cleanText)) return '🍳 ';
+      if (/旅|遊|飛|國|宿/.test(cleanText)) return '✈️ ';
+      if (/房|地|宅|屋/.test(cleanText)) return '🏠 ';
+      if (/書|讀|閱|誌/.test(cleanText)) return '📚 ';
       return '📌 ';
     }
 
@@ -810,9 +811,9 @@
       const grid = document.getElementById('dashboardGrid');
       const sel = document.getElementById('editorTargetCategory');
 
-      // 🔄 自動校正舊資料「醫學」缺乏 Emoji 的問題
+      // 🔄 強制校正舊資料「醫學」自動補標 Emoji 圖示
       saved.forEach((item, index) => {
-        if (!/^[^\w\s\d\u4e00-\u9fa5]/.test(item.name.trim())) {
+        if (item && item.name && !/^[^\w\s\d\u4e00-\u9fa5]/.test(item.name.trim())) {
           item.name = getSmartEmoji(item.name) + item.name.trim();
           saved[index].name = item.name;
         }
@@ -1054,7 +1055,7 @@
         }
 
         const customSubcats = JSON.parse(localStorage.getItem('luckynote_subcats') || '[]');
-        const matchedCustomSub = customSubcats.find(s => note.category === s.name || note.category.includes(s.name) || s.name.includes(note.category));
+        const matchedCustomSub = customSubcats.find(s => note.category === s.name || note.category.includes(s.name) || (s.name && s.name.includes(note.category)));
         if (matchedCustomSub) {
           listId = 'list-' + matchedCustomSub.safeId;
         }
@@ -1078,86 +1079,90 @@
       });
     }
 
-    /* 📅 行事曆渲染邏輯修復（穩健無 Error） */
+    /* 📅 行事曆穩健渲染引擎（100% 防崩潰機制） */
     function renderCalendar(year, month) {
-      const grid = document.getElementById('calendarGrid');
-      const titleEl = document.getElementById('calTitleDisplay');
-      if (!grid || !titleEl) return;
-      
-      grid.innerHTML = `
-        <div class="cal-day-header">日</div><div class="cal-day-header">一</div><div class="cal-day-header">二</div><div class="cal-day-header">三</div><div class="cal-day-header">四</div><div class="cal-day-header">五</div><div class="cal-day-header">六</div>
-      `;
-
-      titleEl.innerText = `📅 ${year} 年 ${month + 1} 月 行事曆`;
-
-      const firstDayIndex = new Date(year, month, 1).getDay();
-      const totalDays = new Date(year, month + 1, 0).getDate();
-
-      const today = new Date();
-      const isCurrentMonth = today.getFullYear() === year && today.getMonth() === month;
-
-      for (let i = 0; i < firstDayIndex; i++) {
-        const emptyCell = document.createElement('div');
-        emptyCell.className = 'cal-day-cell empty';
-        grid.appendChild(emptyCell);
-      }
-
-      for (let day = 1; day <= totalDays; day++) {
-        const dayCell = document.createElement('div');
-        dayCell.className = 'cal-day-cell';
+      try {
+        const grid = document.getElementById('calendarGrid');
+        const titleEl = document.getElementById('calTitleDisplay');
+        if (!grid || !titleEl) return;
         
-        const mStr = (month + 1 < 10 ? '0' : '') + (month + 1);
-        const dStr = (day < 10 ? '0' : '') + day;
-        const dateKey = `${mStr}-${dStr}`;
-        const fullDateStr = `${year}-${mStr}-${dStr}`;
+        grid.innerHTML = `
+          <div class="cal-day-header">日</div><div class="cal-day-header">一</div><div class="cal-day-header">二</div><div class="cal-day-header">三</div><div class="cal-day-header">四</div><div class="cal-day-header">五</div><div class="cal-day-header">六</div>
+        `;
 
-        if (isCurrentMonth && day === today.getDate()) {
-          dayCell.classList.add('today');
-        }
-        if (selectedDateStr === fullDateStr) {
-          dayCell.classList.add('selected');
-        }
+        titleEl.innerText = `📅 ${year} 年 ${month + 1} 月 行事曆`;
 
-        dayCell.onclick = () => selectCalendarDay(year, month + 1, day, fullDateStr, dayCell);
+        const firstDayIndex = new Date(year, month, 1).getDay();
+        const totalDays = new Date(year, month + 1, 0).getDate();
 
-        let cellHTML = `<span class="cal-day-num">${day}</span>`;
-        let hasEvent = false;
-        let hasHoliday = false;
+        const today = new Date();
+        const isCurrentMonth = today.getFullYear() === year && today.getMonth() === month;
 
-        if (taiwanHolidays[dateKey]) {
-          hasHoliday = true;
-          cellHTML += `<span class="cal-holiday">${taiwanHolidays[dateKey]}</span>`;
+        for (let i = 0; i < firstDayIndex; i++) {
+          const emptyCell = document.createElement('div');
+          emptyCell.className = 'cal-day-cell empty';
+          grid.appendChild(emptyCell);
         }
 
-        let dayEvents = [];
-        if (Array.isArray(notesData)) {
-          notesData.forEach(note => {
-            if (note && note.dateStr === fullDateStr) {
-              hasEvent = true;
-              dayEvents.push(note);
-            }
+        for (let day = 1; day <= totalDays; day++) {
+          const dayCell = document.createElement('div');
+          dayCell.className = 'cal-day-cell';
+          
+          const mStr = (month + 1 < 10 ? '0' : '') + (month + 1);
+          const dStr = (day < 10 ? '0' : '') + day;
+          const dateKey = `${mStr}-${dStr}`;
+          const fullDateStr = `${year}-${mStr}-${dStr}`;
+
+          if (isCurrentMonth && day === today.getDate()) {
+            dayCell.classList.add('today');
+          }
+          if (selectedDateStr === fullDateStr) {
+            dayCell.classList.add('selected');
+          }
+
+          dayCell.onclick = () => selectCalendarDay(year, month + 1, day, fullDateStr, dayCell);
+
+          let cellHTML = `<span class="cal-day-num">${day}</span>`;
+          let hasEvent = false;
+          let hasHoliday = false;
+
+          if (taiwanHolidays && taiwanHolidays[dateKey]) {
+            hasHoliday = true;
+            cellHTML += `<span class="cal-holiday">${taiwanHolidays[dateKey]}</span>`;
+          }
+
+          let dayEvents = [];
+          if (Array.isArray(notesData)) {
+            notesData.forEach(note => {
+              if (note && note.dateStr && note.dateStr === fullDateStr) {
+                hasEvent = true;
+                dayEvents.push(note);
+              }
+            });
+          }
+
+          let dotsHTML = '<div class="cal-dots-box">';
+          if (hasEvent) dotsHTML += '<span class="cal-dot event"></span>';
+          if (hasHoliday) dotsHTML += '<span class="cal-dot holiday"></span>';
+          dotsHTML += '</div>';
+
+          dayCell.innerHTML = cellHTML + dotsHTML;
+
+          dayEvents.forEach(note => {
+            const eventTag = document.createElement('span');
+            eventTag.className = 'cal-event-tag';
+            eventTag.innerText = (note.title || '行程').replace(/^⏰\s*\[\d+\/\d+\s*/, '').replace(/\]$/, '');
+            eventTag.onclick = (e) => {
+              e.stopPropagation();
+              openNoteInEditorById(note.id);
+            };
+            dayCell.appendChild(eventTag);
           });
+
+          grid.appendChild(dayCell);
         }
-
-        let dotsHTML = '<div class="cal-dots-box">';
-        if (hasEvent) dotsHTML += '<span class="cal-dot event"></span>';
-        if (hasHoliday) dotsHTML += '<span class="cal-dot holiday"></span>';
-        dotsHTML += '</div>';
-
-        dayCell.innerHTML = cellHTML + dotsHTML;
-
-        dayEvents.forEach(note => {
-          const eventTag = document.createElement('span');
-          eventTag.className = 'cal-event-tag';
-          eventTag.innerText = (note.title || '行程').replace(/^⏰\s*\[\d+\/\d+\s*/, '').replace(/\]$/, '');
-          eventTag.onclick = (e) => {
-            e.stopPropagation();
-            openNoteInEditorById(note.id);
-          };
-          dayCell.appendChild(eventTag);
-        });
-
-        grid.appendChild(dayCell);
+      } catch (err) {
+        console.error("行事曆渲染發生錯誤：", err);
       }
     }
 
@@ -1170,19 +1175,21 @@
       const listEl = document.getElementById('agendaItemsList');
       
       const holidayName = taiwanHolidays[`${month < 10 ? '0' : ''}${month}-${day < 10 ? '0' : ''}${day}`];
-      titleEl.innerText = `📌 ${year}/${month}/${day} 行程明細 ${holidayName ? '(' + holidayName + ')' : ''}`;
+      if (titleEl) titleEl.innerText = `📌 ${year}/${month}/${day} 行程明細 ${holidayName ? '(' + holidayName + ')' : ''}`;
 
       const matchedNotes = notesData.filter(n => n.dateStr === fullDateStr);
 
-      if (matchedNotes.length === 0) {
-        listEl.innerHTML = `<span style="font-size:0.85rem;color:var(--text-sub);padding:4px 0;">當日尚無任何行程，點擊上方按鈕即可新增行程提醒。</span>`;
-      } else {
-        listEl.innerHTML = matchedNotes.map(n => `
-          <div class="mobile-agenda-item" onclick="openNoteInEditorById('${n.id}')">
-            <span>${n.title}</span>
-            <span style="font-size:0.75rem;opacity:0.8;">編輯 ➔</span>
-          </div>
-        `).join('');
+      if (listEl) {
+        if (matchedNotes.length === 0) {
+          listEl.innerHTML = `<span style="font-size:0.85rem;color:var(--text-sub);padding:4px 0;">當日尚無任何行程，點擊上方按鈕即可新增行程提醒。</span>`;
+        } else {
+          listEl.innerHTML = matchedNotes.map(n => `
+            <div class="mobile-agenda-item" onclick="openNoteInEditorById('${n.id}')">
+              <span>${n.title}</span>
+              <span style="font-size:0.75rem;opacity:0.8;">編輯 ➔</span>
+            </div>
+          `).join('');
+        }
       }
     }
 
@@ -1748,13 +1755,14 @@
 
       if (viewName === 'dashboard') {
         dash.style.display = 'flex';
-        statusEl.innerText = statusText || '🌐 全部看板模式';
+        if (statusEl) statusEl.innerText = statusText || '🌐 全部看板模式';
       } else if (viewName === 'editor') {
         edit.style.display = 'flex';
-        statusEl.innerText = statusText || '📝 筆記詳細編輯模式';
+        if (statusEl) statusEl.innerText = statusText || '📝 筆記詳細編輯模式';
       } else if (viewName === 'calendar') {
         cal.style.display = 'flex';
-        statusEl.innerText = statusText || '📅 行事曆';
+        if (statusEl) statusEl.innerText = statusText || '📅 行事曆';
+        renderCalendar(calYear, calMonth); // 切換至行事曆時自動重繪機制
       }
 
       if (pushState) {
