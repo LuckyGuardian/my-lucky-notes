@@ -114,7 +114,6 @@
 
     .input-title { background: transparent; border: none; border-bottom: 2px solid var(--border-color); color: var(--accent-green); font-size: 1.2rem; font-weight: bold; margin-bottom: 8px; padding-bottom: 4px; outline: none; width: 100%; }
     
-    /* 🛠️ 編輯器可垂直彈性延伸，確保手機看得到底部 */
     .input-content-editable { 
       min-height: 250px;
       flex: 1;
@@ -172,7 +171,7 @@
       border-collapse: collapse !important;
     }
 
-    .image-section { margin-top: 12px; padding-top: 8px; padding-bottom: 16px; border-top: 1px dashed var(--border-color); display: block !important; }
+    .image-section { margin-top: 12px; padding-top: 8px; padding-bottom: 24px; border-top: 1px dashed var(--border-color); display: block !important; }
     .image-preview-container { display: flex; gap: 8px; flex-wrap: wrap; margin-top: 4px; }
     .image-preview-box { position: relative; width: 75px; height: 75px; border-radius: 6px; border: 1px solid var(--border-color); overflow: hidden; cursor: pointer; flex-shrink: 0; }
     .image-preview-box img { width: 100%; height: 100%; object-fit: cover; }
@@ -226,18 +225,18 @@
     .tag-badge:hover, .tag-badge.active { background: var(--accent-green); color: white; border-color: var(--accent-green); }
 
     @media (max-width: 768px) {
-      body { flex-direction: column; padding: 4px; gap: 4px; }
+      body { flex-direction: column; padding: 4px; gap: 4px; overflow-y: auto; }
       .mobile-header { display: flex; }
       .sidebar { position: fixed; top: 0; left: 0; height: 100vh; width: 250px; transform: translateX(-100%); box-shadow: 4px 0 15px rgba(0,0,0,0.1); }
       .sidebar.open { transform: translateX(0); }
       
-      .main-container { overflow-y: auto; }
+      .main-container { overflow-y: visible; height: auto; flex: none; }
       .dashboard-grid { grid-template-columns: 1fr; }
       .fab-btn { display: flex; justify-content: center; align-items: center; }
       
-      /* 📱 手機模式編輯頁高度自適應，解決底部字和圖看不到問題 */
-      .editor-view { padding: 8px; overflow-y: auto; height: auto; max-height: none; }
-      .input-content-editable { min-height: 320px; padding: 12px; font-size: 0.95rem; }
+      /* 📱 手機模式編輯器解除高度壓制，隨內容自由拉長，底部字與圖片100%看得見 */
+      .editor-view { padding: 8px; overflow-y: visible; height: auto; max-height: none; }
+      .input-content-editable { min-height: 350px; padding: 12px; font-size: 0.95rem; overflow-y: visible; }
 
       .btn-more-toggle { display: inline-block; }
       .more-tools-box { display: none; width: 100%; margin-top: 4px; padding-top: 4px; border-top: 1px dashed var(--border-color); }
@@ -644,7 +643,6 @@
 
       const editorEl = document.getElementById('noteContent');
       if (editorEl) {
-        // 🛠️ 貼上自動純文字／樣式淨化防禦機制
         editorEl.addEventListener('paste', (e) => {
           const clipboardData = e.clipboardData || window.clipboardData;
           if (!clipboardData) return;
@@ -1111,7 +1109,7 @@
       });
     }
 
-    /* 📅 行事曆穩健渲染引擎 */
+    /* 📅 行事曆渲染邏輯 */
     function renderCalendar(year, month) {
       try {
         const grid = document.getElementById('calendarGrid');
