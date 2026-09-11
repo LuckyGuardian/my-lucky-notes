@@ -119,7 +119,6 @@
     }
     .input-content-editable:focus { border-color: var(--accent-green); }
     
-    /* 🖼️ 手機與電腦圖片全適應渲染優化 */
     .input-content-editable img { 
       max-width: 100% !important; 
       height: auto !important; 
@@ -510,6 +509,7 @@
       loadNotesData();
       initDragAndDrop();
       initCategoryMenuDragAndDrop();
+      applySavedMenuOrder(); // 載入並套用記下的選單順序
 
       const today = new Date();
       calYear = today.getFullYear();
@@ -557,7 +557,6 @@
       document.getElementById('lightboxModal').style.display = 'none';
     }
 
-    /* 🔄 智能救援 + 雲端同步機制 */
     function loadNotesData() {
       if (isFirebaseEnabled && db) {
         db.collection("luckynotes").onSnapshot((snapshot) => {
@@ -891,6 +890,7 @@
       switchView('editor', '📝 修改筆記：' + note.title);
     }
 
+    /* 📌 拖曳選單與記憶排序邏輯 */
     function initCategoryMenuDragAndDrop() {
       const menuGroup = document.getElementById('categoryMenuGroup');
       if (!menuGroup) return;
@@ -911,12 +911,36 @@
         }
 
         syncDashboardGridOrder();
+        saveMenuOrder(); // 即時記下新順序
       });
     }
 
     function bindMenuItemDragEvents(item) {
       item.addEventListener('dragstart', () => item.classList.add('dragging'));
       item.addEventListener('dragend', () => item.classList.remove('dragging'));
+    }
+
+    /* 儲存選單順序至 LocalStorage */
+    function saveMenuOrder() {
+      const menuGroup = document.getElementById('categoryMenuGroup');
+      if (!menuGroup) return;
+      const orderIds = Array.from(menuGroup.querySelectorAll('.menu-item')).map(item => item.id);
+      localStorage.setItem('luckynote_menu_order', JSON.stringify(orderIds));
+    }
+
+    /* 載入並套用排序紀錄 */
+    function applySavedMenuOrder() {
+      const savedOrder = localStorage.getItem('luckynote_menu_order');
+      if (!savedOrder) return;
+      try {
+        const orderIds = JSON.parse(savedOrder);
+        const menuGroup = document.getElementById('categoryMenuGroup');
+        orderIds.forEach(id => {
+          const item = document.getElementById(id);
+          if (item) menuGroup.appendChild(item);
+        });
+        syncDashboardGridOrder();
+      } catch(e) {}
     }
 
     function syncDashboardGridOrder() {
@@ -993,6 +1017,7 @@
       sel.appendChild(opt);
 
       initDragAndDrop();
+      saveMenuOrder();
       alert('資料夾看板「' + folderName + '」已成功建立！');
     }
 
