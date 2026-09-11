@@ -114,13 +114,13 @@
 
     .input-title { background: transparent; border: none; border-bottom: 2px solid var(--border-color); color: var(--accent-green); font-size: 1.2rem; font-weight: bold; margin-bottom: 8px; padding-bottom: 4px; outline: none; width: 100%; }
     
-    /* 🛠️ 防禦網頁複製文字與表格溢出框外的全方位 CSS 防護 */
+    /* 🛠️ 防禦網頁複製文字與清單跑位溢出框外的雙重防護機制 */
     .input-content-editable { 
       flex: 1; 
       background: white; 
       border: 1px solid var(--border-color); 
       border-radius: 8px; 
-      padding: 12px; 
+      padding: 16px 20px; 
       font-size: 1rem; 
       line-height: 1.7; 
       outline: none; 
@@ -137,8 +137,20 @@
       box-sizing: border-box !important;
       word-break: break-word !important;
       overflow-wrap: anywhere !important;
+    }
+
+    /* 強制將貼進來的清單符號推回編輯器內部，杜絕左側黑點突出 */
+    .input-content-editable ul, 
+    .input-content-editable ol {
+      padding-left: 24px !important;
       margin-left: 0 !important;
       margin-right: 0 !important;
+      list-style-position: inside !important;
+    }
+
+    .input-content-editable li {
+      margin-left: 0 !important;
+      padding-left: 0 !important;
     }
 
     .input-content-editable img { 
@@ -591,6 +603,17 @@
     const lawTemplate = `⚖️ [法規/契約重點解析] #法律 #法條\n\n【一、 核心條文與條號】\n* 適用法條：民法第 XXX 條\n* 關鍵要件：\n\n【二、 實務判例與應用】\n* 結論：`;
     const todoTemplate = `☑️ [待辦事項標題]\n\n【一、 任務細節說明】\n* 相關連結/資料：\n* 預計完成時間：`;
 
+    const taiwanHolidays = {
+      "01-01": "元旦",
+      "02-28": "和平紀念日",
+      "04-04": "兒童節",
+      "04-05": "清明節",
+      "05-01": "勞動節",
+      "09-25": "🥮 中秋節",
+      "09-28": "🎓 教師節",
+      "10-10": "國慶日"
+    };
+
     function getSmartEmoji(text) {
       if (!text) return '📌 ';
       const cleanText = text.trim();
@@ -627,7 +650,6 @@
 
       const editorEl = document.getElementById('noteContent');
       if (editorEl) {
-        // 🛠️ 貼上自動純文字／樣式淨化防禦機制
         editorEl.addEventListener('paste', (e) => {
           const clipboardData = e.clipboardData || window.clipboardData;
           if (!clipboardData) return;
@@ -1141,11 +1163,13 @@
           let hasEvent = false;
           let hasHoliday = false;
 
+          // 國定假日判定
           if (typeof taiwanHolidays !== 'undefined' && taiwanHolidays && taiwanHolidays[dateKey]) {
             hasHoliday = true;
             cellHTML += `<span class="cal-holiday">${taiwanHolidays[dateKey]}</span>`;
           }
 
+          // 行程判定
           let dayEvents = [];
           if (Array.isArray(notesData)) {
             notesData.forEach(note => {
