@@ -58,7 +58,6 @@
     .menu-item.dragging { opacity: 0.4; background: #eee9e0; border: 1px dashed var(--accent-green); }
     .menu-item:hover, .menu-item.active { background: #eee9e0; color: var(--accent-green); font-weight: bold; }
     
-    /* 階層式子選單對齊修復 */
     .submenu-group { display: flex; flex-direction: column; gap: 2px; padding-left: 14px; border-left: 2px solid var(--border-color); margin-left: 12px; margin-top: 2px; margin-bottom: 2px; }
     .submenu-item { padding: 5px 8px; border-radius: 5px; cursor: pointer; color: var(--text-main); font-size: 0.83rem; font-weight: 500; display: flex; align-items: center; gap: 6px; white-space: nowrap; transition: 0.2s; position: relative; user-select: none; }
     .submenu-item:hover, .submenu-item.active { background: #eee9e0; color: var(--accent-green); font-weight: bold; }
@@ -598,6 +597,19 @@
       "10-10": "國慶日"
     };
 
+    /* 💡 方案 B：智慧 Emoji 關鍵字自動配對系統 */
+    function getSmartEmoji(text) {
+      if (/^[^\w\s\d\u4e00-\u9fa5]/.test(text.trim())) return ''; // 已有 Emoji 不重複加
+      if (/醫|藥|病|診|健|衛/.test(text)) return '🩺 ';
+      if (/日|韓|法|德|英|語|言/.test(text)) return '🎌 ';
+      if (/錢|財|股|帳|金|幣|理財/.test(text)) return '💰 ';
+      if (/食|菜|廚|味|烹|飪/.test(text)) return '🍳 ';
+      if (/旅|遊|飛|國|宿/.test(text)) return '✈️ ';
+      if (/房|地|宅|屋/.test(text)) return '🏠 ';
+      if (/書|讀|閱|誌/.test(text)) return '📚 ';
+      return '📌 ';
+    }
+
     document.addEventListener('DOMContentLoaded', () => {
       loadNotesData();
       initDragAndDrop();
@@ -613,7 +625,6 @@
 
       renderCalendar(calYear, calMonth);
 
-      // 隱藏右鍵選單
       document.addEventListener('click', () => {
         const ctx = document.getElementById('customContextMenu');
         if (ctx) ctx.style.display = 'none';
@@ -695,22 +706,19 @@
       }
     }
 
-    /* 🖱️ 綁定電腦右鍵與手機長按選單事件 */
     function bindContextMenuEvents(element, type, catName, safeId, sideTextId) {
       let pressTimer = null;
 
-      // 1. 電腦右鍵 (contextmenu)
       element.addEventListener('contextmenu', (e) => {
         e.preventDefault();
         showContextMenu(e.clientX, e.clientY, type, catName, safeId, sideTextId);
       });
 
-      // 2. 手機觸控長按 (touchstart / touchend)
       element.addEventListener('touchstart', (e) => {
         pressTimer = setTimeout(() => {
           const touch = e.touches[0];
           showContextMenu(touch.clientX, touch.clientY, type, catName, safeId, sideTextId);
-        }, 500); // 長按 0.5 秒觸發
+        }, 500);
       }, { passive: true });
 
       element.addEventListener('touchend', () => clearTimeout(pressTimer));
@@ -725,7 +733,6 @@
       ctx.style.top = `${y}px`;
       ctx.style.display = 'block';
 
-      // 綁定選單按鈕功能
       document.getElementById('ctxRenameBtn').onclick = () => {
         ctx.style.display = 'none';
         renameBoard(safeId, sideTextId, catName);
@@ -738,9 +745,10 @@
     }
 
     function addNewSubCategory(parentCategoryName) {
-      const subName = prompt(`請輸入「${parentCategoryName}」底下的全新子分類名稱 (例：🇫🇷 法語學習、📊 財務金融)：`);
-      if (!subName) return;
+      const inputName = prompt(`請輸入「${parentCategoryName}」底下的全新子分類名稱 (例：醫學、法語學習、財務金融)：`);
+      if (!inputName || inputName.trim() === '') return;
 
+      const subName = getSmartEmoji(inputName) + inputName.trim();
       const safeId = 'sub-' + Date.now();
       const submenu = document.getElementById('learnSubmenu');
       if (!submenu) return;
@@ -754,11 +762,9 @@
         updateMenuActive('menu-' + safeId);
         toggleSidebar();
       };
-      subDiv.innerHTML = `📁 <span id="side-text-${safeId}">${subName}</span>`;
+      subDiv.innerHTML = `<span id="side-text-${safeId}">${subName}</span>`;
       
-      // 綁定右鍵/長按事件
       bindContextMenuEvents(subDiv, 'sub', subName, safeId, 'side-text-' + safeId);
-
       submenu.appendChild(subDiv);
 
       const grid = document.getElementById('dashboardGrid');
@@ -808,7 +814,7 @@
             updateMenuActive('menu-' + item.safeId);
             toggleSidebar();
           };
-          subDiv.innerHTML = `📁 <span id="side-text-${item.safeId}">${item.name}</span>`;
+          subDiv.innerHTML = `<span id="side-text-${item.safeId}">${item.name}</span>`;
           
           bindContextMenuEvents(subDiv, 'sub', item.name, item.safeId, 'side-text-' + item.safeId);
           submenu.appendChild(subDiv);
@@ -1032,13 +1038,13 @@
         }
 
         const customSubcats = JSON.parse(localStorage.getItem('luckynote_subcats') || '[]');
-        const matchedCustomSub = customSubcats.find(s => note.category === s.name);
+        const matchedCustomSub = customSubcats.find(s => note.category === s.name || note.category.includes(s.name));
         if (matchedCustomSub) {
           listId = 'list-' + matchedCustomSub.safeId;
         }
 
         const customFolders = JSON.parse(localStorage.getItem('luckynote_custom_folders') || '[]');
-        const matchedCustomFolder = customFolders.find(f => note.category === f.name);
+        const matchedCustomFolder = customFolders.find(f => note.category === f.name || note.category.includes(f.name));
         if (matchedCustomFolder) {
           listId = 'list-' + matchedCustomFolder.safeId;
         }
@@ -1374,9 +1380,10 @@
     }
 
     function addNewFolder() {
-      const folderName = prompt('請輸入新主題分類看板名稱 (例如：🛒 購物清單)：');
-      if (!folderName) return;
+      const inputName = prompt('請輸入新主題分類看板名稱 (例如：醫學、烹飪、旅遊)：');
+      if (!inputName || inputName.trim() === '') return;
 
+      const folderName = getSmartEmoji(inputName) + inputName.trim();
       const safeId = 'custom-' + Date.now();
       
       const menuGroup = document.getElementById('categoryMenuGroup');
@@ -1392,7 +1399,7 @@
         updateMenuActive('menu-' + safeId);
         toggleSidebar();
       };
-      menuItem.innerHTML = `📁 <span class="menu-text" id="side-text-${safeId}">${folderName}</span>`;
+      menuItem.innerHTML = `<span class="menu-text" id="side-text-${safeId}">${folderName}</span>`;
       
       bindContextMenuEvents(menuItem, 'custom', folderName, safeId, 'side-text-' + safeId);
       menuGroup.appendChild(menuItem);
@@ -1448,7 +1455,7 @@
             updateMenuActive('menu-' + item.safeId);
             toggleSidebar();
           };
-          menuItem.innerHTML = `📁 <span class="menu-text" id="side-text-${item.safeId}">${item.name}</span>`;
+          menuItem.innerHTML = `<span class="menu-text" id="side-text-${item.safeId}">${item.name}</span>`;
           
           bindContextMenuEvents(menuItem, 'custom', item.name, item.safeId, 'side-text-' + item.safeId);
           menuGroup.appendChild(menuItem);
