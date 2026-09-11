@@ -88,13 +88,16 @@
     .item-card-header { display: flex; align-items: center; gap: 6px; }
     .item-card-title { font-size: 0.9rem; font-weight: bold; flex: 1; }
 
+    /* 🖊️ 工具列電腦/手機響應式調整 */
     .editor-view { display: none; flex: 1; flex-direction: column; background: var(--bg-panel); border-radius: 10px; padding: 10px 14px; border: 1px solid var(--border-color); overflow: hidden; }
     .editor-tools { display: flex; gap: 4px; margin-bottom: 8px; flex-wrap: wrap; align-items: center; }
     .btn-tool { background: #ffffff; border: 1px solid var(--border-color); padding: 5px 8px; border-radius: 5px; cursor: pointer; font-weight: bold; font-size: 0.8rem; outline: none; }
     .btn-tool:hover { background-color: #f3f0e6; }
     .btn-save-main { background: var(--accent-green); color: white; border-color: var(--accent-green); }
     
+    /* 電腦版直接全展開工具列，隱藏收納按鈕 */
     .more-tools-box { display: flex; gap: 4px; flex-wrap: wrap; align-items: center; }
+    .btn-more-toggle { display: none; }
 
     .btn-voice { background-color: #fef3c7; border-color: #f59e0b; color: #92400e; }
     .btn-voice.recording { background-color: #fee2e2; border-color: #ef4444; color: #991b1b; animation: pulse 1.2s infinite; }
@@ -171,6 +174,10 @@
     .img-lightbox-box { position: relative; max-width: 95vw; max-height: 95vh; display: flex; justify-content: center; align-items: center; }
     .img-lightbox-box img { max-width: 100%; max-height: 90vh; border-radius: 8px; box-shadow: 0 8px 30px rgba(0,0,0,0.5); object-fit: contain; }
 
+    .tag-badge-container { display: flex; gap: 6px; flex-wrap: wrap; margin-bottom: 8px; }
+    .tag-badge { background: #f0ebd8; color: #6b5e43; padding: 3px 10px; border-radius: 12px; font-size: 0.8rem; font-weight: bold; cursor: pointer; border: 1px solid var(--border-color); }
+    .tag-badge:hover, .tag-badge.active { background: var(--accent-green); color: white; border-color: var(--accent-green); }
+
     @media (max-width: 768px) {
       body { flex-direction: column; padding: 4px; gap: 4px; }
       .mobile-header { display: flex; }
@@ -182,6 +189,8 @@
       .editor-view { padding: 8px; }
       .input-content-editable { padding: 8px; font-size: 0.95rem; }
 
+      /* 手機版開啟收納切換按鈕 */
+      .btn-more-toggle { display: inline-block; }
       .more-tools-box { display: none; width: 100%; margin-top: 4px; padding-top: 4px; border-top: 1px dashed var(--border-color); }
       .more-tools-box.open { display: flex; }
 
@@ -266,7 +275,7 @@
 
     <div class="sidebar-section-title-box">
       <span class="sidebar-section-title">新增筆記 (可拖曳排序)</span>
-      <button class="btn-add-folder" onclick="addNewFolder()" title="新增資料夾/分類看板">➕</button>
+      <button class="btn-add-folder" onclick="addNewFolder()" title="新增資料夾/主題分類看板">➕</button>
     </div>
     <div class="menu-group" id="categoryMenuGroup">
       <div class="menu-item" draggable="true" data-target-board="ai-board" id="menu-ai" onclick="openNewCategoryNote('🤖 AI 智庫與筆記'); updateMenuActive('menu-ai'); toggleSidebar();">🤖 <span class="menu-text">AI 智庫與筆記</span></div>
@@ -342,7 +351,7 @@
         </select>
 
         <button class="btn-tool btn-save-main" onclick="saveEditorNote()">💾 儲存筆記</button>
-        <button class="btn-tool" onclick="toggleMoreTools()">⚙️ 更多工具</button>
+        <button class="btn-tool btn-more-toggle" onclick="toggleMoreTools()">⚙️ 更多工具</button>
 
         <div class="more-tools-box" id="moreToolsBox">
           <select class="btn-tool" onchange="formatDoc(this.value); this.value='';" style="padding:3px 6px;">
@@ -374,7 +383,7 @@
       </div>
 
       <input type="hidden" id="noteCalendarDate" value="">
-      <input type="text" id="noteTitle" class="input-title" placeholder="請輸入筆記標題...">
+      <input type="text" id="noteTitle" class="input-title" placeholder="請輸入筆記標題 (可加上 #英文 #法律 標籤)...">
       
       <div id="noteContent" class="input-content-editable" contenteditable="true" placeholder="在此處自由書寫或貼上內容..."></div>
 
@@ -416,6 +425,23 @@
   <div class="modal-overlay" id="lightboxModal" onclick="closeLightbox()">
     <div class="img-lightbox-box">
       <img id="lightboxImg" src="" onclick="event.stopPropagation()">
+    </div>
+  </div>
+
+  <!-- 🏷️ Tag 標籤動態過濾視窗 -->
+  <div class="modal-overlay" id="tagModal">
+    <div class="modal-box">
+      <div class="modal-header">
+        <h3 style="color:var(--accent-green)">🏷️ Tag 標籤過濾瀏覽</h3>
+        <button onclick="closeTagModal()" style="border:none;background:none;font-size:1.2rem;cursor:pointer;">✕</button>
+      </div>
+      <p style="font-size:0.85rem;color:var(--text-sub);">點擊下方標籤快速篩選主題筆記（例如：#英文、#法律）：</p>
+      <div class="tag-badge-container" id="tagBadgesList">
+        <span class="tag-badge active" onclick="filterByTag('')">全部顯示</span>
+      </div>
+      <div style="display:flex;justify-content:flex-end;">
+        <button class="btn-tool" onclick="closeTagModal()">完成</button>
+      </div>
     </div>
   </div>
 
@@ -483,6 +509,7 @@
     let currentEditingNoteId = null;
     let notesData = [];
     let selectedDateStr = '';
+    let currentActiveTag = '';
 
     let calYear = 2026;
     let calMonth = 8; // 0-based
@@ -491,7 +518,7 @@
     const meetingTemplate = `⏰ [會議/活動名稱]\n\n【一、 基本資訊與地點】\n* 時間：14:00 - 15:00\n* 地點：實體 302 會議室 / 線上 Teams\n* 主持人：Headquarter.ai 團隊\n\n【二、 會前準備與攜帶物品】\n[ ] 準備專案簡報檔 (PPT)\n[ ] 帶筆電與簡報筆`;
     const aiTemplate = `🤖 [ChatGPT 萬用文案潤飾 Prompt]\n\n【一、 核心提示詞 (Prompt Template)】\n* 角色設定：你是一位專業的職場溝通專家。\n* 任務目標：幫我潤飾以下內文，使其兼具專業度與道地表達。\n* 輸入內容：[在此貼入原始文字]`;
     const workTemplate = `📌 [會議/專案名稱] 紀錄\n\n【一、 核心目標與結論】\n* 本次要解決的核心問題：\n* 最終決議與共識：\n\n【二、 Action Items (待辦追蹤)】\n[ ] 任務 A (負責人 / 預計完成日)`;
-    const englishTemplate = `🔤 [英文句型與搭配詞指南]\n\n【一、 萬用句型 / 情境短語】\n* 句型 1：I wanted to check in on the status of [事項].`;
+    const englishTemplate = `🔤 [英文句型與搭配詞指南] #英文\n\n【一、 萬用句型 / 情境短語】\n* 句型 1：I wanted to check in on the status of [事項].`;
     const todoTemplate = `☑️ [待辦事項標題]\n\n【一、 任務細節說明】\n* 相關連結/資料：\n* 預計完成時間：`;
 
     const taiwanHolidays = {
@@ -509,7 +536,7 @@
       loadNotesData();
       initDragAndDrop();
       initCategoryMenuDragAndDrop();
-      applySavedMenuOrder(); // 載入並套用記下的選單順序
+      applySavedMenuOrder();
 
       const today = new Date();
       calYear = today.getFullYear();
@@ -571,7 +598,6 @@
               try {
                 const localNotes = JSON.parse(savedLocal);
                 if (localNotes.length > 0) {
-                  console.log("🚀 自動轉移救援本機資料至 Firebase 雲端...");
                   localNotes.forEach(n => {
                     delete n.id;
                     db.collection("luckynotes").add(n);
@@ -583,6 +609,7 @@
 
           renderDashboardCards();
           renderCalendar(calYear, calMonth);
+          renderTagBadges();
         }, (error) => {
           console.error("Firebase 讀取失敗：", error);
           loadNotesFromLocalStorage();
@@ -605,6 +632,7 @@
         saveNotesToLocalStorage();
       }
       renderDashboardCards();
+      renderTagBadges();
     }
 
     function saveNotesToLocalStorage() {
@@ -632,10 +660,53 @@
       ];
     }
 
+    /* 🏷️ 動態分析所有筆記標題與內容中的 #Tag */
+    function renderTagBadges() {
+      const tagSet = new Set();
+      notesData.forEach(n => {
+        const text = (n.title + " " + n.content);
+        const matches = text.match(/#[^\s#]+/g);
+        if (matches) {
+          matches.forEach(t => tagSet.add(t));
+        }
+      });
+
+      const container = document.getElementById('tagBadgesList');
+      if (!container) return;
+      
+      container.innerHTML = `<span class="tag-badge ${currentActiveTag===''?'active':''}" onclick="filterByTag('')">全部顯示</span>`;
+      tagSet.forEach(tag => {
+        const span = document.createElement('span');
+        span.className = `tag-badge ${currentActiveTag===tag?'active':''}`;
+        span.innerText = tag;
+        span.onclick = () => filterByTag(tag);
+        container.appendChild(span);
+      });
+    }
+
+    function filterByTag(tag) {
+      currentActiveTag = tag;
+      renderTagBadges();
+      renderDashboardCards();
+      closeTagModal();
+      if (tag) {
+        document.getElementById('currentStatusText').innerText = '🏷️ 標題過濾模式：' + tag;
+      } else {
+        document.getElementById('currentStatusText').innerText = '🌐 全部看板模式';
+      }
+      switchView('dashboard', document.getElementById('currentStatusText').innerText);
+    }
+
     function renderDashboardCards() {
       document.querySelectorAll('.card-list').forEach(el => el.innerHTML = '');
 
       notesData.forEach(note => {
+        // Tag 過濾過濾機制
+        if (currentActiveTag) {
+          const fullText = note.title + " " + note.content;
+          if (!fullText.includes(currentActiveTag)) return;
+        }
+
         let listId = 'list-web';
         if (note.category.includes('AI')) listId = 'list-ai';
         else if (note.category.includes('工作')) listId = 'list-work';
@@ -890,7 +961,6 @@
       switchView('editor', '📝 修改筆記：' + note.title);
     }
 
-    /* 📌 拖曳選單與記憶排序邏輯 */
     function initCategoryMenuDragAndDrop() {
       const menuGroup = document.getElementById('categoryMenuGroup');
       if (!menuGroup) return;
@@ -911,7 +981,7 @@
         }
 
         syncDashboardGridOrder();
-        saveMenuOrder(); // 即時記下新順序
+        saveMenuOrder();
       });
     }
 
@@ -920,7 +990,6 @@
       item.addEventListener('dragend', () => item.classList.remove('dragging'));
     }
 
-    /* 儲存選單順序至 LocalStorage */
     function saveMenuOrder() {
       const menuGroup = document.getElementById('categoryMenuGroup');
       if (!menuGroup) return;
@@ -928,7 +997,6 @@
       localStorage.setItem('luckynote_menu_order', JSON.stringify(orderIds));
     }
 
-    /* 載入並套用排序紀錄 */
     function applySavedMenuOrder() {
       const savedOrder = localStorage.getItem('luckynote_menu_order');
       if (!savedOrder) return;
@@ -976,7 +1044,7 @@
     }
 
     function addNewFolder() {
-      const folderName = prompt('請輸入新資料夾/分類看板名稱 (例如：🛒 購物清單)：');
+      const folderName = prompt('請輸入新資料夾/主題分類看板名稱 (例如：⚖️ 法律條文)：');
       if (!folderName) return;
 
       const safeId = 'custom-' + Date.now();
@@ -1018,7 +1086,7 @@
 
       initDragAndDrop();
       saveMenuOrder();
-      alert('資料夾看板「' + folderName + '」已成功建立！');
+      alert('主題分類看板「' + folderName + '」已成功建立！');
     }
 
     function openNewCategoryNote(categoryName) {
@@ -1036,7 +1104,7 @@
         defaultTitle = '📌 跨部門會議紀錄與進度追蹤';
         tpl = workTemplate;
       } else if (categoryName.includes('學習')) {
-        defaultTitle = '📖 英文句型與搭配詞指南';
+        defaultTitle = '📖 英文句型與搭配詞指南 #英文';
         tpl = englishTemplate;
       } else if (categoryName.includes('網路')) {
         defaultTitle = '🌐 網路知識收集文章';
@@ -1106,7 +1174,7 @@
 
     function openQuickAddModal() {
       const cat = prompt('請選擇分類數字 (1:AI智庫, 2:工作任務, 3:待辦事項, 4:學習筆記, 5:網路知識)：', '3');
-      const title = prompt('請輸入卡片標題 (可加 #Tag)：');
+      const title = prompt('請輸入卡片標題 (可加上 #Tag 例如：#英文 #法律)：');
       if (!title) return;
 
       let catName = '☑️ 待辦事項';
@@ -1150,6 +1218,12 @@
 
     function openExportModal() { document.getElementById('exportModal').style.display = 'flex'; }
     function closeExportModal() { document.getElementById('exportModal').style.display = 'none'; }
+
+    function openTagModal() { 
+      renderTagBadges();
+      document.getElementById('tagModal').style.display = 'flex'; 
+    }
+    function closeTagModal() { document.getElementById('tagModal').style.display = 'none'; }
 
     function processCustomExport() {
       const selectedChks = Array.from(document.querySelectorAll('.export-chk:checked')).map(c => c.value);
@@ -1371,8 +1445,6 @@
 
     function toggleSidebar() { document.getElementById('sidebar').classList.toggle('open'); }
     function openSearchModal() { const query = prompt('請輸入搜尋關鍵字：'); if (query) alert('搜尋：' + query); }
-    function openTagModal() { document.getElementById('tagModal').style.display = 'flex'; }
-    function closeTagModal() { document.getElementById('tagModal').style.display = 'none'; }
 
     function mobileQuickAdd() {
       openQuickAddModal();
