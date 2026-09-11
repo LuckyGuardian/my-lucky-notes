@@ -58,7 +58,6 @@
     .menu-item.dragging { opacity: 0.4; background: #eee9e0; border: 1px dashed var(--accent-green); }
     .menu-item:hover, .menu-item.active { background: #eee9e0; color: var(--accent-green); font-weight: bold; }
     
-    /* 階層式子選單對齊修復 */
     .submenu-group { display: flex; flex-direction: column; gap: 2px; padding-left: 14px; border-left: 2px solid var(--border-color); margin-left: 12px; margin-top: 2px; margin-bottom: 2px; }
     .submenu-item { padding: 5px 8px; border-radius: 5px; cursor: pointer; color: var(--text-main); font-size: 0.83rem; font-weight: 500; display: flex; align-items: center; gap: 6px; white-space: nowrap; transition: 0.2s; position: relative; user-select: none; }
     .submenu-item:hover, .submenu-item.active { background: #eee9e0; color: var(--accent-green); font-weight: bold; }
@@ -115,7 +114,6 @@
 
     .input-title { background: transparent; border: none; border-bottom: 2px solid var(--border-color); color: var(--accent-green); font-size: 1.2rem; font-weight: bold; margin-bottom: 8px; padding-bottom: 4px; outline: none; width: 100%; }
     
-    /* 🛠️ 剪貼防護機制：強制防禦網頁複製文字與表格溢出框外 */
     .input-content-editable { 
       flex: 1; 
       background: white; 
@@ -163,7 +161,7 @@
     .image-preview-box img { width: 100%; height: 100%; object-fit: cover; }
     .btn-delete-img { position: absolute; top: 2px; right: 2px; background: rgba(168,72,66,0.85); color: white; border: none; border-radius: 50%; width: 18px; height: 18px; cursor: pointer; font-size: 0.7rem; z-index: 2; }
 
-    /* 📅 行事曆 View 樣式修復 */
+    /* 📅 行事曆 View 樣式 */
     .calendar-view { display: none; flex: 1; flex-direction: column; background: var(--bg-panel); border-radius: 10px; padding: 12px; border: 1px solid var(--border-color); overflow-y: auto; gap: 10px; }
     .calendar-header { display: flex; justify-content: space-between; align-items: center; border-bottom: 1px solid var(--border-color); padding-bottom: 6px; }
     .calendar-controls { display: flex; align-items: center; gap: 6px; }
@@ -339,7 +337,7 @@
       <span class="status-title" id="currentStatusText">🌐 全部看板模式</span>
     </div>
 
-    <!-- 視窗 1：看板模式 -->
+    <!-- 視窗 1：看板模式 (只顯示獨立子看板，移除重複的學習筆記通用卡片) -->
     <div class="dashboard-view" id="view-dashboard">
       <div class="dashboard-grid" id="dashboardGrid">
         <div class="board-card" id="todo-board">
@@ -812,7 +810,7 @@
       const grid = document.getElementById('dashboardGrid');
       const sel = document.getElementById('editorTargetCategory');
 
-      // 🔄 自動修正舊資料缺乏 Emoji 的狀況
+      // 🔄 自動校正舊資料「醫學」缺乏 Emoji 的問題
       saved.forEach((item, index) => {
         if (!/^[^\w\s\d\u4e00-\u9fa5]/.test(item.name.trim())) {
           item.name = getSmartEmoji(item.name) + item.name.trim();
@@ -1080,7 +1078,7 @@
       });
     }
 
-    /* 📅 行事曆渲染邏輯修復 */
+    /* 📅 行事曆渲染邏輯修復（穩健無 Error） */
     function renderCalendar(year, month) {
       const grid = document.getElementById('calendarGrid');
       const titleEl = document.getElementById('calTitleDisplay');
@@ -1132,12 +1130,14 @@
         }
 
         let dayEvents = [];
-        notesData.forEach(note => {
-          if (note.dateStr === fullDateStr) {
-            hasEvent = true;
-            dayEvents.push(note);
-          }
-        });
+        if (Array.isArray(notesData)) {
+          notesData.forEach(note => {
+            if (note && note.dateStr === fullDateStr) {
+              hasEvent = true;
+              dayEvents.push(note);
+            }
+          });
+        }
 
         let dotsHTML = '<div class="cal-dots-box">';
         if (hasEvent) dotsHTML += '<span class="cal-dot event"></span>';
@@ -1149,7 +1149,7 @@
         dayEvents.forEach(note => {
           const eventTag = document.createElement('span');
           eventTag.className = 'cal-event-tag';
-          eventTag.innerText = note.title.replace(/^⏰\s*\[\d+\/\d+\s*/, '').replace(/\]$/, '');
+          eventTag.innerText = (note.title || '行程').replace(/^⏰\s*\[\d+\/\d+\s*/, '').replace(/\]$/, '');
           eventTag.onclick = (e) => {
             e.stopPropagation();
             openNoteInEditorById(note.id);
