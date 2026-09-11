@@ -118,10 +118,21 @@
       overflow-wrap: anywhere; 
     }
     .input-content-editable:focus { border-color: var(--accent-green); }
+    
+    /* 🖼️ 手機與電腦圖片全適應渲染優化 */
+    .input-content-editable img { 
+      max-width: 100% !important; 
+      height: auto !important; 
+      border-radius: 6px; 
+      cursor: pointer; 
+      border: 1px solid var(--border-color); 
+      margin: 6px 0; 
+      display: block;
+    }
 
-    .image-section { margin-top: 8px; padding-top: 6px; border-top: 1px dashed var(--border-color); }
+    .image-section { margin-top: 8px; padding-top: 6px; border-top: 1px dashed var(--border-color); display: block !important; }
     .image-preview-container { display: flex; gap: 8px; flex-wrap: wrap; margin-top: 4px; }
-    .image-preview-box { position: relative; width: 75px; height: 75px; border-radius: 6px; border: 1px solid var(--border-color); overflow: hidden; cursor: pointer; }
+    .image-preview-box { position: relative; width: 75px; height: 75px; border-radius: 6px; border: 1px solid var(--border-color); overflow: hidden; cursor: pointer; flex-shrink: 0; }
     .image-preview-box img { width: 100%; height: 100%; object-fit: cover; }
     .btn-delete-img { position: absolute; top: 2px; right: 2px; background: rgba(168,72,66,0.85); color: white; border: none; border-radius: 50%; width: 18px; height: 18px; cursor: pointer; font-size: 0.7rem; z-index: 2; }
 
@@ -143,7 +154,6 @@
     .cal-holiday { background: #fee2e2; color: #991b1b; font-size: 0.65rem; padding: 1px 3px; border-radius: 3px; font-weight: bold; }
     .cal-event-tag { background: #e0e7ff; color: #2b5b84; font-size: 0.68rem; padding: 1px 3px; border-radius: 3px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; font-weight: bold; cursor: pointer; display: block; }
     
-    /* 🔵 🔴 手機版超高清圓點提示 */
     .cal-dots-box { display: none; gap: 3px; justify-content: center; margin-top: 4px; }
     .cal-dot { width: 7px; height: 7px; border-radius: 50%; display: inline-block; box-shadow: 0 1px 2px rgba(0,0,0,0.15); }
     .cal-dot.event { background-color: #2b5b84; }
@@ -155,12 +165,12 @@
 
     .fab-btn { display: none; position: fixed; bottom: 16px; right: 16px; width: 50px; height: 50px; background: var(--accent-green); color: white; border-radius: 50%; border: none; font-size: 1.6rem; box-shadow: 0 4px 10px rgba(0,0,0,0.2); cursor: pointer; z-index: 99; }
 
-    .modal-overlay { display: none; position: fixed; top: 0; left: 0; width: 100vw; height: 100vh; background: rgba(0,0,0,0.5); backdrop-filter: blur(3px); z-index: 9999; justify-content: center; align-items: center; }
+    .modal-overlay { display: none; position: fixed; top: 0; left: 0; width: 100vw; height: 100vh; background: rgba(0,0,0,0.6); backdrop-filter: blur(4px); z-index: 9999; justify-content: center; align-items: center; }
     .modal-box { background: #ffffff; width: 90%; max-width: 450px; border-radius: 12px; padding: 18px; display: flex; flex-direction: column; gap: 12px; box-shadow: 0 10px 25px rgba(0,0,0,0.2); }
     .modal-header { display: flex; justify-content: space-between; align-items: center; border-bottom: 1px solid #e2e8f0; padding-bottom: 6px; }
     
-    .img-lightbox-box { position: relative; max-width: 90vw; max-height: 90vh; display: flex; justify-content: center; align-items: center; }
-    .img-lightbox-box img { max-width: 100%; max-height: 85vh; border-radius: 8px; box-shadow: 0 8px 30px rgba(0,0,0,0.3); }
+    .img-lightbox-box { position: relative; max-width: 95vw; max-height: 95vh; display: flex; justify-content: center; align-items: center; }
+    .img-lightbox-box img { max-width: 100%; max-height: 90vh; border-radius: 8px; box-shadow: 0 8px 30px rgba(0,0,0,0.5); object-fit: contain; }
 
     @media (max-width: 768px) {
       body { flex-direction: column; padding: 4px; gap: 4px; }
@@ -370,7 +380,7 @@
       <div id="noteContent" class="input-content-editable" contenteditable="true" placeholder="在此處自由書寫或貼上內容..."></div>
 
       <div class="image-section">
-        <span style="font-size:0.8rem;color:var(--text-sub);">📷 圖片附件區：</span>
+        <span style="font-size:0.8rem;color:var(--text-sub);">📷 圖片附件區 (點擊圖片可全螢幕放大查看)：</span>
         <div class="image-preview-container" id="imageContainer"></div>
       </div>
     </div>
@@ -556,7 +566,6 @@
             notesData.push({ id: doc.id, ...doc.data() });
           });
 
-          // 救援機制：若雲端是空的，自動檢測本機 LocalStorage 舊筆記並一鍵救援上傳
           if (notesData.length === 0) {
             const savedLocal = localStorage.getItem('luckynote_data');
             if (savedLocal) {
@@ -565,7 +574,7 @@
                 if (localNotes.length > 0) {
                   console.log("🚀 自動轉移救援本機資料至 Firebase 雲端...");
                   localNotes.forEach(n => {
-                    delete n.id; // 由 Firebase 自動生成全新雲端 ID
+                    delete n.id;
                     db.collection("luckynotes").add(n);
                   });
                 }
@@ -704,7 +713,6 @@
           }
         });
 
-        // 🔵 🔴 顯眼高對比圓點
         let dotsHTML = '<div class="cal-dots-box">';
         if (hasEvent) dotsHTML += '<span class="cal-dot event"></span>';
         if (hasHoliday) dotsHTML += '<span class="cal-dot holiday"></span>';
