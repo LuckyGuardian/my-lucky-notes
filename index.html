@@ -84,7 +84,11 @@
     .board-card { background: var(--bg-panel); border-radius: 10px; border: 1px solid var(--border-color); display: flex; flex-direction: column; max-height: 100%; }
     
     .board-header { padding: 8px 12px; border-bottom: 1px solid var(--border-color); display: flex; justify-content: space-between; align-items: center; }
-    .board-title { display: flex; align-items: center; gap: 6px; font-size: 0.95rem; font-weight: bold; color: var(--accent-green); }
+    
+    /* 可點擊編輯的看板標題樣式 */
+    .board-title { display: flex; align-items: center; gap: 6px; font-size: 0.95rem; font-weight: bold; color: var(--accent-green); cursor: pointer; padding: 2px 4px; border-radius: 4px; transition: background 0.2s; }
+    .board-title:hover { background: #eee9e0; }
+    
     .btn-board-add { background: #ffffff; border: 1px solid var(--border-color); padding: 2px 8px; border-radius: 5px; font-size: 0.75rem; font-weight: bold; cursor: pointer; color: var(--accent-green); transition: 0.2s; }
     .btn-board-add:hover { background: var(--accent-green); color: white; border-color: var(--accent-green); }
 
@@ -92,7 +96,7 @@
     
     .item-card { background: var(--bg-card); border-radius: 6px; border: 1px solid var(--border-color); padding: 10px; display: flex; flex-direction: column; gap: 6px; cursor: grab; transition: 0.2s; user-select: none; }
     .item-card:active { cursor: grabbing; }
-    .item-card.dragging { opacity: 0.4; border: 2px dashed var(--accent-green); }
+    .item-card.dragging { opacity: 0.4; background: #eee9e0; border: 1px dashed var(--accent-green); }
     .item-card:hover { border-color: var(--accent-green); box-shadow: 0 2px 6px rgba(0,0,0,0.05); }
     .item-card-header { display: flex; align-items: center; gap: 6px; }
     .item-card-title { font-size: 0.9rem; font-weight: bold; flex: 1; }
@@ -284,25 +288,25 @@
       <button class="btn-add-folder" onclick="addNewFolder()" title="新增主分類看板">➕</button>
     </div>
     <div class="menu-group" id="categoryMenuGroup">
-      <div class="menu-item" draggable="true" data-target-board="todo-board" id="menu-todo" onclick="openNewCategoryNote('☑️ 待辦事項'); updateMenuActive('menu-todo'); toggleSidebar();">☑️ <span class="menu-text">待辦事項</span></div>
-      <div class="menu-item" draggable="true" data-target-board="work-board" id="menu-work" onclick="openNewCategoryNote('💼 工作任務'); updateMenuActive('menu-work'); toggleSidebar();">💼 <span class="menu-text">工作任務</span></div>
-      <div class="menu-item" draggable="true" data-target-board="ai-board" id="menu-ai" onclick="openNewCategoryNote('🤖 AI 智庫與筆記'); updateMenuActive('menu-ai'); toggleSidebar();">🤖 <span class="menu-text">AI 智庫與筆記</span></div>
+      <div class="menu-item" draggable="true" data-target-board="todo-board" id="menu-todo" onclick="openNewCategoryNote('☑️ 待辦事項'); updateMenuActive('menu-todo'); toggleSidebar();">☑️ <span class="menu-text" id="side-text-todo">待辦事項</span></div>
+      <div class="menu-item" draggable="true" data-target-board="work-board" id="menu-work" onclick="openNewCategoryNote('💼 工作任務'); updateMenuActive('menu-work'); toggleSidebar();">💼 <span class="menu-text" id="side-text-work">工作任務</span></div>
+      <div class="menu-item" draggable="true" data-target-board="ai-board" id="menu-ai" onclick="openNewCategoryNote('🤖 AI 智庫與筆記'); updateMenuActive('menu-ai'); toggleSidebar();">🤖 <span class="menu-text" id="side-text-ai">AI 智庫與筆記</span></div>
       
       <!-- 📖 父分類：學習筆記 + 支援一鍵「➕ 新增子分類」 -->
       <div>
         <div class="menu-item" draggable="true" data-target-board="learn-board" id="menu-learn" onclick="toggleSubmenu('learnSubmenu', 'arrowLearn'); openNewCategoryNote('📖 學習筆記'); updateMenuActive('menu-learn');">
-          📖 <span class="menu-text">學習筆記</span>
+          📖 <span class="menu-text" id="side-text-learn">學習筆記</span>
           <button class="btn-add-subfolder" onclick="event.stopPropagation(); addNewSubCategory('📖 學習筆記');" title="新增學習子分類">➕</button>
           <span class="arrow-icon open" id="arrowLearn">▶</span>
         </div>
         <div class="submenu-group" id="learnSubmenu">
-          <div class="submenu-item" id="menu-english" onclick="event.stopPropagation(); openNewCategoryNote('🔤 英文學習'); updateMenuActive('menu-english'); toggleSidebar();">🔤 英文學習</div>
-          <div class="submenu-item" id="menu-law" onclick="event.stopPropagation(); openNewCategoryNote('⚖️ 法律條文'); updateMenuActive('menu-law'); toggleSidebar();">⚖️ 法律條文</div>
-          <div class="submenu-item" id="menu-tech" onclick="event.stopPropagation(); openNewCategoryNote('💻 程式與技術'); updateMenuActive('menu-tech'); toggleSidebar();">💻 程式與技術</div>
+          <div class="submenu-item" id="menu-english" onclick="event.stopPropagation(); openNewCategoryNote('🔤 英文學習'); updateMenuActive('menu-english'); toggleSidebar();">🔤 <span id="side-text-english">英文學習</span></div>
+          <div class="submenu-item" id="menu-law" onclick="event.stopPropagation(); openNewCategoryNote('⚖️ 法律條文'); updateMenuActive('menu-law'); toggleSidebar();">⚖️ <span id="side-text-law">法律條文</span></div>
+          <div class="submenu-item" id="menu-tech" onclick="event.stopPropagation(); openNewCategoryNote('💻 程式與技術'); updateMenuActive('menu-tech'); toggleSidebar();">💻 <span id="side-text-tech">程式與技術</span></div>
         </div>
       </div>
 
-      <div class="menu-item" draggable="true" data-target-board="web-board" id="menu-web" onclick="openNewCategoryNote('🌐 網路知識收集站'); updateMenuActive('menu-web'); toggleSidebar();">🌐 <span class="menu-text">網路知識收集站</span></div>
+      <div class="menu-item" draggable="true" data-target-board="web-board" id="menu-web" onclick="openNewCategoryNote('🌐 網路知識收集站'); updateMenuActive('menu-web'); toggleSidebar();">🌐 <span class="menu-text" id="side-text-web">網路知識收集站</span></div>
     </div>
   </div>
 
@@ -319,7 +323,7 @@
       <div class="dashboard-grid" id="dashboardGrid">
         <div class="board-card" id="todo-board">
           <div class="board-header">
-            <div class="board-title">☑️ 待辦事項</div>
+            <div class="board-title" onclick="renameBoard('todo-board', 'side-text-todo', '☑️ 待辦事項')" title="點擊重命名看板">☑️ <span id="title-text-todo">待辦事項</span> ✏️</div>
             <button class="btn-board-add" onclick="openNewCategoryNote('☑️ 待辦事項')">+ 新增</button>
           </div>
           <div class="card-list" id="list-todo"></div>
@@ -327,7 +331,7 @@
 
         <div class="board-card" id="work-board">
           <div class="board-header">
-            <div class="board-title">💼 工作任務</div>
+            <div class="board-title" onclick="renameBoard('work-board', 'side-text-work', '💼 工作任務')" title="點擊重命名看板">💼 <span id="title-text-work">工作任務</span> ✏️</div>
             <button class="btn-board-add" onclick="openNewCategoryNote('💼 工作任務')">+ 新增</button>
           </div>
           <div class="card-list" id="list-work"></div>
@@ -335,7 +339,7 @@
 
         <div class="board-card" id="ai-board">
           <div class="board-header">
-            <div class="board-title">🤖 AI 智庫與筆記</div>
+            <div class="board-title" onclick="renameBoard('ai-board', 'side-text-ai', '🤖 AI 智庫與筆記')" title="點擊重命名看板">🤖 <span id="title-text-ai">AI 智庫與筆記</span> ✏️</div>
             <button class="btn-board-add" onclick="openNewCategoryNote('🤖 AI 智庫與筆記')">+ 新增</button>
           </div>
           <div class="card-list" id="list-ai"></div>
@@ -343,7 +347,7 @@
 
         <div class="board-card" id="learn-board">
           <div class="board-header">
-            <div class="board-title">📖 學習筆記 (通用)</div>
+            <div class="board-title" onclick="renameBoard('learn-board', 'side-text-learn', '📖 學習筆記')" title="點擊重命名看板">📖 <span id="title-text-learn">學習筆記 (通用)</span> ✏️</div>
             <button class="btn-board-add" onclick="openNewCategoryNote('📖 學習筆記')">+ 新增</button>
           </div>
           <div class="card-list" id="list-learn"></div>
@@ -351,7 +355,7 @@
 
         <div class="board-card" id="english-board">
           <div class="board-header">
-            <div class="board-title">🔤 英文學習 (多益衝刺專區)</div>
+            <div class="board-title" onclick="renameBoard('english-board', 'side-text-english', '🔤 英文學習')" title="點擊重命名看板">🔤 <span id="title-text-english">英文學習 (多益衝刺專區)</span> ✏️</div>
             <button class="btn-board-add" onclick="openNewCategoryNote('🔤 英文學習')">+ 新增</button>
           </div>
           <div class="card-list" id="list-english"></div>
@@ -359,7 +363,7 @@
 
         <div class="board-card" id="law-board">
           <div class="board-header">
-            <div class="board-title">⚖️ 法律條文</div>
+            <div class="board-title" onclick="renameBoard('law-board', 'side-text-law', '⚖️ 法律條文')" title="點擊重命名看板">⚖️ <span id="title-text-law">法律條文</span> ✏️</div>
             <button class="btn-board-add" onclick="openNewCategoryNote('⚖️ 法律條文')">+ 新增</button>
           </div>
           <div class="card-list" id="list-law"></div>
@@ -367,7 +371,7 @@
 
         <div class="board-card" id="tech-board">
           <div class="board-header">
-            <div class="board-title">💻 程式與技術</div>
+            <div class="board-title" onclick="renameBoard('tech-board', 'side-text-tech', '💻 程式與技術')" title="點擊重命名看板">💻 <span id="title-text-tech">程式與技術</span> ✏️</div>
             <button class="btn-board-add" onclick="openNewCategoryNote('💻 程式與技術')">+ 新增</button>
           </div>
           <div class="card-list" id="list-tech"></div>
@@ -375,7 +379,7 @@
 
         <div class="board-card" id="web-board">
           <div class="board-header">
-            <div class="board-title">🌐 網路知識收集站</div>
+            <div class="board-title" onclick="renameBoard('web-board', 'side-text-web', '🌐 網路知識收集站')" title="點擊重命名看板">🌐 <span id="title-text-web">網路知識收集站</span> ✏️</div>
             <button class="btn-board-add" onclick="openNewCategoryNote('🌐 網路知識收集站')">+ 新增</button>
           </div>
           <div class="card-list" id="list-web"></div>
@@ -576,6 +580,7 @@
       initCategoryMenuDragAndDrop();
       applySavedMenuOrder();
       loadCustomSubCategories();
+      applyRenamedBoardTitles();
 
       const today = new Date();
       calYear = today.getFullYear();
@@ -610,6 +615,45 @@
       }
     });
 
+    /* ✏️ 點擊看板名稱進行重命名 */
+    function renameBoard(boardId, sideTextId, defaultName) {
+      const currentTitleEl = document.getElementById(boardId).querySelector('.board-title span');
+      const oldName = currentTitleEl ? currentTitleEl.innerText : defaultName;
+      
+      const newName = prompt(`請輸入「${oldName}」的新看板名稱：`, oldName);
+      if (!newName || newName.trim() === '') return;
+
+      const trimmedName = newName.trim();
+
+      // 1. 更新主頁面看板名稱
+      if (currentTitleEl) currentTitleEl.innerText = trimmedName;
+
+      // 2. 同步更新左側選單文字
+      const sideEl = document.getElementById(sideTextId);
+      if (sideEl) sideEl.innerText = trimmedName;
+
+      // 3. 儲存更名設定至 LocalStorage
+      let savedNames = JSON.parse(localStorage.getItem('luckynote_board_names') || '{}');
+      savedNames[boardId] = { titleText: trimmedName, sideTextId: sideTextId };
+      localStorage.setItem('luckynote_board_names', JSON.stringify(savedNames));
+
+      alert(`看板名稱已順利修改為「${trimmedName}」！`);
+    }
+
+    function applyRenamedBoardTitles() {
+      let savedNames = JSON.parse(localStorage.getItem('luckynote_board_names') || '{}');
+      Object.keys(savedNames).forEach(boardId => {
+        const data = savedNames[boardId];
+        const boardEl = document.getElementById(boardId);
+        if (boardEl) {
+          const span = boardEl.querySelector('.board-title span');
+          if (span) span.innerText = data.titleText;
+        }
+        const sideEl = document.getElementById(data.sideTextId);
+        if (sideEl) sideEl.innerText = data.titleText;
+      });
+    }
+
     function toggleSubmenu(submenuId, arrowId) {
       const submenu = document.getElementById(submenuId);
       const arrow = document.getElementById(arrowId);
@@ -641,7 +685,7 @@
         updateMenuActive('menu-' + safeId);
         toggleSidebar();
       };
-      subDiv.innerText = subName;
+      subDiv.innerHTML = `<span id="side-text-${safeId}">${subName}</span>`;
       submenu.appendChild(subDiv);
 
       const grid = document.getElementById('dashboardGrid');
@@ -650,7 +694,7 @@
       boardCard.id = safeId;
       boardCard.innerHTML = `
         <div class="board-header">
-          <div class="board-title">${subName}</div>
+          <div class="board-title" onclick="renameBoard('${safeId}', 'side-text-${safeId}', '${subName}')" title="點擊重命名看板"><span id="title-text-${safeId}">${subName}</span> ✏️</div>
           <button class="btn-board-add" onclick="openNewCategoryNote('${subName}')">+ 新增</button>
         </div>
         <div class="card-list" id="list-${safeId}"></div>
@@ -691,7 +735,7 @@
             updateMenuActive('menu-' + item.safeId);
             toggleSidebar();
           };
-          subDiv.innerText = item.name;
+          subDiv.innerHTML = `<span id="side-text-${item.safeId}">${item.name}</span>`;
           submenu.appendChild(subDiv);
 
           if (grid) {
@@ -700,7 +744,7 @@
             boardCard.id = item.safeId;
             boardCard.innerHTML = `
               <div class="board-header">
-                <div class="board-title">${item.name}</div>
+                <div class="board-title" onclick="renameBoard('${item.safeId}', 'side-text-${item.safeId}', '${item.name}')" title="點擊重命名看板"><span id="title-text-${item.safeId}">${item.name}</span> ✏️</div>
                 <button class="btn-board-add" onclick="openNewCategoryNote('${item.name}')">+ 新增</button>
               </div>
               <div class="card-list" id="list-${item.safeId}"></div>
@@ -779,7 +823,6 @@
       localStorage.setItem('luckynote_data', JSON.stringify(notesData));
     }
 
-    /* 🎯 針對 400~500 分設計的多益實戰範本 */
     function getInitialToeicNotes() {
       return [
         {
@@ -849,7 +892,6 @@
       switchView('dashboard', document.getElementById('currentStatusText').innerText);
     }
 
-    /* 🔍 嚴格分類判斷邏輯（避免關鍵字重疊錯位） */
     function renderDashboardCards() {
       document.querySelectorAll('.card-list').forEach(el => el.innerHTML = '');
 
@@ -861,7 +903,6 @@
 
         let listId = 'list-web';
         
-        // 嚴格比對，優先歸類於明確的子分類
         if (note.category === '🔤 英文學習' || note.category.includes('英文')) {
           listId = 'list-english';
         } else if (note.category === '⚖️ 法律條文' || note.category.includes('法律')) {
@@ -878,7 +919,6 @@
           listId = 'list-learn';
         }
 
-        // 動態子類別比對
         const customSubcats = JSON.parse(localStorage.getItem('luckynote_subcats') || '[]');
         const matchedCustom = customSubcats.find(s => note.category === s.name);
         if (matchedCustom) {
@@ -1234,7 +1274,7 @@
         updateMenuActive('menu-' + safeId);
         toggleSidebar();
       };
-      menuItem.innerHTML = `📁 <span class="menu-text">${folderName}</span>`;
+      menuItem.innerHTML = `📁 <span class="menu-text" id="side-text-${safeId}">${folderName}</span>`;
       menuGroup.appendChild(menuItem);
 
       const grid = document.getElementById('dashboardGrid');
@@ -1243,7 +1283,7 @@
       boardCard.id = safeId;
       boardCard.innerHTML = `
         <div class="board-header">
-          <div class="board-title">📁 ${folderName}</div>
+          <div class="board-title" onclick="renameBoard('${safeId}', 'side-text-${safeId}', '${folderName}')" title="點擊重命名看板"><span id="title-text-${safeId}">${folderName}</span> ✏️</div>
           <button class="btn-board-add" onclick="openNewCategoryNote('${folderName}')">+ 新增</button>
         </div>
         <div class="card-list" id="list-${safeId}"></div>
