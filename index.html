@@ -96,6 +96,9 @@
 
     .card-list { padding: 8px; overflow-y: auto; flex: 1; display: flex; flex-direction: column; gap: 8px; min-height: 80px; }
     
+    /* 🙈 模式 C：摺疊/收起狀態 */
+    .card-list.mode-collapsed { display: none !important; }
+
     /* 🗂️ 模式 A：大卡片格式 */
     .card-list.mode-card .item-card { background: var(--bg-card); border-radius: 6px; border: 1px solid var(--border-color); padding: 10px; display: flex; flex-direction: column; gap: 6px; cursor: grab; transition: 0.2s; user-select: none; }
     .card-list.mode-card .item-card:active { cursor: grabbing; }
@@ -104,7 +107,7 @@
     .card-list.mode-card .item-card-header { display: flex; align-items: center; gap: 6px; }
     .card-list.mode-card .item-card-title { font-size: 0.9rem; font-weight: bold; flex: 1; }
 
-    /* 🌲 模式 B（方案三）：精簡雙階樹狀清單格式 (適用 AI 智庫與學習筆記) */
+    /* 🌲 模式 B：雙階樹狀清單格式 */
     .card-list.mode-list { gap: 4px; padding: 6px; }
     .card-list.mode-list .item-card { background: #ffffff; border-radius: 5px; border: 1px solid var(--border-color); padding: 6px 10px; display: flex; align-items: center; gap: 8px; cursor: pointer; transition: 0.15s; }
     .card-list.mode-list .item-card:hover { background: #f0ebd8; border-color: var(--accent-green); }
@@ -195,7 +198,7 @@
     .image-preview-box img { width: 100%; height: 100%; object-fit: cover; }
     .btn-delete-img { position: absolute; top: 2px; right: 2px; background: rgba(168,72,66,0.85); color: white; border: none; border-radius: 50%; width: 18px; height: 18px; cursor: pointer; font-size: 0.7rem; z-index: 2; }
 
-    /* 📅 行事曆 View 樣式 */
+    /* 📅 行事曆 View 樣式 (週末淺色渲染美化) */
     .calendar-view { display: none; flex: 1; flex-direction: column; background: var(--bg-panel); border-radius: 10px; padding: 12px; border: 1px solid var(--border-color); overflow-y: auto; gap: 10px; }
     .calendar-header { display: flex; justify-content: space-between; align-items: center; border-bottom: 1px solid var(--border-color); padding-bottom: 6px; }
     .calendar-controls { display: flex; align-items: center; gap: 6px; }
@@ -203,7 +206,16 @@
 
     .calendar-grid { display: grid; grid-template-columns: repeat(7, 1fr); gap: 6px; text-align: center; }
     .cal-day-header { font-weight: bold; color: var(--accent-green); padding: 6px; background: #eee9e0; border-radius: 5px; font-size: 0.85rem; }
+    
+    /* 📅 週末標頭微染淺紅色/淺棕色 */
+    .cal-day-header.weekend { background: #f5ebe6; color: var(--accent-red); }
+
     .cal-day-cell { background: white; border: 1px solid var(--border-color); border-radius: 6px; min-height: 85px; padding: 4px; display: flex; flex-direction: column; gap: 2px; cursor: pointer; text-align: left; transition: 0.2s; position: relative; }
+    
+    /* 📅 星期六、星期日（週末）套用質感淺色底 */
+    .cal-day-cell.weekend { background-color: #fcf8f2; }
+    .cal-day-cell.sunday { background-color: #fff5f5; }
+
     .cal-day-cell.empty { background: transparent; border: none; cursor: default; }
     .cal-day-cell:not(.empty):hover { border-color: var(--accent-green); background-color: #faf8f5; }
     .cal-day-cell.today { border: 2px solid var(--accent-green); background-color: #f4f8f5; }
@@ -372,14 +384,14 @@
       <span class="status-title" id="currentStatusText">🌐 全部看板模式</span>
     </div>
 
-    <!-- 視窗 1：看板模式 (支援 AI智庫/學習筆記以樹狀清單排版；且包含一鍵切換視圖按鈕) -->
+    <!-- 視窗 1：看板模式 (支援 🗂️卡片 / 🌲精簡清單 / 🙈摺疊收起 三階段切換) -->
     <div class="dashboard-view" id="view-dashboard">
       <div class="dashboard-grid" id="dashboardGrid">
         <div class="board-card" id="todo-board">
           <div class="board-header">
             <div class="board-title" onclick="renameBoard('todo-board', 'side-text-todo', '☑️ 待辦事項')" title="點擊重命名看板">☑️ <span id="title-text-todo">待辦事項</span> ✏️</div>
             <div class="board-controls">
-              <button class="btn-view-toggle" onclick="toggleBoardMode('todo-board')" title="切換卡片/清單模式">🗂️/☰</button>
+              <button class="btn-view-toggle" id="btn-toggle-todo-board" onclick="toggleBoardMode('todo-board')" title="切換 🗂️卡片 / 🌲清單 / 🙈收起">🗂️</button>
               <button class="btn-board-add" onclick="openNewCategoryNote('☑️ 待辦事項')">+ 新增</button>
             </div>
           </div>
@@ -390,7 +402,7 @@
           <div class="board-header">
             <div class="board-title" onclick="renameBoard('work-board', 'side-text-work', '💼 工作任務')" title="點擊重命名看板">💼 <span id="title-text-work">工作任務</span> ✏️</div>
             <div class="board-controls">
-              <button class="btn-view-toggle" onclick="toggleBoardMode('work-board')" title="切換卡片/清單模式">🗂️/☰</button>
+              <button class="btn-view-toggle" id="btn-toggle-work-board" onclick="toggleBoardMode('work-board')" title="切換 🗂️卡片 / 🌲清單 / 🙈收起">🗂️</button>
               <button class="btn-board-add" onclick="openNewCategoryNote('💼 工作任務')">+ 新增</button>
             </div>
           </div>
@@ -402,7 +414,7 @@
           <div class="board-header">
             <div class="board-title" onclick="renameBoard('ai-board', 'side-text-ai', '🤖 AI 智庫與筆記')" title="點擊重命名看板">🤖 <span id="title-text-ai">AI 智庫與筆記</span> ✏️</div>
             <div class="board-controls">
-              <button class="btn-view-toggle" onclick="toggleBoardMode('ai-board')" title="切換卡片/清單模式">🗂️/☰</button>
+              <button class="btn-view-toggle" id="btn-toggle-ai-board" onclick="toggleBoardMode('ai-board')" title="切換 🗂️卡片 / 🌲清單 / 🙈收起">🌲</button>
               <button class="btn-board-add" onclick="openNewCategoryNote('🤖 AI 智庫與筆記')">+ 新增</button>
             </div>
           </div>
@@ -414,7 +426,7 @@
           <div class="board-header">
             <div class="board-title" onclick="renameBoard('english-board', 'side-text-english', '🔤 英文學習')" title="點擊重命名看板">🔤 <span id="title-text-english">英文學習 (多益衝刺專區)</span> ✏️</div>
             <div class="board-controls">
-              <button class="btn-view-toggle" onclick="toggleBoardMode('english-board')" title="切換卡片/清單模式">🗂️/☰</button>
+              <button class="btn-view-toggle" id="btn-toggle-english-board" onclick="toggleBoardMode('english-board')" title="切換 🗂️卡片 / 🌲清單 / 🙈收起">🌲</button>
               <button class="btn-board-add" onclick="openNewCategoryNote('🔤 英文學習')">+ 新增</button>
             </div>
           </div>
@@ -426,7 +438,7 @@
           <div class="board-header">
             <div class="board-title" onclick="renameBoard('law-board', 'side-text-law', '⚖️ 法律條文')" title="點擊重命名看板">⚖️ <span id="title-text-law">法律條文</span> ✏️</div>
             <div class="board-controls">
-              <button class="btn-view-toggle" onclick="toggleBoardMode('law-board')" title="切換卡片/清單模式">🗂️/☰</button>
+              <button class="btn-view-toggle" id="btn-toggle-law-board" onclick="toggleBoardMode('law-board')" title="切換 🗂️卡片 / 🌲清單 / 🙈收起">🌲</button>
               <button class="btn-board-add" onclick="openNewCategoryNote('⚖️ 法律條文')">+ 新增</button>
             </div>
           </div>
@@ -438,7 +450,7 @@
           <div class="board-header">
             <div class="board-title" onclick="renameBoard('tech-board', 'side-text-tech', '💻 程式與技術')" title="點擊重命名看板">💻 <span id="title-text-tech">程式與技術</span> ✏️</div>
             <div class="board-controls">
-              <button class="btn-view-toggle" onclick="toggleBoardMode('tech-board')" title="切換卡片/清單模式">🗂️/☰</button>
+              <button class="btn-view-toggle" id="btn-toggle-tech-board" onclick="toggleBoardMode('tech-board')" title="切換 🗂️卡片 / 🌲清單 / 🙈收起">🌲</button>
               <button class="btn-board-add" onclick="openNewCategoryNote('💻 程式與技術')">+ 新增</button>
             </div>
           </div>
@@ -449,7 +461,7 @@
           <div class="board-header">
             <div class="board-title" onclick="renameBoard('web-board', 'side-text-web', '🌐 網路知識收集站')" title="點擊重命名看板">🌐 <span id="title-text-web">網路知識收集站</span> ✏️</div>
             <div class="board-controls">
-              <button class="btn-view-toggle" onclick="toggleBoardMode('web-board')" title="切換卡片/清單模式">🗂️/☰</button>
+              <button class="btn-view-toggle" id="btn-toggle-web-board" onclick="toggleBoardMode('web-board')" title="切換 🗂️卡片 / 🌲清單 / 🙈收起">🗂️</button>
               <button class="btn-board-add" onclick="openNewCategoryNote('🌐 網路知識收集站')">+ 新增</button>
             </div>
           </div>
@@ -533,7 +545,13 @@
         </div>
       </div>
       <div class="calendar-grid" id="calendarGrid">
-        <div class="cal-day-header">日</div><div class="cal-day-header">一</div><div class="cal-day-header">二</div><div class="cal-day-header">三</div><div class="cal-day-header">四</div><div class="cal-day-header">五</div><div class="cal-day-header">六</div>
+        <div class="cal-day-header sunday">日</div>
+        <div class="cal-day-header">一</div>
+        <div class="cal-day-header">二</div>
+        <div class="cal-day-header">三</div>
+        <div class="cal-day-header">四</div>
+        <div class="cal-day-header">五</div>
+        <div class="cal-day-header weekend">六</div>
       </div>
 
       <div class="mobile-day-agenda" id="mobileDayAgenda">
@@ -657,6 +675,7 @@
     const lawTemplate = `⚖️ [法規/契約重點解析] #法律 #法條\n\n【一、 核心條文與條號】\n* 適用法條：民法第 XXX 條\n* 關鍵要件：\n\n【二、 實務判例與應用】\n* 結論：`;
     const todoTemplate = `☑️ [待辦事項標題]\n\n【一、 任務細節說明】\n* 相關連結/資料：\n* 預計完成時間：`;
 
+    /* 🇹🇼 台灣國定假日資料庫 */
     const taiwanHolidays = {
       "01-01": "元旦",
       "02-28": "和平紀念日",
@@ -690,7 +709,7 @@
       loadCustomSubCategories();
       loadCustomFolders();
       applyRenamedBoardTitles();
-      applySavedBoardModes(); // 載入使用者記憶的視圖切換
+      applySavedBoardModes();
 
       const today = new Date();
       calYear = today.getFullYear();
@@ -743,19 +762,26 @@
       }
     });
 
-    /* 🗂️/☰ 看板「卡片模式 / 樹狀清單模式」一鍵切換功能 */
+    /* 🗂️ 三階段切換：🗂️卡片模式 ➔ 🌲樹狀清單 ➔ 🙈摺疊收起 */
     function toggleBoardMode(boardId) {
       const boardEl = document.getElementById(boardId);
       if (!boardEl) return;
       const listEl = boardEl.querySelector('.card-list');
+      const toggleBtn = document.getElementById('btn-toggle-' + boardId);
       if (!listEl) return;
 
       if (listEl.classList.contains('mode-card')) {
         listEl.classList.remove('mode-card');
         listEl.classList.add('mode-list');
-      } else {
+        if (toggleBtn) toggleBtn.innerText = '🌲';
+      } else if (listEl.classList.contains('mode-list')) {
         listEl.classList.remove('mode-list');
+        listEl.classList.add('mode-collapsed');
+        if (toggleBtn) toggleBtn.innerText = '🙈';
+      } else {
+        listEl.classList.remove('mode-collapsed');
         listEl.classList.add('mode-card');
+        if (toggleBtn) toggleBtn.innerText = '🗂️';
       }
 
       saveBoardModes();
@@ -767,7 +793,9 @@
       document.querySelectorAll('.board-card').forEach(board => {
         const listEl = board.querySelector('.card-list');
         if (listEl) {
-          modes[board.id] = listEl.classList.contains('mode-list') ? 'mode-list' : 'mode-card';
+          if (listEl.classList.contains('mode-collapsed')) modes[board.id] = 'mode-collapsed';
+          else if (listEl.classList.contains('mode-list')) modes[board.id] = 'mode-list';
+          else modes[board.id] = 'mode-card';
         }
       });
       localStorage.setItem('luckynote_board_modes', JSON.stringify(modes));
@@ -782,9 +810,16 @@
           const boardEl = document.getElementById(boardId);
           if (boardEl) {
             const listEl = boardEl.querySelector('.card-list');
+            const toggleBtn = document.getElementById('btn-toggle-' + boardId);
             if (listEl) {
-              listEl.classList.remove('mode-card', 'mode-list');
+              listEl.classList.remove('mode-card', 'mode-list', 'mode-collapsed');
               listEl.classList.add(modes[boardId]);
+
+              if (toggleBtn) {
+                if (modes[boardId] === 'mode-collapsed') toggleBtn.innerText = '🙈';
+                else if (modes[boardId] === 'mode-list') toggleBtn.innerText = '🌲';
+                else toggleBtn.innerText = '🗂️';
+              }
             }
           }
         });
@@ -924,7 +959,7 @@
         <div class="board-header">
           <div class="board-title" onclick="renameBoard('${safeId}', 'side-text-${safeId}', '${subName}')" title="點擊重命名看板"><span id="title-text-${safeId}">${subName}</span> ✏️</div>
           <div class="board-controls">
-            <button class="btn-view-toggle" onclick="toggleBoardMode('${safeId}')" title="切換卡片/清單模式">🗂️/☰</button>
+            <button class="btn-view-toggle" id="btn-toggle-${safeId}" onclick="toggleBoardMode('${safeId}')" title="切換 🗂️卡片 / 🌲清單 / 🙈收起">🌲</button>
             <button class="btn-board-add" onclick="openNewCategoryNote('${subName}')">+ 新增</button>
           </div>
         </div>
@@ -987,7 +1022,7 @@
               <div class="board-header">
                 <div class="board-title" onclick="renameBoard('${item.safeId}', 'side-text-${item.safeId}', '${item.name}')" title="點擊重命名看板"><span id="title-text-${item.safeId}">${item.name}</span> ✏️</div>
                 <div class="board-controls">
-                  <button class="btn-view-toggle" onclick="toggleBoardMode('${item.safeId}')" title="切換卡片/清單模式">🗂️/☰</button>
+                  <button class="btn-view-toggle" id="btn-toggle-${item.safeId}" onclick="toggleBoardMode('${item.safeId}')" title="切換 🗂️卡片 / 🌲清單 / 🙈收起">🌲</button>
                   <button class="btn-board-add" onclick="openNewCategoryNote('${item.name}')">+ 新增</button>
                 </div>
               </div>
@@ -1173,7 +1208,6 @@
       switchView('dashboard', document.getElementById('currentStatusText').innerText);
     }
 
-    /* 渲染看板內卡片（相容 卡片模式 / 雙階樹狀清單模式） */
     function renderDashboardCards() {
       document.querySelectorAll('.card-list').forEach(el => el.innerHTML = '');
 
@@ -1222,12 +1256,10 @@
           bindCardDragEvents(card);
           card.onclick = () => openNoteInEditorById(note.id);
 
-          // 抓取 Tag
           const tagMatch = (note.title + ' ' + note.content).match(/#[^\s#]+/);
           const firstTag = tagMatch ? tagMatch[0] : '';
 
           if (isTreeListMode) {
-            // 🌲 方案三：雙階樹狀清單精簡渲染
             card.innerHTML = `
               <div class="item-card-header">
                 <input type="checkbox" onclick="event.stopPropagation()">
@@ -1236,7 +1268,6 @@
               </div>
             `;
           } else {
-            // 🗂️ 預設大卡片模式渲染
             card.innerHTML = `<div class="item-card-header"><input type="checkbox" onclick="event.stopPropagation()"><span class="item-card-title">${note.title}</span></div>`;
           }
 
@@ -1245,7 +1276,7 @@
       });
     }
 
-    /* 📅 行事曆渲染邏輯 */
+    /* 📅 行事曆渲染邏輯 (含星期六、星期日週末淺色底渲染) */
     function renderCalendar(year, month) {
       try {
         const grid = document.getElementById('calendarGrid');
@@ -1253,7 +1284,13 @@
         if (!grid || !titleEl) return;
         
         grid.innerHTML = `
-          <div class="cal-day-header">日</div><div class="cal-day-header">一</div><div class="cal-day-header">二</div><div class="cal-day-header">三</div><div class="cal-day-header">四</div><div class="cal-day-header">五</div><div class="cal-day-header">六</div>
+          <div class="cal-day-header sunday">日</div>
+          <div class="cal-day-header">一</div>
+          <div class="cal-day-header">二</div>
+          <div class="cal-day-header">三</div>
+          <div class="cal-day-header">四</div>
+          <div class="cal-day-header">五</div>
+          <div class="cal-day-header weekend">六</div>
         `;
 
         titleEl.innerText = `📅 ${year} 年 ${month + 1} 月 行事曆`;
@@ -1274,6 +1311,14 @@
           const dayCell = document.createElement('div');
           dayCell.className = 'cal-day-cell';
           
+          const currentDayOfWeek = new Date(year, month, day).getDay();
+          // 0 是星期日，6 是星期六
+          if (currentDayOfWeek === 0) {
+            dayCell.classList.add('sunday');
+          } else if (currentDayOfWeek === 6) {
+            dayCell.classList.add('weekend');
+          }
+
           const mStr = (month + 1 < 10 ? '0' : '') + (month + 1);
           const dStr = (day < 10 ? '0' : '') + day;
           const dateKey = `${mStr}-${dStr}`;
@@ -1609,7 +1654,7 @@
         <div class="board-header">
           <div class="board-title" onclick="renameBoard('${safeId}', 'side-text-${safeId}', '${folderName}')" title="點擊重命名看板"><span id="title-text-${safeId}">${folderName}</span> ✏️</div>
           <div class="board-controls">
-            <button class="btn-view-toggle" onclick="toggleBoardMode('${safeId}')" title="切換卡片/清單模式">🗂️/☰</button>
+            <button class="btn-view-toggle" id="btn-toggle-${safeId}" onclick="toggleBoardMode('${safeId}')" title="切換 🗂️卡片 / 🌲清單 / 🙈收起">🗂️</button>
             <button class="btn-board-add" onclick="openNewCategoryNote('${folderName}')">+ 新增</button>
           </div>
         </div>
@@ -1668,7 +1713,7 @@
               <div class="board-header">
                 <div class="board-title" onclick="renameBoard('${item.safeId}', 'side-text-${item.safeId}', '${item.name}')" title="點擊重命名看板"><span id="title-text-${item.safeId}">${item.name}</span> ✏️</div>
                 <div class="board-controls">
-                  <button class="btn-view-toggle" onclick="toggleBoardMode('${item.safeId}')" title="切換卡片/清單模式">🗂️/☰</button>
+                  <button class="btn-view-toggle" id="btn-toggle-${item.safeId}" onclick="toggleBoardMode('${item.safeId}')" title="切換 🗂️卡片 / 🌲清單 / 🙈收起">🗂️</button>
                   <button class="btn-board-add" onclick="openNewCategoryNote('${item.name}')">+ 新增</button>
                 </div>
               </div>
