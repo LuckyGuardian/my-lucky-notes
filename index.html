@@ -198,7 +198,7 @@
     .image-preview-box img { width: 100%; height: 100%; object-fit: cover; }
     .btn-delete-img { position: absolute; top: 2px; right: 2px; background: rgba(168,72,66,0.85); color: white; border: none; border-radius: 50%; width: 18px; height: 18px; cursor: pointer; font-size: 0.7rem; z-index: 2; }
 
-    /* 📅 行事曆 View 樣式 (週末淺色渲染美化) */
+    /* 📅 行事曆 View 樣式 (週末淺紅色底色) */
     .calendar-view { display: none; flex: 1; flex-direction: column; background: var(--bg-panel); border-radius: 10px; padding: 12px; border: 1px solid var(--border-color); overflow-y: auto; gap: 10px; }
     .calendar-header { display: flex; justify-content: space-between; align-items: center; border-bottom: 1px solid var(--border-color); padding-bottom: 6px; }
     .calendar-controls { display: flex; align-items: center; gap: 6px; }
@@ -207,14 +207,13 @@
     .calendar-grid { display: grid; grid-template-columns: repeat(7, 1fr); gap: 6px; text-align: center; }
     .cal-day-header { font-weight: bold; color: var(--accent-green); padding: 6px; background: #eee9e0; border-radius: 5px; font-size: 0.85rem; }
     
-    /* 📅 週末標頭微染淺紅色/淺棕色 */
-    .cal-day-header.weekend { background: #f5ebe6; color: var(--accent-red); }
+    /* 📅 週末（日、六）標頭淺紅底色 */
+    .cal-day-header.weekend { background: #fce8e6; color: var(--accent-red); }
 
     .cal-day-cell { background: white; border: 1px solid var(--border-color); border-radius: 6px; min-height: 85px; padding: 4px; display: flex; flex-direction: column; gap: 2px; cursor: pointer; text-align: left; transition: 0.2s; position: relative; }
     
-    /* 📅 星期六、星期日（週末）套用質感淺色底 */
-    .cal-day-cell.weekend { background-color: #fcf8f2; }
-    .cal-day-cell.sunday { background-color: #fff5f5; }
+    /* 📅 星期六、星期日統一套用淺紅色底色 */
+    .cal-day-cell.weekend { background-color: #fff5f5; }
 
     .cal-day-cell.empty { background: transparent; border: none; cursor: default; }
     .cal-day-cell:not(.empty):hover { border-color: var(--accent-green); background-color: #faf8f5; }
@@ -384,7 +383,7 @@
       <span class="status-title" id="currentStatusText">🌐 全部看板模式</span>
     </div>
 
-    <!-- 視窗 1：看板模式 (支援 🗂️卡片 / 🌲精簡清單 / 🙈摺疊收起 三階段切換) -->
+    <!-- 視窗 1：看板模式 -->
     <div class="dashboard-view" id="view-dashboard">
       <div class="dashboard-grid" id="dashboardGrid">
         <div class="board-card" id="todo-board">
@@ -545,7 +544,7 @@
         </div>
       </div>
       <div class="calendar-grid" id="calendarGrid">
-        <div class="cal-day-header sunday">日</div>
+        <div class="cal-day-header weekend">日</div>
         <div class="cal-day-header">一</div>
         <div class="cal-day-header">二</div>
         <div class="cal-day-header">三</div>
@@ -1276,7 +1275,7 @@
       });
     }
 
-    /* 📅 行事曆渲染邏輯 (含星期六、星期日週末淺色底渲染) */
+    /* 📅 行事曆渲染邏輯 (星期六、日統一套用淺紅色底色) */
     function renderCalendar(year, month) {
       try {
         const grid = document.getElementById('calendarGrid');
@@ -1284,7 +1283,7 @@
         if (!grid || !titleEl) return;
         
         grid.innerHTML = `
-          <div class="cal-day-header sunday">日</div>
+          <div class="cal-day-header weekend">日</div>
           <div class="cal-day-header">一</div>
           <div class="cal-day-header">二</div>
           <div class="cal-day-header">三</div>
@@ -1312,10 +1311,8 @@
           dayCell.className = 'cal-day-cell';
           
           const currentDayOfWeek = new Date(year, month, day).getDay();
-          // 0 是星期日，6 是星期六
-          if (currentDayOfWeek === 0) {
-            dayCell.classList.add('sunday');
-          } else if (currentDayOfWeek === 6) {
+          // 0(星期日) 與 6(星期六) 統一套用 weekend 淺紅色底色
+          if (currentDayOfWeek === 0 || currentDayOfWeek === 6) {
             dayCell.classList.add('weekend');
           }
 
