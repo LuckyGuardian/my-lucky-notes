@@ -29,7 +29,7 @@
     .mobile-header h2 { font-size: 1rem; color: var(--accent-green); display: flex; align-items: center; gap: 6px; cursor: pointer; }
     .btn-hamburger { background: transparent; border: none; font-size: 1.3rem; cursor: pointer; }
 
-    /* 🛠️ 修復側邊欄可滑動且底部留白保護 */
+    /* 側邊欄可滑動且底部留白保護 */
     .sidebar { width: 220px; background: var(--bg-panel); border-radius: 10px; padding: 10px 8px; display: flex; flex-direction: column; gap: 8px; border: 1px solid var(--border-color); overflow-y: auto; overflow-x: hidden; z-index: 100; transition: width 0.3s ease, padding 0.3s ease, transform 0.3s ease; position: relative; height: 100%; }
     .sidebar.collapsed { width: 56px; padding: 10px 6px; }
     .sidebar.collapsed .mascot-title,
@@ -73,7 +73,7 @@
     .menu-item.export-btn { color: var(--accent-blue); background: #e0e7ff; cursor: pointer; }
     .menu-item.export-btn:hover { background: #c7d2fe; }
 
-    /* 📅 修復側邊欄小日曆排版，移除 margin-top: auto 改為自然邊距並加安全留白 */
+    /* 📅 側邊欄小日曆卡片 */
     .side-mini-cal { margin-top: 6px; margin-bottom: 12px; background: #ffffff; border: 1px solid var(--border-color); border-radius: 8px; overflow: hidden; box-shadow: 0 2px 6px rgba(0,0,0,0.04); flex-shrink: 0; }
     .side-mini-cal-header { background: #d8c27a; color: #2b332c; padding: 5px 8px; font-size: 0.8rem; font-weight: bold; display: flex; align-items: center; justify-content: space-between; }
     .side-mini-cal-nav { background: #ffffff; padding: 4px 6px; display: flex; align-items: center; justify-content: space-between; border-bottom: 1px solid var(--border-color); font-size: 0.8rem; font-weight: bold; }
@@ -81,8 +81,8 @@
     .side-mini-cal-grid { display: grid; grid-template-columns: repeat(7, 1fr); padding: 6px 4px; gap: 2px; text-align: center; font-size: 0.72rem; }
     .side-mini-cal-day-header { font-weight: bold; padding: 2px 0; color: #333; }
     .side-mini-cal-cell { padding: 4px 0; border-radius: 3px; cursor: pointer; font-weight: 500; color: #333; }
-    .side-mini-cal-cell.weekend { background-color: #f7e600; font-weight: bold; } /* 黃底標示週末 */
-    .side-mini-cal-cell.today { background-color: #555555 !important; color: #ffffff !important; font-weight: bold; } /* 當天深色標示 */
+    .side-mini-cal-cell.weekend { background-color: #f7e600; font-weight: bold; }
+    .side-mini-cal-cell.today { background-color: #555555 !important; color: #ffffff !important; font-weight: bold; }
     .side-mini-cal-cell.empty { background: transparent; cursor: default; }
 
     .main-container { flex: 1; display: flex; flex-direction: column; gap: 6px; overflow: hidden; position: relative; min-width: 0; }
@@ -217,7 +217,7 @@
     .file-preview-box:hover { background: #eee9e0; border-color: var(--accent-green); }
     .file-preview-name { white-space: nowrap; overflow: hidden; text-overflow: ellipsis; flex: 1; }
 
-    /* 📅 行事曆 View 樣式 */
+    /* 📅 行事曆 View 樣式 (優化自動斷行縮排) */
     .calendar-view { display: none; flex: 1; flex-direction: column; background: var(--bg-panel); border-radius: 10px; padding: 12px; border: 1px solid var(--border-color); overflow-y: auto; gap: 10px; }
     .calendar-header { display: flex; justify-content: space-between; align-items: center; border-bottom: 1px solid var(--border-color); padding-bottom: 6px; }
     .calendar-controls { display: flex; align-items: center; gap: 6px; }
@@ -227,7 +227,7 @@
     .cal-day-header { font-weight: bold; color: var(--accent-green); padding: 6px; background: #eee9e0; border-radius: 5px; font-size: 0.85rem; }
     .cal-day-header.weekend { background: #fce8e6; color: var(--accent-red); }
 
-    .cal-day-cell { background: white; border: 1px solid var(--border-color); border-radius: 6px; min-height: 85px; padding: 4px; display: flex; flex-direction: column; gap: 2px; cursor: pointer; text-align: left; transition: 0.2s; position: relative; }
+    .cal-day-cell { background: white; border: 1px solid var(--border-color); border-radius: 6px; min-height: 95px; padding: 4px; display: flex; flex-direction: column; gap: 2px; cursor: pointer; text-align: left; transition: 0.2s; position: relative; overflow: hidden; }
     .cal-day-cell.weekend { background-color: #fff5f5; }
 
     .cal-day-cell.empty { background: transparent; border: none; cursor: default; }
@@ -237,7 +237,25 @@
     
     .cal-day-num { font-weight: bold; font-size: 0.8rem; color: var(--text-sub); }
     .cal-holiday { background: #fee2e2; color: #991b1b; font-size: 0.65rem; padding: 1px 3px; border-radius: 3px; font-weight: bold; display: inline-block; margin-top: 1px; }
-    .cal-event-tag { background: #e0e7ff; color: #2b5b84; font-size: 0.68rem; padding: 1px 3px; border-radius: 3px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; font-weight: bold; cursor: pointer; display: block; margin-top: 2px; }
+
+    /* 🛠️ 行事曆標題「自動換行＋自動縮排＋省略號」 */
+    .cal-event-tag { 
+      background: #e0e7ff; 
+      color: #2b5b84; 
+      font-size: 0.72rem; 
+      padding: 3px 5px; 
+      border-radius: 4px; 
+      font-weight: bold; 
+      cursor: pointer; 
+      display: -webkit-box;
+      -webkit-line-clamp: 2; /* 最多顯示兩行自動斷行 */
+      -webkit-box-orient: vertical;
+      overflow: hidden; 
+      text-overflow: ellipsis; 
+      line-height: 1.25;
+      margin-top: 2px;
+      word-break: break-all;
+    }
     
     .cal-dots-box { display: flex; gap: 3px; justify-content: flex-start; margin-top: 2px; }
     .cal-dot { width: 6px; height: 6px; border-radius: 50%; display: inline-block; }
@@ -580,7 +598,7 @@
     <!-- 視窗 3：📅 動態萬年行事曆 -->
     <div class="calendar-view" id="view-calendar">
       <div class="calendar-header">
-        <h3 style="color:var(--accent-green);" id="calTitleDisplay">📅 行事曆</h3>
+        <h3 style="color:var(--accent-green);" id="calTitleDisplay">📅 行事曆 (雙擊格子可直接填寫新增行程)</h3>
         <div class="calendar-controls">
           <button class="btn-cal-month" onclick="changeMonth(-1)">◀ 上個月</button>
           <button class="btn-cal-month" onclick="changeMonth(0)">今天</button>
@@ -1429,7 +1447,7 @@
       });
     }
 
-    /* 📅 行事曆渲染邏輯 */
+    /* 📅 大版行事曆渲染邏輯 (雙擊格子可直接在格子填寫新增行程) */
     function renderCalendar(year, month) {
       try {
         const grid = document.getElementById('calendarGrid');
@@ -1446,7 +1464,7 @@
           <div class="cal-day-header weekend">六</div>
         `;
 
-        titleEl.innerText = `📅 ${year} 年 ${month + 1} 月 行事曆`;
+        titleEl.innerText = `📅 ${year} 年 ${month + 1} 月 行事曆 (雙擊格子可直接在格子填寫新增行程)`;
 
         const firstDayIndex = new Date(year, month, 1).getDay();
         const totalDays = new Date(year, month + 1, 0).getDate();
@@ -1481,19 +1499,24 @@
             dayCell.classList.add('selected');
           }
 
+          // 單擊：檢視當天行程
           dayCell.onclick = () => selectCalendarDay(year, month + 1, day, fullDateStr, dayCell);
+
+          // 雙擊（Double Click）：直接在格子內填寫新增行程
+          dayCell.ondblclick = (e) => {
+            e.stopPropagation();
+            quickAddEventDirectlyInGrid(fullDateStr, month + 1, day);
+          };
 
           let cellHTML = `<span class="cal-day-num">${day}</span>`;
           let hasEvent = false;
           let hasHoliday = false;
 
-          // 🇹🇼 國定假日判定
           if (typeof taiwanHolidays !== 'undefined' && taiwanHolidays && taiwanHolidays[dateKey]) {
             hasHoliday = true;
             cellHTML += `<span class="cal-holiday">${taiwanHolidays[dateKey]}</span>`;
           }
 
-          // 📌 會議與活動行程判定
           let dayEvents = [];
           if (Array.isArray(notesData)) {
             notesData.forEach(note => {
@@ -1529,6 +1552,35 @@
       }
     }
 
+    /* 雙擊格子直覺填寫新增行程功能 */
+    function quickAddEventDirectlyInGrid(fullDateStr, month, day) {
+      const titleInput = prompt(`📌 請輸入 ${month}/${day} 要新增的行程標題：`);
+      if (!titleInput || titleInput.trim() === '') return;
+
+      const title = titleInput.trim();
+      const newNote = {
+        title: `⏰ [${month}/${day}] ${title}`,
+        content: `<b>【${month}/${day} 行程提醒】</b><br>* 內容：${title}<br>* 日期：${fullDateStr}`,
+        category: '☑️ 待辦事項',
+        dateStr: fullDateStr,
+        images: [],
+        files: [],
+        updatedAt: new Date().toISOString()
+      };
+
+      if (isFirebaseEnabled && db) {
+        db.collection("luckynotes").add(newNote);
+      } else {
+        newNote.id = 'note-' + Date.now();
+        notesData.push(newNote);
+        saveNotesToLocalStorage();
+        renderCalendar(calYear, calMonth);
+        renderDashboardCards();
+      }
+
+      alert(`✅ 已成功將行程「${title}」填入 ${month}/${day} 日格子中！`);
+    }
+
     function selectCalendarDay(year, month, day, fullDateStr, cellEl) {
       document.querySelectorAll('.cal-day-cell').forEach(el => el.classList.remove('selected'));
       cellEl.classList.add('selected');
@@ -1546,7 +1598,7 @@
 
       if (listEl) {
         if (matchedNotes.length === 0) {
-          listEl.innerHTML = `<span style="font-size:0.85rem;color:var(--text-sub);padding:4px 0;">當日尚無任何行程，點擊上方按鈕即可新增行程提醒。</span>`;
+          listEl.innerHTML = `<span style="font-size:0.85rem;color:var(--text-sub);padding:4px 0;">當日尚無任何行程，雙擊上方格子可直接填寫新增。</span>`;
         } else {
           listEl.innerHTML = matchedNotes.map(n => `
             <div class="mobile-agenda-item" onclick="openNoteInEditorById('${n.id}')">
@@ -2247,7 +2299,7 @@
       }
 
       if (!recognition) {
-        return alert('⚠️ 您的瀏覽器不支援 Web Speech 語音 API。\n如果您使用手機，建議直接點擊手機輸入法鍵盤右下角的「🎙️ 麦克風」進行語音輸入，效果最佳！');
+        return alert('⚠️ 您的瀏覽器不支援 Web Speech 語音 API。\n如果您使用手機，建議直接點擊手機輸入法鍵盤右下角的「🎙️ 麥克風」進行語音輸入，效果最佳！');
       }
 
       const btn = document.getElementById('voiceBtn');
