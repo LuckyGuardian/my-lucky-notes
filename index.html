@@ -37,7 +37,8 @@
     .sidebar.collapsed .btn-side-add-text,
     .sidebar.collapsed .btn-add-folder,
     .sidebar.collapsed .btn-add-subfolder,
-    .sidebar.collapsed .submenu-group { display: none !important; }
+    .sidebar.collapsed .submenu-group,
+    .sidebar.collapsed .side-mini-cal { display: none !important; }
     .sidebar.collapsed .menu-item { justify-content: center; padding: 8px 0; }
     .sidebar.collapsed .btn-side-add { padding: 8px 0; }
 
@@ -70,6 +71,18 @@
 
     .menu-item.export-btn { color: var(--accent-blue); background: #e0e7ff; cursor: pointer; }
     .menu-item.export-btn:hover { background: #c7d2fe; }
+
+    /* 📅 側邊欄最下方小日曆卡片 (樣式仿造參考圖二) */
+    .side-mini-cal { margin-top: auto; background: #ffffff; border: 1px solid var(--border-color); border-radius: 8px; overflow: hidden; box-shadow: 0 2px 6px rgba(0,0,0,0.04); }
+    .side-mini-cal-header { background: #d8c27a; color: #2b332c; padding: 4px 8px; font-size: 0.8rem; font-weight: bold; display: flex; align-items: center; justify-content: space-between; }
+    .side-mini-cal-nav { background: #ffffff; padding: 4px 6px; display: flex; align-items: center; justify-content: space-between; border-bottom: 1px solid var(--border-color); font-size: 0.8rem; font-weight: bold; }
+    .side-mini-cal-btn { background: transparent; border: none; font-weight: bold; cursor: pointer; padding: 0 4px; color: #2b332c; font-size: 0.85rem; }
+    .side-mini-cal-grid { display: grid; grid-template-columns: repeat(7, 1fr); padding: 4px; gap: 2px; text-align: center; font-size: 0.72rem; }
+    .side-mini-cal-day-header { font-weight: bold; padding: 2px 0; color: #333; }
+    .side-mini-cal-cell { padding: 3px 0; border-radius: 2px; cursor: pointer; font-weight: 500; color: #333; }
+    .side-mini-cal-cell.weekend { background-color: #f7e600; font-weight: bold; } /* 黃底標示週末 */
+    .side-mini-cal-cell.today { background-color: #555555 !important; color: #ffffff !important; font-weight: bold; } /* 當天深色標示 */
+    .side-mini-cal-cell.empty { background: transparent; cursor: default; }
 
     .main-container { flex: 1; display: flex; flex-direction: column; gap: 6px; overflow: hidden; position: relative; min-width: 0; }
     
@@ -345,7 +358,6 @@
     <div class="menu-group">
       <div class="menu-item" style="cursor:pointer;" onclick="openSearchModal(); toggleSidebar();">🔍 <span class="menu-text">搜尋</span></div>
       <div class="menu-item" style="cursor:pointer;" onclick="openTagModal(); toggleSidebar();">🏷️ <span class="menu-text">Tag 瀏覽</span></div>
-      <div class="menu-item" style="cursor:pointer;" id="menu-cal" onclick="switchView('calendar', '📅 行事曆'); updateMenuActive('menu-cal'); toggleSidebar();">📅 <span class="menu-text">行事曆</span></div>
       <div class="menu-item export-btn" onclick="openExportModal(); toggleSidebar();">📥 <span class="menu-text">匯出資料 (自訂/全站)</span></div>
     </div>
 
@@ -373,6 +385,29 @@
 
       <div class="menu-item" draggable="true" data-target-board="web-board" id="menu-web" onclick="openNewCategoryNote('🌐 網路知識收集站'); updateMenuActive('menu-web'); toggleSidebar();">🌐 <span class="menu-text" id="side-text-web">網路知識收集站</span></div>
     </div>
+
+    <!-- 📅 側邊欄最下方：小日曆卡片 (仿照參考圖二) -->
+    <div class="side-mini-cal" onclick="switchView('calendar', '📅 行事曆'); updateMenuActive(''); toggleSidebar();" title="點擊開起放大版行事曆">
+      <div class="side-mini-cal-header">
+        <span>小日曆 (<span id="miniTodayText">2026/09/17</span>)</span>
+        <span>📝</span>
+      </div>
+      <div class="side-mini-cal-nav" onclick="event.stopPropagation()">
+        <button class="side-mini-cal-btn" onclick="changeMiniCalMonth(-1)">&lt;</button>
+        <span id="miniCalTitle">2026年9月</span>
+        <button class="side-mini-cal-btn" onclick="changeMiniCalMonth(1)">&gt;</button>
+      </div>
+      <div class="side-mini-cal-grid" id="miniCalGrid">
+        <div class="side-mini-cal-day-header">日</div>
+        <div class="side-mini-cal-day-header">一</div>
+        <div class="side-mini-cal-day-header">二</div>
+        <div class="side-mini-cal-day-header">三</div>
+        <div class="side-mini-cal-day-header">四</div>
+        <div class="side-mini-cal-day-header">五</div>
+        <div class="side-mini-cal-day-header">六</div>
+      </div>
+    </div>
+
   </div>
 
   <!-- 主內容區 -->
@@ -675,6 +710,8 @@
 
     let calYear = 2026;
     let calMonth = 8; // 0-based
+    let miniCalYear = 2026;
+    let miniCalMonth = 8;
 
     const webTemplate = `🌐 [文章或知識標題]\n\n【一、 基本資訊】\n* 來源網址：https://...\n* 主題標籤：#科技 #股票 #心理\n\n【二、 核心重點摘要】\n* 重點 1：\n* 重點 2：\n\n【三、 個人心得與應用】\n* 我的思考：`;
     const meetingTemplate = `⏰ [會議/活動名稱]\n\n【一、 基本資訊與地點】\n* 時間：14:00 - 15:00\n* 地點：實體 302 會議室 / 線上 Teams\n* 主持人：Headquarter.ai 團隊\n\n【二、 會前準備與攜帶物品】\n[ ] 準備專案簡報檔 (PPT)\n[ ] 帶筆電與簡報筆`;
@@ -683,7 +720,7 @@
     const lawTemplate = `⚖️ [法規/契約重點解析] #法律 #法條\n\n【一、 核心條文與條號】\n* 適用法條：民法第 XXX 條\n* 關鍵要件：\n\n【二、 實務判例與應用】\n* 結論：`;
     const todoTemplate = `☑️ [待辦事項標題]\n\n【一、 任務細節說明】\n* 相關連結/資料：\n* 預計完成時間：`;
 
-    /* 🇹🇼 台灣國定假日資料庫 (含 2026/10/26 光復節補假) */
+    /* 🇹🇼 台灣國定假日資料庫 */
     const taiwanHolidays = {
       "01-01": "元旦",
       "02-28": "和平紀念日",
@@ -725,8 +762,11 @@
       const today = new Date();
       calYear = today.getFullYear();
       calMonth = today.getMonth();
+      miniCalYear = calYear;
+      miniCalMonth = calMonth;
 
       renderCalendar(calYear, calMonth);
+      renderMiniCalendar(miniCalYear, miniCalMonth);
 
       document.addEventListener('click', () => {
         const ctx = document.getElementById('customContextMenu');
@@ -772,6 +812,79 @@
         });
       }
     });
+
+    /* 📅 側邊欄小日曆渲染 (仿照圖二) */
+    function renderMiniCalendar(year, month) {
+      const grid = document.getElementById('miniCalGrid');
+      const titleEl = document.getElementById('miniCalTitle');
+      const todayTextEl = document.getElementById('miniTodayText');
+      if (!grid || !titleEl) return;
+
+      const today = new Date();
+      const mStr = (today.getMonth() + 1 < 10 ? '0' : '') + (today.getMonth() + 1);
+      const dStr = (today.getDate() < 10 ? '0' : '') + today.getDate();
+      if (todayTextEl) todayTextEl.innerText = `${today.getFullYear()}/${mStr}/${dStr}`;
+
+      titleEl.innerText = `${year}年${month + 1}月`;
+
+      grid.innerHTML = `
+        <div class="side-mini-cal-day-header">日</div>
+        <div class="side-mini-cal-day-header">一</div>
+        <div class="side-mini-cal-day-header">二</div>
+        <div class="side-mini-cal-day-header">三</div>
+        <div class="side-mini-cal-day-header">四</div>
+        <div class="side-mini-cal-day-header">五</div>
+        <div class="side-mini-cal-day-header">六</div>
+      `;
+
+      const firstDayIndex = new Date(year, month, 1).getDay();
+      const totalDays = new Date(year, month + 1, 0).getDate();
+      const isCurrentMonth = today.getFullYear() === year && today.getMonth() === month;
+
+      for (let i = 0; i < firstDayIndex; i++) {
+        const empty = document.createElement('div');
+        empty.className = 'side-mini-cal-cell empty';
+        grid.appendChild(empty);
+      }
+
+      for (let day = 1; day <= totalDays; day++) {
+        const cell = document.createElement('div');
+        cell.className = 'side-mini-cal-cell';
+        cell.innerText = day;
+
+        const dayOfWeek = new Date(year, month, day).getDay();
+        if (dayOfWeek === 0 || dayOfWeek === 6) {
+          cell.classList.add('weekend');
+        }
+
+        if (isCurrentMonth && day === today.getDate()) {
+          cell.classList.add('today');
+        }
+
+        const mStrSel = (month + 1 < 10 ? '0' : '') + (month + 1);
+        const dStrSel = (day < 10 ? '0' : '') + day;
+        const fullDateStr = `${year}-${mStrSel}-${dStrSel}`;
+
+        cell.onclick = (e) => {
+          e.stopPropagation();
+          clickCalendarDayByDate(year, month + 1, day);
+        };
+
+        grid.appendChild(cell);
+      }
+    }
+
+    function changeMiniCalMonth(delta) {
+      miniCalMonth += delta;
+      if (miniCalMonth < 0) {
+        miniCalMonth = 11;
+        miniCalYear--;
+      } else if (miniCalMonth > 11) {
+        miniCalMonth = 0;
+        miniCalYear++;
+      }
+      renderMiniCalendar(miniCalYear, miniCalMonth);
+    }
 
     function insertTable() {
       const rows = prompt('請輸入表格列數 (Rows)：', '3');
@@ -1377,13 +1490,11 @@
           let hasEvent = false;
           let hasHoliday = false;
 
-          // 🇹🇼 國定假日判定
           if (typeof taiwanHolidays !== 'undefined' && taiwanHolidays && taiwanHolidays[dateKey]) {
             hasHoliday = true;
             cellHTML += `<span class="cal-holiday">${taiwanHolidays[dateKey]}</span>`;
           }
 
-          // 📌 會議與活動行程判定
           let dayEvents = [];
           if (Array.isArray(notesData)) {
             notesData.forEach(note => {
