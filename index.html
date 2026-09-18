@@ -39,7 +39,8 @@
     .sidebar.collapsed .btn-add-subfolder,
     .sidebar.collapsed .submenu-group,
     .sidebar.collapsed .side-mini-cal,
-    .sidebar.collapsed .export-btn { display: none !important; }
+    .sidebar.collapsed .export-btn,
+    .sidebar.collapsed .side-quick-tools { display: none !important; }
     .sidebar.collapsed .menu-item { justify-content: center; padding: 8px 0; }
     .sidebar.collapsed .btn-side-add { padding: 8px 0; }
 
@@ -49,6 +50,14 @@
     .mascot-box:hover { opacity: 0.8; }
     .mascot-svg { width: 34px; height: 38px; flex-shrink: 0; }
     .mascot-title { font-size: 1.05rem; font-weight: bold; color: var(--accent-green); white-space: nowrap; }
+
+    /* 頂部按鈕列（整合新增卡片 + 搜尋與 Tag 圖示） */
+    .side-action-row { display: flex; gap: 4px; align-items: center; width: 100%; }
+    .btn-side-add { flex: 1; background: var(--accent-green); color: white; border: none; padding: 8px 6px; border-radius: 6px; font-weight: bold; font-size: 0.85rem; cursor: pointer; display: flex; align-items: center; justify-content: center; gap: 4px; box-shadow: 0 2px 4px rgba(59,90,69,0.15); white-space: nowrap; }
+    .btn-side-add:hover { opacity: 0.9; }
+
+    .btn-icon-tool { background: #ffffff; border: 1px solid var(--border-color); padding: 7px; border-radius: 6px; cursor: pointer; font-size: 0.9rem; display: flex; align-items: center; justify-content: center; transition: 0.2s; flex-shrink: 0; }
+    .btn-icon-tool:hover { background: #eee9e0; border-color: var(--accent-green); }
 
     .sidebar-section-title-box { display: flex; justify-content: space-between; align-items: center; margin-top: 4px; margin-bottom: 1px; padding-left: 6px; padding-right: 4px; }
     .sidebar-section-title { font-size: 0.78rem; color: var(--text-sub); font-weight: bold; white-space: nowrap; }
@@ -66,9 +75,6 @@
 
     .arrow-icon { margin-left: auto; font-size: 0.7rem; color: var(--text-sub); transition: transform 0.2s; cursor: pointer; }
     .arrow-icon.open { transform: rotate(90deg); }
-
-    .btn-side-add { background: var(--accent-green); color: white; border: none; padding: 8px; border-radius: 6px; font-weight: bold; font-size: 0.85rem; cursor: pointer; display: flex; align-items: center; justify-content: center; gap: 6px; box-shadow: 0 2px 4px rgba(59,90,69,0.15); margin: 2px 0; white-space: nowrap; }
-    .btn-side-add:hover { opacity: 0.9; }
 
     .menu-item.export-btn { color: var(--accent-blue); background: #e0e7ff; cursor: pointer; margin-top: 4px; margin-bottom: 8px; }
     .menu-item.export-btn:hover { background: #c7d2fe; }
@@ -112,7 +118,6 @@
     
     .card-list.mode-collapsed { display: none !important; }
 
-    /* 🗂️ 大卡片模式：完整展列文字不裁切 */
     .card-list.mode-card .item-card { background: var(--bg-card); border-radius: 6px; border: 1px solid var(--border-color); padding: 8px 10px; display: flex; flex-direction: column; gap: 4px; cursor: grab; transition: 0.2s; user-select: none; overflow: hidden; height: auto; }
     .card-list.mode-card .item-card:active { cursor: grabbing; }
     .card-list.mode-card .item-card.dragging { opacity: 0.4; background: #eee9e0; border: 1px dashed var(--accent-green); }
@@ -121,9 +126,8 @@
     .card-list.mode-card .item-card-header input[type="checkbox"] { margin-top: 3px; flex-shrink: 0; }
     .card-list.mode-card .item-card-title { font-size: 0.85rem; font-weight: 600; flex: 1; line-height: 1.4; color: var(--text-main); word-break: break-word; overflow: visible; }
 
-    /* 🌲 樹狀清單模式：項目過多時支援卡片框內往下滑動 */
-    .card-list.mode-list { gap: 4px; padding: 4px 6px; overflow-y: auto; }
-    .card-list.mode-list .item-card { background: #ffffff; border-radius: 5px; border: 1px solid var(--border-color); padding: 6px 8px; display: flex; align-items: center; gap: 6px; cursor: pointer; transition: 0.15s; overflow: hidden; height: auto; flex-shrink: 0; }
+    .card-list.mode-list { gap: 4px; padding: 4px 6px; }
+    .card-list.mode-list .item-card { background: #ffffff; border-radius: 5px; border: 1px solid var(--border-color); padding: 6px 8px; display: flex; align-items: center; gap: 6px; cursor: pointer; transition: 0.15s; overflow: hidden; height: auto; }
     .card-list.mode-list .item-card:hover { background: #f0ebd8; border-color: var(--accent-green); }
     .card-list.mode-list .item-card-header { display: flex; align-items: center; gap: 6px; width: 100%; overflow: hidden; }
     .card-list.mode-list .item-card-header input[type="checkbox"] { flex-shrink: 0; }
@@ -368,9 +372,14 @@
       <div class="mascot-title">Lucky Note</div>
     </div>
 
-    <button class="btn-side-add" onclick="openQuickAddModal(); toggleSidebar();">
-      ➕ <span class="btn-side-add-text">快速新增卡片</span>
-    </button>
+    <!-- 頂部按鈕組合：新增卡片 + 🔍搜尋 + 🏷️Tag圖示按鈕 -->
+    <div class="side-action-row">
+      <button class="btn-side-add" onclick="openQuickAddModal(); toggleSidebar();">
+        ➕ <span class="btn-side-add-text">快速新增卡片</span>
+      </button>
+      <button class="btn-icon-tool side-quick-tools" onclick="openSearchModal(); toggleSidebar();" title="搜尋筆記">🔍</button>
+      <button class="btn-icon-tool side-quick-tools" onclick="openTagModal(); toggleSidebar();" title="Tag 標籤瀏覽">🏷️</button>
+    </div>
 
     <div class="sidebar-section-title-box">
       <span class="sidebar-section-title">主題分類看板 (右鍵/長按管理)</span>
@@ -1066,6 +1075,7 @@
       switchView('dashboard', `📖 跨領域學習筆記彙整視圖`, false);
     }
 
+    /* 🛠️ 選單右鍵與長按管理事件註冊 (支援刪除與重命名) */
     function bindContextMenuEvents(element, type, catName, safeId, sideTextId) {
       let pressTimer = null;
 
@@ -1760,6 +1770,7 @@
       switchView('editor', '📝 修改筆記：' + note.title);
     }
 
+    /* 🛠️ 左側選單拖曳排序與右鍵/長按管理初始化 */
     function initCategoryMenuDragAndDrop() {
       const menuGroup = document.getElementById('categoryMenuGroup');
       if (!menuGroup) return;
@@ -1781,6 +1792,23 @@
 
         syncDashboardGridOrder();
         saveMenuOrder();
+      });
+
+      // 為靜態預設選單項目綁定右鍵與長按管理事件
+      bindStaticMenuContextEvents();
+    }
+
+    function bindStaticMenuContextEvents() {
+      const staticMenus = [
+        { id: 'menu-todo', name: '☑️ 待辦事項', safeId: 'todo-board', sideId: 'side-text-todo' },
+        { id: 'menu-work', name: '💼 工作任務', safeId: 'work-board', sideId: 'side-text-work' },
+        { id: 'menu-ai', name: '🤖 AI 智庫與筆記', safeId: 'ai-board', sideId: 'side-text-ai' },
+        { id: 'menu-web', name: '🌐 網路知識收集站', safeId: 'web-board', sideId: 'side-text-web' }
+      ];
+
+      staticMenus.forEach(m => {
+        const el = document.getElementById(m.id);
+        if (el) bindContextMenuEvents(el, 'static', m.name, m.safeId, m.sideId);
       });
     }
 
