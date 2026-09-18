@@ -112,7 +112,7 @@
     
     .card-list.mode-collapsed { display: none !important; }
 
-    /* 🗂️ 大卡片模式：完美展列文字不裁切 */
+    /* 🗂️ 大卡片模式：完整展列文字不裁切 */
     .card-list.mode-card .item-card { background: var(--bg-card); border-radius: 6px; border: 1px solid var(--border-color); padding: 8px 10px; display: flex; flex-direction: column; gap: 4px; cursor: grab; transition: 0.2s; user-select: none; overflow: hidden; height: auto; }
     .card-list.mode-card .item-card:active { cursor: grabbing; }
     .card-list.mode-card .item-card.dragging { opacity: 0.4; background: #eee9e0; border: 1px dashed var(--accent-green); }
@@ -121,9 +121,9 @@
     .card-list.mode-card .item-card-header input[type="checkbox"] { margin-top: 3px; flex-shrink: 0; }
     .card-list.mode-card .item-card-title { font-size: 0.85rem; font-weight: 600; flex: 1; line-height: 1.4; color: var(--text-main); word-break: break-word; overflow: visible; }
 
-    /* 🌲 樹狀清單模式：精準單行與標籤完全對齊 */
-    .card-list.mode-list { gap: 4px; padding: 4px 6px; }
-    .card-list.mode-list .item-card { background: #ffffff; border-radius: 5px; border: 1px solid var(--border-color); padding: 6px 8px; display: flex; align-items: center; gap: 6px; cursor: pointer; transition: 0.15s; overflow: hidden; height: auto; }
+    /* 🌲 樹狀清單模式：項目過多時支援卡片框內往下滑動 */
+    .card-list.mode-list { gap: 4px; padding: 4px 6px; overflow-y: auto; }
+    .card-list.mode-list .item-card { background: #ffffff; border-radius: 5px; border: 1px solid var(--border-color); padding: 6px 8px; display: flex; align-items: center; gap: 6px; cursor: pointer; transition: 0.15s; overflow: hidden; height: auto; flex-shrink: 0; }
     .card-list.mode-list .item-card:hover { background: #f0ebd8; border-color: var(--accent-green); }
     .card-list.mode-list .item-card-header { display: flex; align-items: center; gap: 6px; width: 100%; overflow: hidden; }
     .card-list.mode-list .item-card-header input[type="checkbox"] { flex-shrink: 0; }
@@ -371,14 +371,6 @@
     <button class="btn-side-add" onclick="openQuickAddModal(); toggleSidebar();">
       ➕ <span class="btn-side-add-text">快速新增卡片</span>
     </button>
-
-    <div class="sidebar-section-title-box">
-      <span class="sidebar-section-title">快速跳轉</span>
-    </div>
-    <div class="menu-group">
-      <div class="menu-item" style="cursor:pointer;" onclick="openSearchModal(); toggleSidebar();">🔍 <span class="menu-text">搜尋</span></div>
-      <div class="menu-item" style="cursor:pointer;" onclick="openTagModal(); toggleSidebar();">🏷️ <span class="menu-text">Tag 瀏覽</span></div>
-    </div>
 
     <div class="sidebar-section-title-box">
       <span class="sidebar-section-title">主題分類看板 (右鍵/長按管理)</span>
