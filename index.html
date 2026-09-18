@@ -38,7 +38,8 @@
     .sidebar.collapsed .btn-add-folder,
     .sidebar.collapsed .btn-add-subfolder,
     .sidebar.collapsed .submenu-group,
-    .sidebar.collapsed .side-mini-cal { display: none !important; }
+    .sidebar.collapsed .side-mini-cal,
+    .sidebar.collapsed .export-btn { display: none !important; }
     .sidebar.collapsed .menu-item { justify-content: center; padding: 8px 0; }
     .sidebar.collapsed .btn-side-add { padding: 8px 0; }
 
@@ -69,11 +70,10 @@
     .btn-side-add { background: var(--accent-green); color: white; border: none; padding: 8px; border-radius: 6px; font-weight: bold; font-size: 0.85rem; cursor: pointer; display: flex; align-items: center; justify-content: center; gap: 6px; box-shadow: 0 2px 4px rgba(59,90,69,0.15); margin: 2px 0; white-space: nowrap; }
     .btn-side-add:hover { opacity: 0.9; }
 
-    .menu-item.export-btn { color: var(--accent-blue); background: #e0e7ff; cursor: pointer; }
+    .menu-item.export-btn { color: var(--accent-blue); background: #e0e7ff; cursor: pointer; margin-top: 4px; margin-bottom: 8px; }
     .menu-item.export-btn:hover { background: #c7d2fe; }
 
-    /* 📅 側邊欄小日曆卡片 */
-    .side-mini-cal { margin-top: 6px; margin-bottom: 12px; background: #ffffff; border: 1px solid var(--border-color); border-radius: 8px; overflow: hidden; box-shadow: 0 2px 6px rgba(0,0,0,0.04); flex-shrink: 0; }
+    .side-mini-cal { margin-top: 6px; background: #ffffff; border: 1px solid var(--border-color); border-radius: 8px; overflow: hidden; box-shadow: 0 2px 6px rgba(0,0,0,0.04); flex-shrink: 0; }
     .side-mini-cal-header { background: #d8c27a; color: #2b332c; padding: 5px 8px; font-size: 0.8rem; font-weight: bold; display: flex; align-items: center; justify-content: space-between; }
     .side-mini-cal-nav { background: #ffffff; padding: 4px 6px; display: flex; align-items: center; justify-content: space-between; border-bottom: 1px solid var(--border-color); font-size: 0.8rem; font-weight: bold; }
     .side-mini-cal-btn { background: transparent; border: none; font-weight: bold; cursor: pointer; padding: 0 4px; color: #2b332c; font-size: 0.85rem; }
@@ -216,7 +216,7 @@
     .file-preview-box:hover { background: #eee9e0; border-color: var(--accent-green); }
     .file-preview-name { white-space: nowrap; overflow: hidden; text-overflow: ellipsis; flex: 1; }
 
-    /* 📅 行事曆 View 滿版自適應高度樣式 */
+    /* 📅 行事曆 View 樣式 */
     .calendar-view { display: none; flex: 1; flex-direction: column; background: var(--bg-panel); border-radius: 10px; padding: 10px; border: 1px solid var(--border-color); overflow: hidden; gap: 6px; height: 100%; }
     .calendar-header { display: flex; justify-content: space-between; align-items: center; border-bottom: 1px solid var(--border-color); padding-bottom: 4px; flex-shrink: 0; }
     .calendar-controls { display: flex; align-items: center; gap: 6px; }
@@ -374,7 +374,6 @@
     <div class="menu-group">
       <div class="menu-item" style="cursor:pointer;" onclick="openSearchModal(); toggleSidebar();">🔍 <span class="menu-text">搜尋</span></div>
       <div class="menu-item" style="cursor:pointer;" onclick="openTagModal(); toggleSidebar();">🏷️ <span class="menu-text">Tag 瀏覽</span></div>
-      <div class="menu-item export-btn" onclick="openExportModal(); toggleSidebar();">📥 <span class="menu-text">匯出資料 (自訂/全站)</span></div>
     </div>
 
     <div class="sidebar-section-title-box">
@@ -402,7 +401,7 @@
       <div class="menu-item" draggable="true" data-target-board="web-board" id="menu-web" onclick="openNewCategoryNote('🌐 網路知識收集站'); updateMenuActive('menu-web'); toggleSidebar();">🌐 <span class="menu-text" id="side-text-web">網路知識收集站</span></div>
     </div>
 
-    <!-- 📅 側邊欄最下方小日曆 -->
+    <!-- 📅 側邊欄小日曆 -->
     <div class="side-mini-cal" onclick="switchView('calendar', '📅 行事曆'); updateMenuActive(''); toggleSidebar();" title="點擊開起大版行事曆">
       <div class="side-mini-cal-header">
         <span>小日曆 (<span id="miniTodayText">2026/09/17</span>)</span>
@@ -423,6 +422,9 @@
         <div class="side-mini-cal-day-header">六</div>
       </div>
     </div>
+
+    <!-- 📥 移動至左側側邊欄的最底部 -->
+    <div class="menu-item export-btn" onclick="openExportModal(); toggleSidebar();">📥 <span class="menu-text">匯出資料 (自訂/全站)</span></div>
 
   </div>
 
@@ -764,7 +766,6 @@
       return '📌 ';
     }
 
-    /* 🛠️ 從卡片提取排版用 dateStr 物件或標題日期（如 9/16、10/22）用於智能時間排序 */
     function extractNoteDate(note) {
       if (note.dateStr && /^\d{4}-\d{2}-\d{2}$/.test(note.dateStr)) {
         return new Date(note.dateStr).getTime();
@@ -776,7 +777,7 @@
         const year = new Date().getFullYear();
         return new Date(year, month, day).getTime();
       }
-      return Infinity; // 無日期的項目排到最後面
+      return Infinity;
     }
 
     document.addEventListener('DOMContentLoaded', () => {
@@ -844,7 +845,6 @@
       }
     });
 
-    /* 📅 側邊欄小日曆渲染 */
     function renderMiniCalendar(year, month) {
       const grid = document.getElementById('miniCalGrid');
       const titleEl = document.getElementById('miniCalTitle');
@@ -1391,11 +1391,9 @@
       switchView('dashboard', document.getElementById('currentStatusText').innerText);
     }
 
-    /* 🛠️ 看板內部卡片渲染（升級：有日期的優先排，且依照年月日排序） */
     function renderDashboardCards() {
       document.querySelectorAll('.card-list').forEach(el => el.innerHTML = '');
 
-      // 複製一份資料陣列，進行「有日期的優先排 + 依照年月日時間先後排序」
       const sortedNotes = [...notesData].sort((a, b) => {
         const dateA = extractNoteDate(a);
         const dateB = extractNoteDate(b);
@@ -1462,13 +1460,12 @@
             card.innerHTML = `<div class="item-card-header"><input type="checkbox" onclick="event.stopPropagation()"><span class="item-card-title">${note.title}</span></div>`;
           }
 
-          // 按順序 append，確保排序好的日期正確置頂
           listEl.appendChild(card);
         }
       });
     }
 
-    /* 📅 大版行事曆渲染邏輯 (雙擊格子直接在格子填寫行程) */
+    /* 📅 大版行事曆渲染邏輯 */
     function renderCalendar(year, month) {
       try {
         const grid = document.getElementById('calendarGrid');
